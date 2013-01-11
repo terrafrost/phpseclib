@@ -330,7 +330,7 @@ class Crypt_AES extends Crypt_Rijndael {
                     $iv = substr_replace($iv, $ciphertext, $orig_pos, $i);
                     $this->enbuffer['enmcrypt_init'] = true;
                 }
-                if ($len >= 16) {
+                if ($len & 0xFFFFFFF0) {
                     if ($this->enbuffer['enmcrypt_init'] === true) {
                         mcrypt_generic_init($this->enmcrypt, $this->key, $iv);
                         $this->enbuffer['enmcrypt_init'] = false;
@@ -338,12 +338,12 @@ class Crypt_AES extends Crypt_Rijndael {
                     $ciphertext.= mcrypt_generic($this->enmcrypt, substr($plaintext, $i, $len - $len % 16));
                     $iv = substr($ciphertext, -16);
                     $i = strlen($ciphertext);
-                    $len%= 16;
+                    $len&= 0xF;
                 }
                 if ($len) {
                     $iv = mcrypt_generic($this->ecb, $iv);
                     $block = substr($iv, $pos) ^ substr($plaintext, $i);
-                    $iv = substr_replace($iv, $block, $pos, $len);
+                    $iv = substr_replace($iv, $block, 0, $len);
                     $ciphertext.= $block;
                     $pos = $len;
                 }
@@ -414,21 +414,23 @@ class Crypt_AES extends Crypt_Rijndael {
                     $iv = substr_replace($iv, substr($ciphertext, 0, $i), $orig_pos, $i);
                     $this->debuffer['demcrypt_init'] = true;
                 }
-                if ($len >= 16) {
+                $leading = $len & 0xFFFFFFF0;
+                if ($leading) {
                     if ($this->debuffer['demcrypt_init'] === true) {
                         mcrypt_generic_init($this->demcrypt, $this->key, $iv);
                         $this->debuffer['demcrypt_init'] = false;
                     }
-                    $cb = substr($ciphertext, $i, $len - $len % 16);
+                    $cb = substr($ciphertext, $i, $leading);
                     $plaintext.= mdecrypt_generic($this->demcrypt, $cb);
                     $iv = substr($cb, -16);
                     $i = strlen($plaintext);
-                    $len%= 16;
+                    $len&= 0xF;
                 }
                 if ($len) {
                     $iv = mcrypt_generic($this->ecb, $iv);
                     $plaintext.= substr($iv, $pos) ^ substr($ciphertext, $i);
-                    $iv = substr_replace($iv, substr($ciphertext, $i, $len), $pos, $len);
+                    $iv = substr_replace($iv, substr($ciphertext, $i), 0, $len)
+                        &"\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
                     $pos = $len;
                 }
 
