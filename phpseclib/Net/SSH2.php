@@ -1160,14 +1160,14 @@ class Net_SSH2 {
                 break;
             case 'aes192-cbc':
             case 'aes192-ctr':
-            case 'twofish128-cbc':
-            case 'twofish128-ctr':
+            case 'twofish192-cbc':
+            case 'twofish192-ctr':
                 $encryptKeyLength = 24;
                 break;
             case 'aes128-cbc':
             case 'aes128-ctr':
-            case 'twofish192-cbc':
-            case 'twofish192-ctr':
+            case 'twofish128-cbc':
+            case 'twofish128-ctr':
                 $encryptKeyLength = 16;
                 break;
             case 'arcfour':
