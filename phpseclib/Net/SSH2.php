@@ -1149,15 +1149,13 @@ class Net_SSH2 {
         switch ($encrypt) {
             case '3des-cbc':
             case '3des-ctr':
-            case 'twofish-cbc':
-            case 'twofish256-cbc':
-            case 'twofish256-ctr':
                 $encryptKeyLength = 24;
                 break;
             case 'aes256-cbc':
             case 'aes256-ctr':
-            case 'twofish192-cbc':
-            case 'twofish192-ctr':
+            case 'twofish-cbc':
+            case 'twofish256-cbc':
+            case 'twofish256-ctr':
                 $encryptKeyLength = 32;
                 break;
             case 'aes192-cbc':
@@ -1168,6 +1166,8 @@ class Net_SSH2 {
                 break;
             case 'aes128-cbc':
             case 'aes128-ctr':
+            case 'twofish192-cbc':
+            case 'twofish192-ctr':
                 $encryptKeyLength = 16;
                 break;
             case 'arcfour':
@@ -1345,13 +1345,13 @@ class Net_SSH2 {
             case 'twofish256-cbc':
             case 'twofish-cbc':
                 $this->encrypt = new Crypt_Twofish();
-                $this->decrypt_block_size = 16;
+                $this->encrypt_block_size = 16;
                 break;
             case 'twofish128-ctr':
             case 'twofish192-ctr':
             case 'twofish256-ctr':
                 $this->encrypt = new Crypt_Twofish(CRYPT_TWOFISH_MODE_CTR);
-                $this->decrypt_block_size = 16;
+                $this->encrypt_block_size = 16;
                 break;
             case 'arcfour':
             case 'arcfour128':
