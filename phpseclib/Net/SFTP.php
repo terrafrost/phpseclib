@@ -389,7 +389,7 @@ class Net_SFTP extends Net_SSH2 {
             $this->exec(
                 "test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n" .
                 "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n" .
-                "exec sftp-server"
+                "exec sftp-server", false
             );
             return $this->_init_sftp();
         }
