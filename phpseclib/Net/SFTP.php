@@ -384,6 +384,27 @@ class Net_SFTP extends Net_SSH2 {
             return false;
         }
 
+        if (!$this->_init_sftp()) {
+            // from PuTTY's psftp.exe
+            $this->exec(
+                "test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n" .
+                "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n" .
+                "exec sftp-server"
+            );
+            return $this->_init_sftp();
+        }
+
+        return true;
+    }
+
+    /**
+     * Initialize SFTP subsystem
+     *
+     * @return Boolean
+     * @access private
+     */
+    function _init_sftp()
+    {
         $this->window_size_client_to_server[NET_SFTP_CHANNEL] = $this->window_size;
 
         $packet = pack('CNa*N3',
