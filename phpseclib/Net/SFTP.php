@@ -58,7 +58,7 @@
  * Include Net_SSH2
  */
 if (!class_exists('Net_SSH2')) {
-    require_once('Net/SSH2.php');
+    require_once('SSH2.php');
 }
 
 /**#@+
@@ -405,7 +405,7 @@ class Net_SFTP extends Net_SSH2 {
      */
     function _init_sftp()
     {
-        $this->window_size_client_to_server[NET_SFTP_CHANNEL] = $this->window_size;
+        $this->window_size_server_to_client[NET_SFTP_CHANNEL] = $this->window_size;
 
         $packet = pack('CNa*N3',
             NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SFTP_CHANNEL, $this->window_size, 0x4000);
@@ -1046,7 +1046,7 @@ class Net_SFTP extends Net_SSH2 {
      */
     function truncate($filename, $new_size)
     {
-        $attr = pack('N3', NET_SFTP_ATTR_SIZE, 0, $new_size);
+        $attr = pack('N3', NET_SFTP_ATTR_SIZE, $new_size / 0x100000000, $new_size);
 
         return $this->_setstat($filename, $attr, false);
     }
@@ -1080,9 +1080,9 @@ class Net_SFTP extends Net_SSH2 {
             $atime = $time;
         }
 
-        $flags = NET_SFTP_OPEN_CREATE | NET_SFTP_OPEN_EXCL;
+        $flags = NET_SFTP_OPEN_WRITE | NET_SFTP_OPEN_CREATE | NET_SFTP_OPEN_EXCL;
         $attr = pack('N3', NET_SFTP_ATTR_ACCESSTIME, $time, $atime);
-        $packet = pack('Na*N2', strlen($filename), $filename, $flags, $attr);
+        $packet = pack('Na*Na*', strlen($filename), $filename, $flags, $attr);
         if (!$this->_send_sftp_packet(NET_SFTP_OPEN, $packet)) {
             return false;
         }
@@ -1541,7 +1541,8 @@ class Net_SFTP extends Net_SSH2 {
         $i = 0;
         while ($sent < $size) {
             $temp = $mode & NET_SFTP_LOCAL_FILE ? fread($fp, $sftp_packet_size) : $this->_string_shift($data, $sftp_packet_size);
-            $packet = pack('Na*N3a*', strlen($handle), $handle, 0, $offset + $sent, strlen($temp), $temp);
+            $subtemp = $offset + $sent;
+            $packet = pack('Na*N3a*', strlen($handle), $handle, $subtemp / 0x100000000, $subtemp, strlen($temp), $temp);
             if (!$this->_send_sftp_packet(NET_SFTP_WRITE, $packet)) {
                 fclose($fp);
                 return false;
@@ -1671,7 +1672,7 @@ class Net_SFTP extends Net_SSH2 {
 
         $size = (1 << 20) < $length || $length < 0 ? 1 << 20 : $length;
         while (true) {
-            $packet = pack('Na*N3', strlen($handle), $handle, 0, $offset, $size);
+            $packet = pack('Na*N3', strlen($handle), $handle, $offset / 0x100000000, $offset, $size);
             if (!$this->_send_sftp_packet(NET_SFTP_READ, $packet)) {
                 if ($local_file !== false) {
                     fclose($fp);
@@ -1707,7 +1708,7 @@ class Net_SFTP extends Net_SSH2 {
             }
         }
 
-        if ($length > 0 && $length <= strlen($content)) {
+        if ($length > 0 && $length <= $offset - $size) {
             if ($local_file === false) {
                 $content = substr($content, 0, $length);
             } else {
@@ -1925,11 +1926,8 @@ class Net_SFTP extends Net_SSH2 {
                     // (0xFFFFFFFF bytes), anyway.  as such, we'll just represent all file sizes that are bigger than
                     // 4GB as being 4GB.
                     extract(unpack('Nupper/Nsize', $this->_string_shift($response, 8)));
-                    if ($upper) {
-                        $attr['size'] = 0xFFFFFFFF;
-                    } else {
-                        $attr['size'] = $size < 0 ? ($size & 0x7FFFFFFF) + 0x80000000 : $size;
-                    }
+                    $attr['size'] = $upper ? 0x100000000 * $upper : 0;
+                    $attr['size']+= $size < 0 ? ($size & 0x7FFFFFFF) + 0x80000000 : $size;
                     break;
                 case NET_SFTP_ATTR_UIDGID: // 0x00000002 (SFTPv3 only)
                     $attr+= unpack('Nuid/Ngid', $this->_string_shift($response, 8));

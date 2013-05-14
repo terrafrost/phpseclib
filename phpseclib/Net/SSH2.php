@@ -68,64 +68,6 @@
  * @link       http://phpseclib.sourceforge.net
  */
 
-/**
- * Include Math_BigInteger
- *
- * Used to do Diffie-Hellman key exchange and DSA/RSA signature verification.
- */
-if (!class_exists('Math_BigInteger')) {
-    require_once('Math/BigInteger.php');
-}
-
-/**
- * Include Crypt_Random
- */
-if (!function_exists('crypt_random_string')) {
-    require_once('Crypt/Random.php');
-}
-
-/**
- * Include Crypt_Hash
- */
-if (!class_exists('Crypt_Hash')) {
-    require_once('Crypt/Hash.php');
-}
-
-/**
- * Include Crypt_TripleDES
- */
-if (!class_exists('Crypt_TripleDES')) {
-    require_once('Crypt/TripleDES.php');
-}
-
-/**
- * Include Crypt_RC4
- */
-if (!class_exists('Crypt_RC4')) {
-    require_once('Crypt/RC4.php');
-}
-
-/**
- * Include Crypt_AES
- */
-if (!class_exists('Crypt_AES')) {
-    require_once('Crypt/AES.php');
-}
-
-/**
- * Include Crypt_Twofish
- */
-if (!class_exists('Crypt_Twofish')) {
-    require_once('Crypt/Twofish.php');
-}
-
-/**
- * Include Crypt_Blowfish
- */
-if (!class_exists('Crypt_Blowfish')) {
-    require_once('Crypt/Blowfish.php');
-}
-
 /**#@+
  * Execution Bitmap Masks
  *
@@ -591,7 +533,7 @@ class Net_SSH2 {
     /**
      * The Window Size
      *
-     * Bytes the other party can send before it must wait for the window to be adjusted (0x7FFFFFFF = 4GB)
+     * Bytes the other party can send before it must wait for the window to be adjusted (0x7FFFFFFF = 2GB)
      *
      * @var Integer
      * @see Net_SSH2::_send_channel_packet()
@@ -609,7 +551,7 @@ class Net_SSH2 {
      * @var Array
      * @access private
      */
-    var $window_size_client_to_server = array();
+    var $window_size_server_to_client = array();
 
     /**
      * Server signature
@@ -791,6 +733,20 @@ class Net_SSH2 {
      */
     function Net_SSH2($host, $port = 22, $timeout = 10)
     {
+        // Include Math_BigInteger
+        // Used to do Diffie-Hellman key exchange and DSA/RSA signature verification.
+        if (!class_exists('Math_BigInteger')) {
+            require_once('Math/BigInteger.php');
+        }
+
+        if (!function_exists('crypt_random_string')) {
+            require_once('Crypt/Random.php');
+        }
+
+        if (!class_exists('Crypt_Hash')) {
+            require_once('Crypt/Hash.php');
+        }
+
         $this->last_packet = strtok(microtime(), ' ') + strtok(''); // == microtime(true) in PHP5
         $this->message_numbers = array(
             1 => 'NET_SSH2_MSG_DISCONNECT',
@@ -1334,30 +1290,48 @@ class Net_SSH2 {
 
         switch ($encrypt) {
             case '3des-cbc':
+                if (!class_exists('Crypt_TripleDES')) {
+                    require_once('Crypt/TripleDES.php');
+                }
                 $this->encrypt = new Crypt_TripleDES();
                 // $this->encrypt_block_size = 64 / 8 == the default
                 break;
             case '3des-ctr':
+                if (!class_exists('Crypt_TripleDES')) {
+                    require_once('Crypt/TripleDES.php');
+                }
                 $this->encrypt = new Crypt_TripleDES(CRYPT_DES_MODE_CTR);
                 // $this->encrypt_block_size = 64 / 8 == the default
                 break;
             case 'aes256-cbc':
             case 'aes192-cbc':
             case 'aes128-cbc':
+                if (!class_exists('Crypt_AES')) {
+                    require_once('Crypt/AES.php');
+                }
                 $this->encrypt = new Crypt_AES();
                 $this->encrypt_block_size = 16; // eg. 128 / 8
                 break;
             case 'aes256-ctr':
             case 'aes192-ctr':
             case 'aes128-ctr':
+                if (!class_exists('Crypt_AES')) {
+                    require_once('Crypt/AES.php');
+                }
                 $this->encrypt = new Crypt_AES(CRYPT_AES_MODE_CTR);
                 $this->encrypt_block_size = 16; // eg. 128 / 8
                 break;
             case 'blowfish-cbc':
+                if (!class_exists('Crypt_Blowfish')) {
+                    require_once('Crypt/Blowfish.php');
+                }
                 $this->encrypt = new Crypt_Blowfish();
                 $this->encrypt_block_size = 8;
                 break;
             case 'blowfish-ctr':
+                if (!class_exists('Crypt_Blowfish')) {
+                    require_once('Crypt/Blowfish.php');
+                }
                 $this->encrypt = new Crypt_Blowfish(CRYPT_BLOWFISH_MODE_CTR);
                 $this->encrypt_block_size = 8;
                 break;
@@ -1365,18 +1339,27 @@ class Net_SSH2 {
             case 'twofish192-cbc':
             case 'twofish256-cbc':
             case 'twofish-cbc':
+                if (!class_exists('Crypt_Twofish')) {
+                    require_once('Crypt/Twofish.php');
+                }
                 $this->encrypt = new Crypt_Twofish();
                 $this->encrypt_block_size = 16;
                 break;
             case 'twofish128-ctr':
             case 'twofish192-ctr':
             case 'twofish256-ctr':
+                if (!class_exists('Crypt_Twofish')) {
+                    require_once('Crypt/Twofish.php');
+                }
                 $this->encrypt = new Crypt_Twofish(CRYPT_TWOFISH_MODE_CTR);
                 $this->encrypt_block_size = 16;
                 break;
             case 'arcfour':
             case 'arcfour128':
             case 'arcfour256':
+                if (!class_exists('Crypt_RC4')) {
+                    require_once('Crypt/RC4.php');
+                }
                 $this->encrypt = new Crypt_RC4();
                 break;
             case 'none';
@@ -1385,28 +1368,46 @@ class Net_SSH2 {
 
         switch ($decrypt) {
             case '3des-cbc':
+                if (!class_exists('Crypt_TripleDES')) {
+                    require_once('Crypt/TripleDES.php');
+                }
                 $this->decrypt = new Crypt_TripleDES();
                 break;
             case '3des-ctr':
+                if (!class_exists('Crypt_TripleDES')) {
+                    require_once('Crypt/TripleDES.php');
+                }
                 $this->decrypt = new Crypt_TripleDES(CRYPT_DES_MODE_CTR);
                 break;
             case 'aes256-cbc':
             case 'aes192-cbc':
             case 'aes128-cbc':
+                if (!class_exists('Crypt_AES')) {
+                    require_once('Crypt/AES.php');
+                }
                 $this->decrypt = new Crypt_AES();
                 $this->decrypt_block_size = 16;
                 break;
             case 'aes256-ctr':
             case 'aes192-ctr':
             case 'aes128-ctr':
+                if (!class_exists('Crypt_AES')) {
+                    require_once('Crypt/AES.php');
+                }
                 $this->decrypt = new Crypt_AES(CRYPT_AES_MODE_CTR);
                 $this->decrypt_block_size = 16;
                 break;
             case 'blowfish-cbc':
+                if (!class_exists('Crypt_Blowfish')) {
+                    require_once('Crypt/Blowfish.php');
+                }
                 $this->decrypt = new Crypt_Blowfish();
                 $this->decrypt_block_size = 8;
                 break;
             case 'blowfish-ctr':
+                if (!class_exists('Crypt_Blowfish')) {
+                    require_once('Crypt/Blowfish.php');
+                }
                 $this->decrypt = new Crypt_Blowfish(CRYPT_BLOWFISH_MODE_CTR);
                 $this->decrypt_block_size = 8;
                 break;
@@ -1414,18 +1415,27 @@ class Net_SSH2 {
             case 'twofish192-cbc':
             case 'twofish256-cbc':
             case 'twofish-cbc':
+                if (!class_exists('Crypt_Twofish')) {
+                    require_once('Crypt/Twofish.php');
+                }
                 $this->decrypt = new Crypt_Twofish();
                 $this->decrypt_block_size = 16;
                 break;
             case 'twofish128-ctr':
             case 'twofish192-ctr':
             case 'twofish256-ctr':
+                if (!class_exists('Crypt_Twofish')) {
+                    require_once('Crypt/Twofish.php');
+                }
                 $this->decrypt = new Crypt_Twofish(CRYPT_TWOFISH_MODE_CTR);
                 $this->decrypt_block_size = 16;
                 break;
             case 'arcfour':
             case 'arcfour128':
             case 'arcfour256':
+                if (!class_exists('Crypt_RC4')) {
+                    require_once('Crypt/RC4.php');
+                }
                 $this->decrypt = new Crypt_RC4();
                 break;
             case 'none';
@@ -2013,16 +2023,16 @@ class Net_SSH2 {
         }
 
         // RFC4254 defines the (client) window size as "bytes the other party can send before it must wait for the window to
-        // be adjusted".  0x7FFFFFFF is, at 4GB, the max size.  technically, it should probably be decremented, but, 
-        // honestly, if you're transfering more than 4GB, you probably shouldn't be using phpseclib, anyway.
+        // be adjusted".  0x7FFFFFFF is, at 2GB, the max size.  technically, it should probably be decremented, but, 
+        // honestly, if you're transfering more than 2GB, you probably shouldn't be using phpseclib, anyway.
         // see http://tools.ietf.org/html/rfc4254#section-5.2 for more info
-        $this->window_size_client_to_server[NET_SSH2_CHANNEL_EXEC] = 0x7FFFFFFF;
+        $this->window_size_server_to_client[NET_SSH2_CHANNEL_EXEC] = 0x7FFFFFFF;
         // 0x8000 is the maximum max packet size, per http://tools.ietf.org/html/rfc4253#section-6.1, although since PuTTy
         // uses 0x4000, that's what will be used here, as well.
         $packet_size = 0x4000;
 
         $packet = pack('CNa*N3',
-            NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SSH2_CHANNEL_EXEC, $this->window_size_client_to_server[NET_SSH2_CHANNEL_EXEC], $packet_size);
+            NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SSH2_CHANNEL_EXEC, $this->window_size_server_to_client[NET_SSH2_CHANNEL_EXEC], $packet_size);
 
         if (!$this->_send_binary_packet($packet)) {
             return false;
@@ -2119,11 +2129,11 @@ class Net_SSH2 {
             return true;
         }
 
-        $this->window_size_client_to_server[NET_SSH2_CHANNEL_SHELL] = 0x7FFFFFFF;
+        $this->window_size_server_to_client[NET_SSH2_CHANNEL_SHELL] = 0x7FFFFFFF;
         $packet_size = 0x4000;
 
         $packet = pack('CNa*N3',
-            NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SSH2_CHANNEL_SHELL, $this->window_size_client_to_server[NET_SSH2_CHANNEL_SHELL], $packet_size);
+            NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SSH2_CHANNEL_SHELL, $this->window_size_server_to_client[NET_SSH2_CHANNEL_SHELL], $packet_size);
 
         if (!$this->_send_binary_packet($packet)) {
             return false;
@@ -2546,9 +2556,18 @@ class Net_SSH2 {
                 user_error('Connection closed by server');
                 return false;
             }
-
             if (!strlen($response)) {
                 return '';
+            }
+
+            // resize the window, if appropriate
+            $this->window_size_server_to_client[$client_channel]-= strlen($response);
+            if ($this->window_size_server_to_client[$client_channel] < 0) {
+                $packet = pack('CNN', NET_SSH2_MSG_CHANNEL_WINDOW_ADJUST, $this->server_channels[$client_channel], $this->window_size);
+                if (!$this->_send_binary_packet($packet)) {
+                    return false;
+                }
+                $this->window_size_server_to_client[$client_channel]+= $this->window_size;
             }
 
             extract(unpack('Ctype/Nchannel', $this->_string_shift($response, 5)));
@@ -2774,7 +2793,7 @@ class Net_SSH2 {
                 case NET_SSH2_LOG_REALTIME_FILE:
                     if (!isset($this->realtime_log_file)) {
                         // PHP doesn't seem to like using constants in fopen()
-                        $filename = NET_SSH2_LOG_REALTIME_FILE;
+                        $filename = NET_SSH2_LOG_REALTIME_FILENAME;
                         $fp = fopen($filename, 'w');
                         $this->realtime_log_file = $fp;
                     }
@@ -2810,16 +2829,6 @@ class Net_SSH2 {
     function _send_channel_packet($client_channel, $data)
     {
         while (strlen($data) > $this->packet_size_client_to_server[$client_channel]) {
-            // resize the window, if appropriate
-            $this->window_size_client_to_server[$client_channel]-= $this->packet_size_client_to_server[$client_channel];
-            if ($this->window_size_client_to_server[$client_channel] < 0) {
-                $packet = pack('CNN', NET_SSH2_MSG_CHANNEL_WINDOW_ADJUST, $this->server_channels[$client_channel], $this->window_size);
-                if (!$this->_send_binary_packet($packet)) {
-                    return false;
-                }
-                $this->window_size_client_to_server[$client_channel]+= $this->window_size;
-            }
-
             $packet = pack('CN2a*',
                 NET_SSH2_MSG_CHANNEL_DATA,
                 $this->server_channels[$client_channel],
@@ -2830,16 +2839,6 @@ class Net_SSH2 {
             if (!$this->_send_binary_packet($packet)) {
                 return false;
             }
-        }
-
-        // resize the window, if appropriate
-        $this->window_size_client_to_server[$client_channel]-= strlen($data);
-        if ($this->window_size_client_to_server[$client_channel] < 0) {
-            $packet = pack('CNN', NET_SSH2_MSG_CHANNEL_WINDOW_ADJUST, $this->server_channels[$client_channel], $this->window_size);
-            if (!$this->_send_binary_packet($packet)) {
-                return false;
-            }
-            $this->window_size_client_to_server[$client_channel]+= $this->window_size;
         }
 
         return $this->_send_binary_packet(pack('CN2a*',
