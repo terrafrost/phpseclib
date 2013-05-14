@@ -983,13 +983,18 @@ class Net_SSH2 {
             //'zlib' // OPTIONAL        ZLIB (LZ77) compression
         );
 
-        // some SSH servers have buggy implementations of some of the above algorithms
+        // some SSH servers have bugs that require work arounds
         switch ($this->server_identifier) {
             case 'SSH-2.0-SSHD':
                 $mac_algorithms = array_values(array_diff(
                     $mac_algorithms,
                     array('hmac-sha1-96', 'hmac-md5-96')
                 ));
+                break;
+             // http://www.chiark.greenend.org.uk/~sgtatham/putty/wishlist/ssh2-bug-maxpkt.html
+             case 'SSH-2.0-1.36_sshlib GlobalSCAPE':
+             case 'SSH-2.0-1.36 sshlib: GlobalScape':
+                 $this->window_size = 0x4000;
         }
 
         static $str_kex_algorithms, $str_server_host_key_algorithms,
@@ -2026,7 +2031,7 @@ class Net_SSH2 {
         // be adjusted".  0x7FFFFFFF is, at 2GB, the max size.  technically, it should probably be decremented, but, 
         // honestly, if you're transfering more than 2GB, you probably shouldn't be using phpseclib, anyway.
         // see http://tools.ietf.org/html/rfc4254#section-5.2 for more info
-        $this->window_size_server_to_client[NET_SSH2_CHANNEL_EXEC] = 0x7FFFFFFF;
+        $this->window_size_server_to_client[NET_SSH2_CHANNEL_EXEC] = $this->window_size;
         // 0x8000 is the maximum max packet size, per http://tools.ietf.org/html/rfc4253#section-6.1, although since PuTTy
         // uses 0x4000, that's what will be used here, as well.
         $packet_size = 0x4000;
@@ -2129,7 +2134,7 @@ class Net_SSH2 {
             return true;
         }
 
-        $this->window_size_server_to_client[NET_SSH2_CHANNEL_SHELL] = 0x7FFFFFFF;
+        $this->window_size_server_to_client[NET_SSH2_CHANNEL_SHELL] = $this->window_size;
         $packet_size = 0x4000;
 
         $packet = pack('CNa*N3',
