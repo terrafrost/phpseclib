@@ -2786,6 +2786,9 @@ class Net_SSH2 {
                             return true;
                         case NET_SSH2_MSG_CHANNEL_FAILURE:
                             return false;
+                        case NET_SSH2_MSG_CHANNEL_DATA:
+                            $this->channel_status[$channel] = NET_SSH2_MSG_CHANNEL_DATA;
+                            break;
                         default:
                             user_error('Unable to fulfill channel request');
                             return $this->_disconnect(NET_SSH2_DISCONNECT_BY_APPLICATION);
