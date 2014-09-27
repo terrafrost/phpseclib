@@ -154,6 +154,14 @@ define('MATH_BIGINTEGER_MODE_BCMATH', 2);
  * (if present; otherwise, either the BCMath or the internal implementation will be used)
  */
 define('MATH_BIGINTEGER_MODE_GMP', 3);
+/**
+ * To use the GMP library with operator overloading
+ *
+ * (GMP operator overloading was introduced in PHP 5.6: https://wiki.php.net/rfc/operator_overloading_gmp)
+ *
+ * (if present; otherwise, either the GMP, BCMath or the internal implementation will be used)
+ */
+define('MATH_BIGINTEGER_MODE_GMP_OVERLOAD', 4);
 /**#@-*/
 
 /**
@@ -256,7 +264,11 @@ class Math_BigInteger
         if ( !defined('MATH_BIGINTEGER_MODE') ) {
             switch (true) {
                 case extension_loaded('gmp'):
-                    define('MATH_BIGINTEGER_MODE', MATH_BIGINTEGER_MODE_GMP);
+                    define('MATH_BIGINTEGER_MODE',
+                        version_compare(PHP_VERSION, '5.6.0') >= 0 ?
+                            MATH_BIGINTEGER_MODE_GMP_OVERLOAD :
+                            MATH_BIGINTEGER_MODE_GMP
+                    );
                     break;
                 case extension_loaded('bcmath'):
                     define('MATH_BIGINTEGER_MODE', MATH_BIGINTEGER_MODE_BCMATH);
@@ -329,9 +341,12 @@ class Math_BigInteger
 
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
-                if (is_resource($x) && get_resource_type($x) == 'GMP integer') {
-                    $this->value = $x;
-                    return;
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                switch (true) {
+                    case is_resource($x) && get_resource_type($x) == 'GMP integer':
+                    case is_object($x) && get_class($x) == 'GMP':
+                        $this->value = $x;
+                        return;
                 }
                 $this->value = gmp_init(0);
                 break;
@@ -357,6 +372,7 @@ class Math_BigInteger
             case  256:
                 switch ( MATH_BIGINTEGER_MODE ) {
                     case MATH_BIGINTEGER_MODE_GMP:
+                    case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                         $sign = $this->is_negative ? '-' : '';
                         $this->value = gmp_init($sign . '0x' . bin2hex($x));
                         break;
@@ -408,6 +424,7 @@ class Math_BigInteger
 
                 switch ( MATH_BIGINTEGER_MODE ) {
                     case MATH_BIGINTEGER_MODE_GMP:
+                    case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                         $temp = $this->is_negative ? '-0x' . $x : '0x' . $x;
                         $this->value = gmp_init($temp);
                         $this->is_negative = false;
@@ -438,6 +455,7 @@ class Math_BigInteger
 
                 switch ( MATH_BIGINTEGER_MODE ) {
                     case MATH_BIGINTEGER_MODE_GMP:
+                    case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                         $this->value = gmp_init($x);
                         break;
                     case MATH_BIGINTEGER_MODE_BCMATH:
@@ -543,6 +561,7 @@ class Math_BigInteger
 
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 if (gmp_cmp($this->value, gmp_init(0)) == 0) {
                     return $this->precision > 0 ? str_repeat(chr(0), ($this->precision + 1) >> 3) : '';
                 }
@@ -684,6 +703,7 @@ class Math_BigInteger
     {
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 return gmp_strval($this->value);
             case MATH_BIGINTEGER_MODE_BCMATH:
                 if ($this->value === '0') {
@@ -840,6 +860,11 @@ class Math_BigInteger
     function add($y)
     {
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $temp = new Math_BigInteger();
+                $temp->value = $this->value + $y->value;
+
+                return $this->_normalize($temp);
             case MATH_BIGINTEGER_MODE_GMP:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_add($this->value, $y->value);
@@ -971,6 +996,11 @@ class Math_BigInteger
     function subtract($y)
     {
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $temp = new Math_BigInteger();
+                $temp->value = $this->value - $y->value;
+
+                return $this->_normalize($temp);
             case MATH_BIGINTEGER_MODE_GMP:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_sub($this->value, $y->value);
@@ -1106,6 +1136,11 @@ class Math_BigInteger
     function multiply($x)
     {
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $temp = new Math_BigInteger();
+                $temp->value = $this->value * $x->value;
+
+                return $this->_normalize($temp);
             case MATH_BIGINTEGER_MODE_GMP:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_mul($this->value, $x->value);
@@ -1394,6 +1429,7 @@ class Math_BigInteger
     {
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 $quotient = new Math_BigInteger();
                 $remainder = new Math_BigInteger();
 
@@ -1642,11 +1678,13 @@ class Math_BigInteger
             return $this->_normalize($temp->modPow($e, $n));
         }
 
-        if ( MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_GMP ) {
-            $temp = new Math_BigInteger();
-            $temp->value = gmp_powm($this->value, $e->value, $n->value);
+        switch (MATH_BIGINTEGER_MODE) {
+            case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $temp = new Math_BigInteger();
+                $temp->value = gmp_powm($this->value, $e->value, $n->value);
 
-            return $this->_normalize($temp);
+                return $this->_normalize($temp);
         }
 
         if ($this->compare(new Math_BigInteger()) < 0 || $this->compare($n) > 0) {
@@ -2421,6 +2459,7 @@ class Math_BigInteger
     {
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_invert($this->value, $n->value);
 
@@ -2487,6 +2526,7 @@ class Math_BigInteger
     {
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 extract(gmp_gcdext($this->value, $n->value));
 
                 return array(
@@ -2632,6 +2672,7 @@ class Math_BigInteger
 
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 $temp->value = gmp_abs($this->value);
                 break;
             case MATH_BIGINTEGER_MODE_BCMATH:
@@ -2666,6 +2707,7 @@ class Math_BigInteger
     {
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 return gmp_cmp($this->value, $y->value);
             case MATH_BIGINTEGER_MODE_BCMATH:
                 return bccomp($this->value, $y->value, 0);
@@ -2763,6 +2805,11 @@ class Math_BigInteger
     function bitwise_and($x)
     {
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $temp = new Math_BigInteger();
+                $temp->value = $this->value & $x->value;
+
+                return $this->_normalize($temp);
             case MATH_BIGINTEGER_MODE_GMP:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_and($this->value, $x->value);
@@ -2804,6 +2851,11 @@ class Math_BigInteger
     function bitwise_or($x)
     {
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $temp = new Math_BigInteger();
+                $temp->value = $this->value | $x->value;
+
+                return $this->_normalize($temp);
             case MATH_BIGINTEGER_MODE_GMP:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_or($this->value, $x->value);
@@ -2844,6 +2896,11 @@ class Math_BigInteger
     function bitwise_xor($x)
     {
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP:
+                $temp = new Math_BigInteger();
+                $temp->value = $this->value ^ $x->value;
+
+                return $this->_normalize($temp);
             case MATH_BIGINTEGER_MODE_GMP:
                 $temp = new Math_BigInteger();
                 $temp->value = gmp_xor($this->value, $x->value);
@@ -3218,19 +3275,21 @@ class Math_BigInteger
         $x = $this->random($min, $max);
 
         // gmp_nextprime() requires PHP 5 >= 5.2.0 per <http://php.net/gmp-nextprime>.
-        if ( MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_GMP && function_exists('gmp_nextprime') ) {
-            $p = new Math_BigInteger();
-            $p->value = gmp_nextprime($x->value);
+        switch (true) {
+            case MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_GMP && function_exists('gmp_nextprime'):
+            case MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                $p = new Math_BigInteger();
+                $p->value = gmp_nextprime($x->value);
 
-            if ($p->compare($max) <= 0) {
-                return $p;
-            }
+                if ($p->compare($max) <= 0) {
+                    return $p;
+                }
 
-            if (!$min->equals($x)) {
-                $x = $x->subtract($one);
-            }
+                if (!$min->equals($x)) {
+                    $x = $x->subtract($one);
+                }
 
-            return $x->randomPrime($min, $x);
+                return $x->randomPrime($min, $x);
         }
 
         if ($x->equals($two)) {
@@ -3338,6 +3397,7 @@ class Math_BigInteger
         // ie. isEven() or !isOdd()
         switch ( MATH_BIGINTEGER_MODE ) {
             case MATH_BIGINTEGER_MODE_GMP:
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
                 return gmp_prob_prime($this->value, $t) != 0;
             case MATH_BIGINTEGER_MODE_BCMATH:
                 if ($this->value === '2') {
@@ -3537,6 +3597,12 @@ class Math_BigInteger
         $result->bitmask = $this->bitmask;
 
         switch ( MATH_BIGINTEGER_MODE ) {
+            case MATH_BIGINTEGER_MODE_GMP_OVERLOAD:
+                if (!empty($result->bitmask->value)) {
+                    $result->value = $result->value & $result->bitmask->value;
+                }
+
+                return $result;
             case MATH_BIGINTEGER_MODE_GMP:
                 if (!empty($result->bitmask->value)) {
                     $result->value = gmp_and($result->value, $result->bitmask->value);
