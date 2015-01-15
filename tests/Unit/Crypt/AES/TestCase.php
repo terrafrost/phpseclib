@@ -280,16 +280,22 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
 
         $result = bin2hex($aes->encrypt(pack('H*', 'f34481ec3cc627bacd5dc3fb08f273e6')));
         $this->assertSame($result, '0336763e966d92595a567cc9ce537f5e');
+$aes->disablePadding();
         $result = bin2hex($aes->encrypt('9798c4640bad75c7c3227db910174e72'));
         $this->assertSame($result, 'a9a1631bf4996954ebc093957b234589');
+$aes->disablePadding();
         $result = bin2hex($aes->encrypt('96ab5c2ff612d9dfaae8c31f30c42168'));
         $this->assertSame($result, 'ff4f8391a6a40ca5b25d23bedd44a597');
+$aes->disablePadding();
         $result = bin2hex($aes->encrypt('6a118a874519e64e9963798a503f1d35'));
         $this->assertSame($result, 'dc43be40be0e53712f7e2bf5ca707209');
+$aes->disablePadding();
         $result = bin2hex($aes->encrypt('cb9fceec81286ca3e989bd979b0cb284'));
         $this->assertSame($result, '92beedab1895a94faa69b632e5cc47ce');
+$aes->disablePadding();
         $result = bin2hex($aes->encrypt('b26aeb1874e47ca8358ff22378f09144'));
         $this->assertSame($result, '459264f4798f6a78bacb89c15ed3d601');
+$aes->disablePadding();
         $result = bin2hex($aes->encrypt('58c8e00b2631686d54eab84b91f0aca1'));
         $this->assertSame($result, '08a4e2efec8a8e3312ca7460b9040bbf');
     }
