@@ -279,9 +279,11 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
         }
 
         $result = bin2hex($aes->encrypt(pack('H*', 'f34481ec3cc627bacd5dc3fb08f273e6')));
+echo "\r\nAAA = $result\r\n\r\n";
         $this->assertSame($result, '0336763e966d92595a567cc9ce537f5e');
 $aes->disablePadding();
         $result = bin2hex($aes->encrypt('9798c4640bad75c7c3227db910174e72'));
+echo "\r\nBBB = $result\r\n\r\n";
         $this->assertSame($result, 'a9a1631bf4996954ebc093957b234589');
 $aes->disablePadding();
         $result = bin2hex($aes->encrypt('96ab5c2ff612d9dfaae8c31f30c42168'));
