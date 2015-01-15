@@ -263,7 +263,7 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
 
         $this->assertNotSame(bin2hex($c1), bin2hex($c2));
     }
-/*
+
     // from http://csrc.nist.gov/groups/STM/cavp/documents/aes/AESAVS.pdf#page=16
     public function testGFSBox128()
     {
@@ -280,18 +280,25 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
 
         $result = bin2hex($aes->encrypt(pack('H*', 'f34481ec3cc627bacd5dc3fb08f273e6')));
         $this->assertSame($result, '0336763e966d92595a567cc9ce537f5e');
+echo 'a';
         $result = $aes->encrypt('9798c4640bad75c7c3227db910174e72');
         $this->assertSame($result, 'a9a1631bf4996954ebc093957b234589');
+echo 'b';
         $result = $aes->encrypt('96ab5c2ff612d9dfaae8c31f30c42168');
         $this->assertSame($result, 'ff4f8391a6a40ca5b25d23bedd44a597');
+echo 'c';
         $result = $aes->encrypt('6a118a874519e64e9963798a503f1d35');
         $this->assertSame($result, 'dc43be40be0e53712f7e2bf5ca707209');
+echo 'd';
         $result = $aes->encrypt('cb9fceec81286ca3e989bd979b0cb284');
         $this->assertSame($result, '92beedab1895a94faa69b632e5cc47ce');
+echo 'e';
         $result = $aes->encrypt('b26aeb1874e47ca8358ff22378f09144');
         $this->assertSame($result, '459264f4798f6a78bacb89c15ed3d601');
+echo 'f';
         $result = $aes->encrypt('58c8e00b2631686d54eab84b91f0aca1');
         $this->assertSame($result, '08a4e2efec8a8e3312ca7460b9040bbf');
+echo 'g';
     }
 
     public function testGFSBox192()
@@ -345,5 +352,5 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
         $result = $aes->encrypt('91fbef2d15a97816060bee1feaa49afe');
         $this->assertSame($result, '1bc704f1bce135ceb810341b216d7abe');
     }
-*/
+
 }
