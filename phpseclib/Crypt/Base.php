@@ -1642,21 +1642,18 @@ class Crypt_Base
      */
     function _setEngine()
     {
-        $this->engine = null;
-
-        $candidateEngines = array(
-            $this->preferredEngine,
-            CRYPT_ENGINE_MCRYPT,
-            CRYPT_ENGINE_OPENSSL
-        );
-        foreach ($candidateEngines as $engine) {
-            if ($this->isValidEngine($engine)) {
+        switch (true) {
+            case $this->isValidEngine($this->preferredEngine):
                 $this->engine = $this->preferredEngine;
                 break;
-            }
-        }
-        if (!$this->engine) {
-            $this->engine = CRYPT_ENGINE_INTERNAL;
+            case $this->isValidEngine(CRYPT_ENGINE_OPENSSL):
+                $this->engine = CRYPT_ENGINE_OPENSSL;
+                break;
+            case $this->isValidEngine(CRYPT_ENGINE_MCRYPT):
+                $this->engine = CRYPT_ENGINE_MCRYPT;
+                break;
+            default:
+                $this->engine = CRYPT_ENGINE_INTERNAL;
         }
 
         if ($this->engine != CRYPT_ENGINE_MCRYPT && $this->enmcrypt) {
