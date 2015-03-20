@@ -986,6 +986,7 @@ class Net_SSH2
         $temp = '';
         $extra = '';
         while (!feof($this->fsock) && !preg_match('#^SSH-(\d\.\d+)#', $temp, $matches)) {
+echo 'x';
             if (substr($temp, -2) == "\r\n") {
                 $extra.= $temp;
                 $temp = '';
