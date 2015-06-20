@@ -901,7 +901,7 @@ class Net_SFTP extends Net_SSH2
                             } else {
                                 $temp = $dir . '/' . $shortname;
                             }
-                            $this->_update_stat_cache($temp, (object) $attributes);
+                            $this->_update_stat_cache($temp, (object) array('stat' => $attributes));
                         }
                         // SFTPv6 has an optional boolean end-of-list field, but we'll ignore that, since the
                         // final SSH_FXP_STATUS packet should tell us that, already.
@@ -1150,10 +1150,10 @@ class Net_SFTP extends Net_SSH2
         if ($this->use_stat_cache) {
             $result = $this->_query_stat_cache($filename);
             if (is_array($result) && isset($result['.'])) {
-                return (array) $result['.'];
+                return $result['.']->stat;
             }
-            if (is_object($result)) {
-                return (array) $result;
+            if (is_object($result) && isset($result->stat)) {
+                return $result->stat;
             }
         }
 
@@ -1166,7 +1166,7 @@ class Net_SFTP extends Net_SSH2
             if ($stat['type'] == NET_SFTP_TYPE_DIRECTORY) {
                 $filename.= '/.';
             }
-            $this->_update_stat_cache($filename, (object) $stat);
+            $this->_update_stat_cache($filename, (object) array('stat' => $stat));
             return $stat;
         }
 
@@ -1179,7 +1179,7 @@ class Net_SFTP extends Net_SSH2
         if ($stat['type'] == NET_SFTP_TYPE_DIRECTORY) {
             $filename.= '/.';
         }
-        $this->_update_stat_cache($filename, (object) $stat);
+        $this->_update_stat_cache($filename, (object) array('stat' => $stat));
 
         return $stat;
     }
@@ -1207,10 +1207,10 @@ class Net_SFTP extends Net_SSH2
         if ($this->use_stat_cache) {
             $result = $this->_query_stat_cache($filename);
             if (is_array($result) && isset($result['.'])) {
-                return (array) $result['.'];
+                return $result['.']->lstat;
             }
-            if (is_object($result)) {
-                return (array) $result;
+            if (is_object($result) && isset($result->lstat)) {
+                return $result->lstat;
             }
         }
 
@@ -1223,7 +1223,7 @@ class Net_SFTP extends Net_SSH2
             if ($lstat['type'] == NET_SFTP_TYPE_DIRECTORY) {
                 $filename.= '/.';
             }
-            $this->_update_stat_cache($filename, (object) $lstat);
+            $this->_update_stat_cache($filename, (object) array('lstat' => $lstat));
             return $lstat;
         }
 
@@ -1231,7 +1231,7 @@ class Net_SFTP extends Net_SSH2
 
         if ($lstat != $stat) {
             $lstat = array_merge($lstat, array('type' => NET_SFTP_TYPE_SYMLINK));
-            $this->_update_stat_cache($filename, (object) $lstat);
+            $this->_update_stat_cache($filename, (object) array('lstat' => $lstat));
             return $stat;
         }
 
@@ -1244,7 +1244,7 @@ class Net_SFTP extends Net_SSH2
         if ($lstat['type'] == NET_SFTP_TYPE_DIRECTORY) {
             $filename.= '/.';
         }
-        $this->_update_stat_cache($filename, (object) $lstat);
+        $this->_update_stat_cache($filename, (object) array('lstat' => $lstat));
 
         return $lstat;
     }
@@ -1765,7 +1765,7 @@ class Net_SFTP extends Net_SSH2
      * If $data is a resource then it'll be used as a resource instead.
      *
      *
-     * Setting $mode to NET_SFTP_CALLBACK will use $data as callback function, which gets only one parameter -- number
+     * Setting $mode to self::SOURCE_CALLBACK will use $data as callback function, which gets only one parameter -- number 
      * of bytes to return, and returns a string if there is some data or null if there is no more data
      *
      * Currently, only binary mode is supported.  As such, if the line endings need to be adjusted, you will need to take
@@ -1793,12 +1793,12 @@ class Net_SFTP extends Net_SSH2
      * @param optional Integer $mode
      * @param optional Integer $start
      * @param optional Integer $local_start
-     * @param optional callable|null $progressCallback
+     * @param optional callable|null $callback
      * @return Boolean
      * @access public
      * @internal ASCII mode for SFTPv4/5/6 can be supported by adding a new function - Net_SFTP::setMode().
      */
-    function put($remote_file, $data, $mode = NET_SFTP_STRING, $start = -1, $local_start = -1, $progressCallback = null)
+    function put($remote_file, $data, $mode = NET_SFTP_STRING, $start = -1, $local_start = -1, $callback = null)
     {
         if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
             return false;
@@ -1846,13 +1846,13 @@ class Net_SFTP extends Net_SSH2
         }
 
         // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.2.3
-        $dataCallback = false;
+        $callback = false;
         switch (true) {
-            case $mode & NET_SFTP_CALLBACK:
+            case $mode & NET_SFTP_CALLBACK;
                 if (!is_callable($data)) {
                     user_error("\$data should be is_callable if you set NET_SFTP_CALLBACK flag");
                 }
-                $dataCallback = $data;
+                $callback = $data;
                 // do nothing
                 break;
             case is_resource($data):
@@ -1881,7 +1881,7 @@ class Net_SFTP extends Net_SSH2
             } else {
                 fseek($fp, $offset);
             }
-        } elseif ($dataCallback) {
+        } elseif ($callback) {
             $size = 0;
         } else {
             $size = strlen($data);
@@ -1894,9 +1894,9 @@ class Net_SFTP extends Net_SSH2
         // make the SFTP packet be exactly 4096 bytes by including the bytes in the NET_SFTP_WRITE packets "header"
         $sftp_packet_size-= strlen($handle) + 25;
         $i = 0;
-        while ($dataCallback || ($sent < $size)) {
-            if ($dataCallback) {
-                $temp = call_user_func($dataCallback, $sftp_packet_size);
+        while ($callback || ($sent < $size)) {
+            if ($callback) {
+                $temp = call_user_func($callback, $sftp_packet_size);
                 if (is_null($temp)) {
                     break;
                 }
@@ -1912,8 +1912,8 @@ class Net_SFTP extends Net_SSH2
                 return false;
             }
             $sent+= strlen($temp);
-            if (is_callable($progressCallback)) {
-                call_user_func($progressCallback, $sent);
+            if (is_callable($callback)) {
+                call_user_func($callback, $sent);
             }
 
             $i++;
@@ -2303,7 +2303,7 @@ class Net_SFTP extends Net_SSH2
      */
     function is_link($path)
     {
-        $result = $this->_get_stat_cache_prop($path, 'type');
+        $result = $this->_get_lstat_cache_prop($path, 'type');
         if ($result === false) {
             return false;
         }
@@ -2419,17 +2419,47 @@ class Net_SFTP extends Net_SSH2
      */
     function _get_stat_cache_prop($path, $prop)
     {
+        return $this->_get_xstat_cache_prop($path, $prop, 'stat');
+    }
+
+    /**
+     * Return an lstat properity
+     *
+     * Uses cache if appropriate.
+     *
+     * @param String $path
+     * @param String $prop
+     * @return Mixed
+     * @access private
+     */
+    function _get_lstat_cache_prop($path, $prop)
+    {
+        return $this->_get_xstat_cache_prop($path, $prop, 'lstat');
+    }
+
+    /**
+     * Return a stat or lstat properity
+     *
+     * Uses cache if appropriate.
+     *
+     * @param String $path
+     * @param String $prop
+     * @return Mixed
+     * @access private
+     */
+    function _get_xstat_cache_prop($path, $prop, $type)
+    {
         if ($this->use_stat_cache) {
             $path = $this->_realpath($path);
 
             $result = $this->_query_stat_cache($path);
 
             if (is_object($result) && isset($result->$prop)) {
-                return $result->$prop;
+                return $result->$$type->$prop;
             }
         }
 
-        $result = $this->stat($path);
+        $result = $this->$type($path);
 
         if ($result === false || !isset($result[$prop])) {
             return false;

@@ -382,6 +382,42 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     /**
      * @depends testSymlink
      */
+    public function testStatLstatCache($sftp)
+    {
+        $stat = $sftp->stat('symlink');
+        $lstat = $sftp->lstat('symlink);
+        $this->assertNotEquals(
+            $stat, $lstat,
+            'Failed asserting that stat and lstat returned different output for a symlink'
+        );
+
+        return $sftp;
+    }
+
+    /**
+     * @depends testStatLstatCache
+     */
+    public function testLinkFile($sftp)
+    {
+        $this->assertTrue(
+            $sftp->is_link('symlink'),
+            'Failed asserting that symlink is a link'
+        );
+        $this->assertTrue(
+            $sftp->is_file('symlink'),
+            'Failed asserting that symlink is a file'
+        );
+        $this->assertFalse(
+            $sftp->is_dir('symlink'),
+            'Failed asserting that symlink is not a directory'
+        );
+
+        return $sftp;
+    }
+
+    /**
+     * @depends testLinkFile
+     */
     public function testReadlink($sftp)
     {
         $this->assertInternalType('string', $sftp->readlink('symlink'),
