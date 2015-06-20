@@ -137,6 +137,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     {
         $r = substr(self::$buffer, 0, $length);
         self::$buffer = substr(self::$buffer, $length);
+echo "uploading " . strlen($r) . " bytes\n";
         if (strlen($r)) return $r;
         return null;
     }
@@ -147,16 +148,18 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     public function testPutSizeGetFileCallback($sftp)
     {
         self::$buffer =  self::$exampleData;
+echo "buffer len = ".strlen(self::$buffer)."\n";
         $this->assertTrue(
             $sftp->put('file1.txt', array(__CLASS__, 'callback'), NET_SFTP_CALLBACK),
             'Failed asserting that example data could be successfully put().'
         );
 
+//Failed asserting that 5933 is identical to 10000.
         $this->assertSame(
             self::$exampleDataLength,
             $sftp->size('file1.txt'),
             'Failed asserting that put example data has the expected length'
-        );
+        ); // zzz
 
         $this->assertSame(
             self::$exampleData,
