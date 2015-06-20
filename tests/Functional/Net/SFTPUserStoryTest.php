@@ -385,7 +385,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     public function testStatLstatCache($sftp)
     {
         $stat = $sftp->stat('symlink');
-        $lstat = $sftp->lstat('symlink);
+        $lstat = $sftp->lstat('symlink');
         $this->assertNotEquals(
             $stat, $lstat,
             'Failed asserting that stat and lstat returned different output for a symlink'
