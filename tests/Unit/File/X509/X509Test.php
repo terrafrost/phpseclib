@@ -125,7 +125,7 @@ aBtsWpliLSex/HHhtRW9AkBGcq67zKmEpJ9kXcYLEjJii3flFS+Ct/rNm+Hhm1l7
         $pubKey->loadKey($privKey->getPublicKey());
         $pubKey->setPublicKey();
 
-        $subject = new File_X509();
+        $subject = new X509();
         $subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
         $subject->setPublicKey($pubKey);
 
@@ -133,7 +133,7 @@ aBtsWpliLSex/HHhtRW9AkBGcq67zKmEpJ9kXcYLEjJii3flFS+Ct/rNm+Hhm1l7
         $issuer->setPrivateKey($privKey);
         $issuer->setDN($subject->getDN());
 
-        $x509 = new File_X509();
+        $x509 = new X509();
 
         $result = $x509->sign($issuer, $subject);
         $cert = $x509->saveX509($result);
