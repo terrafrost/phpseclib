@@ -8,6 +8,7 @@
 use phpseclib\File\ASN1;
 use phpseclib\File\ASN1\Element;
 use phpseclib\File\X509;
+use phpseclib\Crypt\RSA;
 
 class Unit_File_X509_X509Test extends PhpseclibTestCase
 {
