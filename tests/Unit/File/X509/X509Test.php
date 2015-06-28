@@ -85,7 +85,7 @@ IOkKcGQRCMha8X2e7GmlpdWC1ycenlbN0nbVeSv3JUMcafC4+Q==
 
         $asn1 = new ASN1();
 
-        $value = $this->encodeOID('1.2.3.4');
+        $value = $this->_encodeOID('1.2.3.4');
         $ext = chr(ASN1::TYPE_OBJECT_IDENTIFIER) . $asn1->_encodeLength(strlen($value)) . $value;
         $value = 'zzzzzzzzz';
         $ext.= chr(ASN1::TYPE_OCTET_STRING) . $asn1->_encodeLength(strlen($value)) . $value;
