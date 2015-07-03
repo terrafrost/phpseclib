@@ -573,6 +573,8 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
      */
     public function testStatOnDeletedDir($sftp)
     {
+echo 'zzz = ';
+var_dump($sftp);
         $this->assertInternalType(
             'array',
             $sftp->stat(self::$scratchDir),
