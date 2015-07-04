@@ -547,16 +547,20 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
      */
     public function testDeleteRecursiveScratch($sftp)
     {
+var_dump($sftp->stat(self::$scratchDir));
         $this->assertInternalType(
             'array',
             $sftp->stat(self::$scratchDir),
             'Failed asserting that stat on an existant directory returns an array'
         );
+var_dump($sftp->delete(self::$scratchDir));
         $this->assertTrue(
             $sftp->delete(self::$scratchDir),
             'Failed asserting that non-empty scratch directory could ' .
             'be deleted using recursive delete().'
         );
+var_dump($sftp->stat(self::$scratchDir));
+exit;
         $this->assertFalse(
             $sftp->stat(self::$scratchDir),
             'Failed asserting that stat on a deleted directory returns false'
