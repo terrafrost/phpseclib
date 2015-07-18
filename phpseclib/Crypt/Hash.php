@@ -166,8 +166,6 @@ class Hash
      */
     function hash($text)
     {
-        $mode = is_array($this->hash) ? self::MODE_INTERNAL : CRYPT_HASH_MODE;
-
         $output = !empty($this->key) || is_string($this->key) ?
             hash_hmac($this->hash, $text, $this->key, true) :
             hash($this->hash, $text, true);
