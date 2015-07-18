@@ -155,6 +155,8 @@ class Hash
                 $hash = 'sha1';
                 $this->l = 20;
         }
+
+        $this->hash = $hash;
     }
 
     /**
