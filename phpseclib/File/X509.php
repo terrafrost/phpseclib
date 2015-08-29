@@ -1251,6 +1251,31 @@ class File_X509
             )
         );
 
+        $this->SubjectDirectoryAttributes = array(
+            'type'     => FILE_ASN1_TYPE_SEQUENCE,
+            'min'      => 1,
+            'max'      => -1,
+            'children' => $Attribute
+        );
+
+        $QCStatement = array(
+            'type'     => FILE_ASN1_TYPE_SEQUENCE,
+            'children' => array(
+                'statementId' => array('type' => FILE_ASN1_TYPE_OBJECT_IDENTIFIER),
+                'statementInfo' => array(
+                    'type' => FILE_ASN1_TYPE_ANY,
+                    'optional' => true
+                )
+            )
+        );
+
+        $this->QCStatements = array(
+            'type'     => FILE_ASN1_TYPE_SEQUENCE,
+            'min'      => 1,
+            'max'      => -1,
+            'children' => $QCStatement
+        );
+
         // OIDs from RFC5280 and those RFCs mentioned in RFC5280#section-4.1.1.2
         $this->oids = array(
             '1.3.6.1.5.5.7' => 'id-pkix',
@@ -1316,6 +1341,7 @@ class File_X509
             '2.5.29.54' => 'id-ce-inhibitAnyPolicy',
             '2.5.29.46' => 'id-ce-freshestCRL',
             '1.3.6.1.5.5.7.1.1' => 'id-pe-authorityInfoAccess',
+            '1.3.6.1.5.5.7.1.3' => 'id-pe-qcStatements',
             '1.3.6.1.5.5.7.1.11' => 'id-pe-subjectInfoAccess',
             '2.5.29.20' => 'id-ce-cRLNumber',
             '2.5.29.28' => 'id-ce-issuingDistributionPoint',
@@ -1413,7 +1439,14 @@ class File_X509
             // see http://tools.ietf.org/html/rfc2985
             '1.2.840.113549.1.9.2' => 'pkcs-9-at-unstructuredName', // PKCS #9 unstructured name
             '1.2.840.113549.1.9.7' => 'pkcs-9-at-challengePassword', // Challenge password for certificate revocations
-            '1.2.840.113549.1.9.14' => 'pkcs-9-at-extensionRequest' // Certificate extension request
+            '1.2.840.113549.1.9.14' => 'pkcs-9-at-extensionRequest', // Certificate extension request
+
+            // from http://www.etsi.org/deliver/etsi_ts/101800_101899/101862/01.03.01_60/ts_101862v010301p.pdf
+            '0.4.0.1862.1' => 'id-etsi-qcs',
+            '0.4.0.1862.1.1' => 'id-etsi-qcs-QcCompliance',
+            '0.4.0.1862.1.2' => 'id-etsi-qcs-QcLimitValue',
+            '0.4.0.1862.1.3' => 'id-etsi-qcs-QcRetentionPeriod',
+            '0.4.0.1862.1.4' => 'id-etsi-qcs-QcSSCD'
         );
     }
 
@@ -1796,6 +1829,10 @@ class File_X509
                 return $this->PolicyMappings;
             case 'id-ce-nameConstraints':
                 return $this->NameConstraints;
+            case 'id-ce-subjectDirectoryAttributes':
+                return $this->SubjectDirectoryAttributes;
+            case 'id-pe-qcStatements': // http://tools.ietf.org/html/rfc3739
+                return $this->QCStatements;
 
             case 'netscape-cert-type':
                 return $this->netscape_cert_type;
