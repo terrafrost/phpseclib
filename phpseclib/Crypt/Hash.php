@@ -160,12 +160,10 @@ class Hash
                     break;
                 }
                 // if the hash algorithm doens't exist maybe it's a truncated hash. eg. md5-96 or some such
-                if (preg_match('#(-\d+)$#', $hash, $matches) && in_array(substr($hash, 0, -strlen($matches[1])), hash_algos())) {
+                if (preg_match('#(-\d+)$#', $hash, $matches) && in_array($hash = substr($hash, 0, -strlen($matches[1])), hash_algos())) {
                     $this->l = abs($matches[1]) >> 3;
                     break;
                 }
-echo "zzz = " . substr($hash, 0, -strlen($matches[1])) . "\n";
-echo $matches[1] . "\n";
                 throw new UnsupportedAlgorithmException("$hash is not a supported algorithm");
         }
 
