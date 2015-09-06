@@ -164,6 +164,7 @@ class Hash
                     $this->l = abs($matches[1]) >> 3;
                     break;
                 }
+echo "$hash is not a supported algorithm\n";
 print_r(hash_algos()); exit;
                 throw new UnsupportedAlgorithmException("$hash is not a supported algorithm");
         }
