@@ -164,6 +164,8 @@ class Hash
                     $this->l = abs($matches[1]) >> 3;
                     break;
                 }
+echo "zzz = " . substr($hash, 0, -strlen($matches[1])) . "\n";
+echo $matches[1] . "\n";
                 throw new UnsupportedAlgorithmException("$hash is not a supported algorithm");
         }
 
