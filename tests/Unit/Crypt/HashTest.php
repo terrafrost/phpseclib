@@ -206,11 +206,11 @@ class Unit_Crypt_HashTest extends PhpseclibTestCase
     {
         $hash = new Hash();
         $this->assertEquals($hash->getHash(), 'sha256');
-        $hash = new Hash('whirpool');
+        $hash = new Hash('whirlpool');
         $this->assertEquals($hash->getHash(), 'whirlpool');
         $hash = new Hash('md5');
         $this->assertEquals($hash->getHash(), 'md5');
-        $hash->setHash('whirpool');
+        $hash->setHash('whirlpool');
         $this->assertEquals($hash->getHash(), 'whirlpool');
         $hash->setHash('md5');
         $this->assertEquals($hash->getHash(), 'md5');
@@ -220,11 +220,11 @@ class Unit_Crypt_HashTest extends PhpseclibTestCase
     {
         $hash = new Hash();
         $this->assertEquals($hash->getLength(), 64);
-        $hash = new Hash('whirpool');
+        $hash = new Hash('whirlpool');
         $this->assertEquals($hash->getLength(), 128);
         $hash = new Hash('md5');
         $this->assertEquals($hash->getLength(), 32);
-        $hash->setHash('whirpool');
+        $hash->setHash('whirlpool');
         $this->assertEquals($hash->getLength(), 128);
         $hash->setHash('md5');
         $this->assertEquals($hash->getLength(), 32);
