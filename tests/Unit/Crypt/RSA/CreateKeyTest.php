@@ -14,7 +14,7 @@ class Unit_Crypt_RSA_CreateKeyTest extends PhpseclibTestCase
 
     public function testCreateKey()
     {
-        extract(RSA::createKey(512));
+        var_dump(RSA::createKey(512)); exit;
 var_dump($privatekey);
 exit;
         $this->assertInstanceOf('\phpseclib\Crypt\RSA', $privatekey);

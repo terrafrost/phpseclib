@@ -739,6 +739,8 @@ class RSA
         $publickey->k = $bits >> 3;
         $publickey->exponent = $e;
 
+echo "this far\n";
+
         return array(
             'privatekey' => $privatekey,
             'publickey'  => $publickey,
