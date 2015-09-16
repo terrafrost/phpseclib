@@ -497,7 +497,7 @@ class RSA
                 case defined('MATH_BIGINTEGER_OPENSSL_DISABLE'):
                     define('CRYPT_RSA_MODE', self::MODE_INTERNAL);
                     break;
-                case extension_loaded('openssl') && file_exists($this->configFile):
+                case extension_loaded('openssl') && file_exists(self::$configFile):
                     // some versions of XAMPP have mismatched versions of OpenSSL which causes it not to work
                     ob_start();
                     @phpinfo();
@@ -1559,7 +1559,6 @@ class RSA
             $this->encryptionMode = $key->encryptionMode;
             $this->signatureMode = $key->signatureMode;
             $this->password = $key->password;
-            $this->configFile = $key->configFile;
             $this->comment = $key->comment;
 
             if (is_object($key->hash)) {
