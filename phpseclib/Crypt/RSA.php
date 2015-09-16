@@ -15,10 +15,10 @@
  *
  *    $plaintext = 'terrafrost';
  *
- *    $rsa->loadKey($privatekey);
+ *    $rsa->load($privatekey);
  *    $ciphertext = $rsa->encrypt($plaintext);
  *
- *    $rsa->loadKey($publickey);
+ *    $rsa->load($publickey);
  *    echo $rsa->decrypt($ciphertext);
  * ?>
  * </code>
@@ -33,10 +33,10 @@
  *
  *    $plaintext = 'terrafrost';
  *
- *    $rsa->loadKey($privatekey);
+ *    $rsa->load($privatekey);
  *    $signature = $rsa->sign($plaintext);
  *
- *    $rsa->loadKey($publickey);
+ *    $rsa->load($publickey);
  *    echo $rsa->verify($plaintext, $signature) ? 'verified' : 'unverified';
  * ?>
  * </code>
@@ -1659,7 +1659,7 @@ class RSA
      * Or rather, pass in $password such that empty($password) && !is_string($password) is true.
      *
      * @see createKey()
-     * @see loadKey()
+     * @see load()
      * @access public
      * @param string $password
      */
@@ -1757,13 +1757,13 @@ class RSA
         }
 
         $rsa = new RSA();
-        if (!$rsa->loadKey($key, $type)) {
+        if (!$rsa->load($key, $type)) {
             return false;
         }
         unset($rsa->publicExponent);
 
         // don't overwrite the old key if the new key is invalid
-        $this->loadKey($rsa);
+        $this->load($rsa);
         return true;
     }
 
@@ -1896,7 +1896,7 @@ class RSA
     function __clone()
     {
         $key = new RSA();
-        $key->loadKey($this);
+        $key->load($this);
         return $key;
     }
 
