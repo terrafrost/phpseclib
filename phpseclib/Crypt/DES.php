@@ -140,16 +140,6 @@ class Crypt_DES extends Crypt_Base
     var $block_size = 8;
 
     /**
-     * The Key
-     *
-     * @see Crypt_Base::key
-     * @see setKey()
-     * @var string
-     * @access private
-     */
-    var $key = "\0\0\0\0\0\0\0\0";
-
-    /**
      * The default password key_size used by setPassword()
      *
      * @see Crypt_Base::password_key_size
@@ -157,7 +147,7 @@ class Crypt_DES extends Crypt_Base
      * @var int
      * @access private
      */
-    var $password_key_size = 8;
+    var $key_size = 8;
 
     /**
      * The namespace used by the cipher for its constants.

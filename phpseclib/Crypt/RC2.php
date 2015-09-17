@@ -146,7 +146,7 @@ class Crypt_RC2 extends Crypt_Base
      * @var int
      * @access private
      */
-    var $password_key_size = 16; // = 128 bits
+    var $key_size = 16; // = 128 bits
 
     /**
      * The namespace used by the cipher for its constants.
@@ -388,7 +388,8 @@ class Crypt_RC2 extends Crypt_Base
      */
     function setKeyLength($length)
     {
-        if ($length >= 1 && $length <= 1024) {
+        if ($length >= 8 && $length <= 1024) {
+            $this->key_size = $length >> 3;
             $this->default_key_length = $length;
         }
     }

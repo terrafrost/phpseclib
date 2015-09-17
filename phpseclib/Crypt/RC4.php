@@ -106,7 +106,7 @@ class Crypt_RC4 extends Crypt_Base
      * @var int
      * @access private
      */
-    var $password_key_size = 128; // = 1024 bits
+    var $key_size = 128; // = 1024 bits
 
     /**
      * The namespace used by the cipher for its constants.
@@ -223,18 +223,24 @@ class Crypt_RC4 extends Crypt_Base
     }
 
     /**
-     * Sets the key.
+     * Sets the key length
      *
-     * Keys can be between 1 and 256 bytes long.  If they are longer then 256 bytes, the first 256 bytes will
-     * be used.  If no key is explicitly set, it'll be assumed to be a single null byte.
+     * Keys can be between 1 and 256 bytes long.
      *
      * @access public
-     * @see Crypt_Base::setKey()
-     * @param string $key
+     * @param int $length
      */
-    function setKey($key)
+    function setKeyLength($length)
     {
-        parent::setKey(substr($key, 0, 256));
+        if ($length < 8) {
+            $this->key_size = 1;
+        } else if ($length > 2048) {
+            $this->key_size = 248;
+        } else {
+            $this->key_size = $length >> 3;
+        }
+
+        parent::setKeyLength($length);
     }
 
     /**
