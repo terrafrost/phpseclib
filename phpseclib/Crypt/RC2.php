@@ -392,7 +392,7 @@ class Crypt_RC2 extends Crypt_Base
             $this->key_size = $length >> 3;
             $this->default_key_length = $length;
 
-            parent::setKeyLength($length);
+            //parent::setKeyLength($length);
         }
     }
 
