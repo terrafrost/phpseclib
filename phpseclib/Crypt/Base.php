@@ -470,6 +470,16 @@ class Crypt_Base
      */
     var $openssl_options;
 
+
+    /**
+     * Has the key length explicitly been set or should it be derived from the key, itself?
+     *
+     * @see setKeyLength()
+     * @var bool
+     * @access private
+     */
+    var $explicit_key_length = false;
+
     /**
      * Default Constructor.
      *
@@ -558,6 +568,11 @@ class Crypt_Base
      */
     function setKey($key)
     {
+        if (!$this->explicit_key_length) {
+            $this->setKeyLength(strlen($key));
+            $this->explicit_key_length = false;
+        }
+
         $this->key = $key;
         $this->changed = true;
         $this->_setEngine();
