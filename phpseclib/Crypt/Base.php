@@ -859,7 +859,6 @@ echo "IN MCRYPT ENCRYPT PART\n";
                     $ciphertext.= $block;
                     $pos = $len;
                 }
-echo "size of key after MCRYPT = " . strlen($this->key) . "\n";
 
                 return $ciphertext;
             }
@@ -869,6 +868,7 @@ echo "size of key after MCRYPT = " . strlen($this->key) . "\n";
             if (!$this->continuousBuffer) {
                 mcrypt_generic_init($this->enmcrypt, $this->key, $this->encryptIV);
             }
+echo "size of key after MCRYPT = " . strlen($this->key) . "\n";
 
             return $ciphertext;
         }
