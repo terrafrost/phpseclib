@@ -1915,6 +1915,8 @@ class Crypt_Base
         $this->encryptIV = $this->decryptIV = str_pad(substr($this->iv, 0, $this->block_size), $this->block_size, "\0");
 
         $key_size = $this->key_size >> 3;
+echo 'orig key size = '.strlen($this->key) . "\n";
+echo 'forced key size = '.$key_size . "\n";
         $this->key = str_pad(substr($this->key, 0, $key_size), $key_size, "\0");
     }
 
