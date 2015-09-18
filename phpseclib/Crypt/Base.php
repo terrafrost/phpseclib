@@ -594,7 +594,7 @@ class Crypt_Base
     function setKey($key)
     {
         if (!$this->explicit_key_length) {
-            $this->setKeyLength(strlen($key));
+            $this->setKeyLength(strlen($key) << 3);
             $this->explicit_key_length = false;
         }
 
@@ -1914,10 +1914,9 @@ class Crypt_Base
         // $this->encryptIV = $this->decryptIV = strlen($this->iv) == $this->block_size ? $this->iv : str_repeat("\0", $this->block_size);
         $this->encryptIV = $this->decryptIV = str_pad(substr($this->iv, 0, $this->block_size), $this->block_size, "\0");
 
-        $key_size = $this->key_size >> 3;
 echo 'orig key size = '.strlen($this->key) . "\n";
-echo 'forced key size = '.$key_size . "\n";
-        $this->key = str_pad(substr($this->key, 0, $key_size), $key_size, "\0");
+echo 'forced key size = '.$this->key_size . "\n";
+        $this->key = str_pad(substr($this->key, 0, $this->key_size), $this->key_size, "\0");
     }
 
     /**
