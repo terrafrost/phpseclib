@@ -367,8 +367,10 @@ class Crypt_RC2 extends Crypt_Base
         switch ($engine) {
             case CRYPT_ENGINE_OPENSSL:
                 if ($this->current_key_length != 128 || strlen($this->orig_key) != 16) {
+echo "openssl is not supported\n";
                     return false;
                 }
+echo "openssl is supported\n";
                 $this->cipher_name_openssl_ecb = 'rc2-ecb';
                 $this->cipher_name_openssl = 'rc2-' . $this->_openssl_translate_mode();
         }
