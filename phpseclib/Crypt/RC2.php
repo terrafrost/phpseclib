@@ -388,11 +388,11 @@ class Crypt_RC2 extends Crypt_Base
      */
     function setKeyLength($length)
     {
-        if ($length >= 8 && $length <= 1024) {
+        if ($length >= 1 && $length <= 1024) {
             $this->key_size = $length >> 3;
             $this->default_key_length = $length;
 
-            //parent::setKeyLength($length);
+            parent::setKeyLength($length);
         }
     }
 
