@@ -1585,6 +1585,7 @@ echo "key len after _setup() call: " . strlen($this->key) . "\n";
      */
     function isValidEngine($engine)
     {
+echo "size of key at start of isvalidengine = ".strlen($this->key) . "\n";
         switch ($engine) {
             case CRYPT_ENGINE_OPENSSL:
                 if ($this->mode == CRYPT_MODE_STREAM && $this->continuousBuffer) {
@@ -1609,6 +1610,7 @@ echo "key len after _setup() call: " . strlen($this->key) . "\n";
 
                 $methods = openssl_get_cipher_methods();
                 if (in_array($this->cipher_name_openssl, $methods)) {
+echo "size of key at r1 of isvalidengine = ".strlen($this->key) . "\n";
                     return true;
                 }
                 // not all of openssl's symmetric cipher's support ctr. for those
@@ -1616,6 +1618,7 @@ echo "key len after _setup() call: " . strlen($this->key) . "\n";
                 switch ($this->mode) {
                     case CRYPT_MODE_CTR:
                         if (in_array($this->cipher_name_openssl_ecb, $methods)) {
+echo "size of key at r2 of isvalidengine = ".strlen($this->key) . "\n";
                             $this->openssl_emulate_ctr = true;
                             return true;
                         }
