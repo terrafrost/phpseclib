@@ -874,6 +874,7 @@ echo "key len in internal encrypt() call: " . strlen($this->key) . "\n";
 
         if ($this->changed) {
             $this->_setup();
+echo "key len after _setup() call: " . strlen($this->key) . "\n";
             $this->changed = false;
         }
         if ($this->use_inline_crypt) {
