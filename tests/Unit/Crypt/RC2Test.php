@@ -98,6 +98,7 @@ echo "ZZZZZZZ\n";
 
         $rc2->setPreferredEngine(CRYPT_ENGINE_OPENSSL);
         if ($rc2->getEngine() == CRYPT_ENGINE_OPENSSL) {
+echo "USING OPENSSL MODE\n";
             $openssl = $rc2->encrypt('d');
             $this->assertEquals($result, $openssl, 'Failed asserting that the OpenSSL engine produced the correct result');
         } else {
