@@ -90,6 +90,7 @@ echo "ZZZZZZZ\n";
 
         $rc2->setPreferredEngine(CRYPT_ENGINE_MCRYPT);
         if ($rc2->getEngine() == CRYPT_ENGINE_MCRYPT) {
+echo "USING MCRYPT MODE\n";
             $mcrypt = $rc2->encrypt('d');
             $this->assertEquals($result, $mcrypt, 'Failed asserting that the mcrypt engine produced the correct result');
         } else {
