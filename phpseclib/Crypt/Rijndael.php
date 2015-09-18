@@ -292,16 +292,16 @@ class Crypt_Rijndael extends Crypt_Base
     function setKeyLength($length)
     {
         switch (true) {
-            case $length <= 16:
+            case $length <= 128:
                 $this->key_size = 16;
                 break;
-            case $length <= 20:
+            case $length <= 160:
                 $this->key_size = 20;
                 break;
-            case $length <= 24:
+            case $length <= 192:
                 $this->key_size = 24;
                 break;
-            case $length <= 28:
+            case $length <= 224:
                 $this->key_size = 28;
                 break;
             default:
