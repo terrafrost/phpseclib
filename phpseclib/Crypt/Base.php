@@ -594,7 +594,7 @@ class Crypt_Base
     function setKey($key)
     {
         if (!$this->explicit_key_length) {
-            $this->setKeyLength(strlen($key));
+            $this->setKeyLength(strlen($key) << 3);
             $this->explicit_key_length = false;
         }
 
