@@ -858,6 +858,7 @@ echo "setting key size to $zzz (" . strlen($key) . ")\n";
                     $ciphertext.= $block;
                     $pos = $len;
                 }
+echo "size of key after MCRYPT = " . strlen($this->key) . "\n";
 
                 return $ciphertext;
             }
