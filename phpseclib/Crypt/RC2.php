@@ -468,6 +468,12 @@ echo "calling parent::setKey with ".strlen(call_user_func_array('pack', $l)) . "
      */
     function encrypt($plaintext)
     {
+$backtrace = debug_backtrace(); 
+for ($i = 0; $i < count($backtrace); $i++) { 
+    unset($backtrace[$i]['args']); 
+    unset($backtrace[$i]['object']); 
+} 
+print_r($backtrace);
 echo "key len when encrypt() is called: " . strlen($this->key) . "\n";
         if ($this->engine == CRYPT_ENGINE_OPENSSL) {
             $temp = $this->key;
