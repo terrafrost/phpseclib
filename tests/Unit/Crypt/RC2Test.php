@@ -97,6 +97,7 @@ echo "USING MCRYPT MODE\n";
             self::markTestSkipped('Unable to initialize mcrypt engine');
         }
 
+echo "SETTING OPENSSL MODE\n";
         $rc2->setPreferredEngine(CRYPT_ENGINE_OPENSSL);
         if ($rc2->getEngine() == CRYPT_ENGINE_OPENSSL) {
 echo "USING OPENSSL MODE\n";
