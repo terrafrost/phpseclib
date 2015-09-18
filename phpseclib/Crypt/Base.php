@@ -797,6 +797,7 @@ echo "setting key size to $zzz (" . strlen($key) . ")\n";
         }
 
         if ($this->engine === CRYPT_ENGINE_MCRYPT) {
+echo "USING MCRYPT MODE\n";
             if ($this->changed) {
                 $this->_setupMcrypt();
                 $this->changed = false;
