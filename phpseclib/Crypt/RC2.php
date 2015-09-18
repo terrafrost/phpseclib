@@ -388,10 +388,10 @@ class Crypt_RC2 extends Crypt_Base
      */
     function setKeyLength($length)
     {
-        $length >>= 3;
-        if ($length >= 1 && $length <= 1024) {
-            $this->key_size = $length;
-            $this->default_key_length = $length;
+        $key_size = $length >> 3;
+        if ($key_size >= 1 && $key_size <= 1024) {
+            $this->key_size = $key_size;
+            $this->default_key_length = $key_size;
 
             parent::setKeyLength($length);
         }
@@ -452,6 +452,7 @@ class Crypt_RC2 extends Crypt_Base
         // Prepare the key for mcrypt.
         $l[0] = $this->invpitable[$l[0]];
         array_unshift($l, 'C*');
+echo "calling parent::setKey with ".strlen(call_user_func_array('pack', $l)) . "\n";
         parent::setKey(call_user_func_array('pack', $l));
     }
 
