@@ -1779,6 +1779,7 @@ echo "key len after _setup() call: " . strlen($this->key) . "\n";
      */
     function _setup()
     {
+echo "key len in _setup() call = ".strlen($this->key) . "\n";
         $this->_clearBuffers();
         $this->_setupKey();
 
