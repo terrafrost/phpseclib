@@ -725,8 +725,10 @@ echo "setting key size to $zzz (" . strlen($key) . ")\n";
         }
 
         if ($this->engine === CRYPT_ENGINE_OPENSSL) {
+echo "size of key in openssl = ".strlen($this->key)."\n";
             if ($this->changed) {
                 $this->_clearBuffers();
+echo "size of key in openssl / after _clearbuffers = ".strlen($this->key)."\n";
                 $this->changed = false;
             }
             switch ($this->mode) {
