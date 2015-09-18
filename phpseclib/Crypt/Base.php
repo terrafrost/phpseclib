@@ -870,6 +870,7 @@ echo "setting key size to $zzz (" . strlen($key) . ")\n";
 
             return $ciphertext;
         }
+echo "key len in internal encrypt() call: " . strlen($this->key) . "\n";
 
         if ($this->changed) {
             $this->_setup();
