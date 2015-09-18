@@ -470,7 +470,6 @@ class Crypt_Base
      */
     var $openssl_options;
 
-
     /**
      * Has the key length explicitly been set or should it be derived from the key, itself?
      *
@@ -553,6 +552,32 @@ class Crypt_Base
     }
 
     /**
+     * Sets the key length
+     *
+     * Keys with explicitly set lengths need to be treated accordingly
+     *
+     * @access public
+     * @param int $length
+     */
+    function setKeyLength($length)
+    {
+        $this->explicit_key_length = true;
+        $this->changed = true;
+        $this->_setEngine();
+    }
+
+    /**
+     * Returns the current key length
+     *
+     * @access public
+     * @return int
+     */
+    function getKeyLength()
+    {
+        return $this->key_size << 3;
+    }
+
+    /**
      * Sets the key.
      *
      * The min/max length(s) of the key depends on the cipher which is used.
@@ -616,7 +641,7 @@ class Crypt_Base
                 if (isset($func_args[5])) {
                     $dkLen = $func_args[5];
                 } else {
-                    $dkLen = $method == 'pbkdf1' ? 2 * $this->password_key_size : $this->password_key_size;
+                    $dkLen = $method == 'pbkdf1' ? 2 * $this->key_size : $this->key_size;
                 }
 
                 switch (true) {
@@ -1889,8 +1914,8 @@ class Crypt_Base
         // $this->encryptIV = $this->decryptIV = strlen($this->iv) == $this->block_size ? $this->iv : str_repeat("\0", $this->block_size);
         $this->encryptIV = $this->decryptIV = str_pad(substr($this->iv, 0, $this->block_size), $this->block_size, "\0");
 
-echo "actual key size = ".strlen($this->key)."\n";
-echo "desired key size = ".$this->key_size."\n";
+        $key_size = $this->key_size >> 3;
+        $this->key = str_pad(substr($this->key, 0, $key_size), $key_size, "\0");
     }
 
     /**
