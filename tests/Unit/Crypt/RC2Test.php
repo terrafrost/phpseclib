@@ -42,6 +42,7 @@ class Unit_Crypt_RC2Test extends PhpseclibTestCase
     }
 
     // this test is just confirming RC2's key expansion
+/*
     public function testEncryptPadding()
     {
         $rc2 = new Crypt_RC2(CRYPT_MODE_ECB);
@@ -107,11 +108,11 @@ echo "USING OPENSSL MODE\n";
             self::markTestSkipped('Unable to initialize OpenSSL engine');
         }
     }
-
+*/
     /**
      * @dataProzvider engineVectors
      */
-/*
+
     public function testVectors($engine, $engineName, $key, $keyLen, $plaintext, $ciphertext)
     {
         $rc2 = new Crypt_RC2();
@@ -124,8 +125,8 @@ echo "USING OPENSSL MODE\n";
         $rc2->setPreferredEngine($engine);
 echo "ATTEMPTING ENCRYPTION\n";
         $result = bin2hex($rc2->encrypt(pack('H*', $plaintext)));
-exit;
+//exit;
         $this->assertEquals($result, $ciphertext, "Failed asserting that $plaintext yielded expected output in $engineName engine");
     }
-*/
+
 }
