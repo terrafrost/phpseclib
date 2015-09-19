@@ -110,7 +110,7 @@ echo "USING OPENSSL MODE\n";
     }
 */
     /**
-     * @dataProzvider engineVectors
+     * @dataProvider engineVectors
      */
 
     public function testVectors($engine, $engineName, $key, $keyLen, $plaintext, $ciphertext)
