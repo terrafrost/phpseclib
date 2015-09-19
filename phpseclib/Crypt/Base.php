@@ -480,6 +480,15 @@ class Crypt_Base
     var $explicit_key_length = false;
 
     /**
+     * Don't truncate / null pad key
+     *
+     * @see Crypt_Base::_clearBuffers
+     * @var bool
+     * @access private
+     */
+    var $skip_key_adjustment = false;
+
+    /**
      * Default Constructor.
      *
      * Determines whether or not the mcrypt extension should be used.
@@ -594,8 +603,6 @@ class Crypt_Base
     function setKey($key)
     {
         if (!$this->explicit_key_length) {
-$zzz = strlen($key) << 3;
-echo "setting key size to $zzz (" . strlen($key) . ")\n";
             $this->setKeyLength(strlen($key) << 3);
             $this->explicit_key_length = false;
         }
@@ -725,10 +732,8 @@ echo "setting key size to $zzz (" . strlen($key) . ")\n";
         }
 
         if ($this->engine === CRYPT_ENGINE_OPENSSL) {
-echo "size of key in openssl = ".strlen($this->key)."\n";
             if ($this->changed) {
                 $this->_clearBuffers();
-echo "size of key in openssl / after _clearbuffers = ".strlen($this->key)."\n";
                 $this->changed = false;
             }
             switch ($this->mode) {
@@ -799,7 +804,6 @@ echo "size of key in openssl / after _clearbuffers = ".strlen($this->key)."\n";
         }
 
         if ($this->engine === CRYPT_ENGINE_MCRYPT) {
-echo "IN MCRYPT ENCRYPT PART\n";
             if ($this->changed) {
                 $this->_setupMcrypt();
                 $this->changed = false;
@@ -868,17 +872,15 @@ echo "IN MCRYPT ENCRYPT PART\n";
             $ciphertext = mcrypt_generic($this->enmcrypt, $plaintext);
 
             if (!$this->continuousBuffer) {
+//echo 'RC2.php key = '.bin2hex($this->key) . "\r\n";
                 mcrypt_generic_init($this->enmcrypt, $this->key, $this->encryptIV);
             }
-echo "size of key after MCRYPT = " . strlen($this->key) . "\n";
 
             return $ciphertext;
         }
-echo "key len in internal encrypt() call: " . strlen($this->key) . "\n";
 
         if ($this->changed) {
             $this->_setup();
-echo "key len after _setup() call: " . strlen($this->key) . "\n";
             $this->changed = false;
         }
         if ($this->use_inline_crypt) {
@@ -1585,7 +1587,6 @@ echo "key len after _setup() call: " . strlen($this->key) . "\n";
      */
     function isValidEngine($engine)
     {
-echo "size of key at start of isvalidengine = ".strlen($this->key) . "\n";
         switch ($engine) {
             case CRYPT_ENGINE_OPENSSL:
                 if ($this->mode == CRYPT_MODE_STREAM && $this->continuousBuffer) {
@@ -1610,7 +1611,6 @@ echo "size of key at start of isvalidengine = ".strlen($this->key) . "\n";
 
                 $methods = openssl_get_cipher_methods();
                 if (in_array($this->cipher_name_openssl, $methods)) {
-echo "size of key at r1 of isvalidengine = ".strlen($this->key) . "\n";
                     return true;
                 }
                 // not all of openssl's symmetric cipher's support ctr. for those
@@ -1618,7 +1618,6 @@ echo "size of key at r1 of isvalidengine = ".strlen($this->key) . "\n";
                 switch ($this->mode) {
                     case CRYPT_MODE_CTR:
                         if (in_array($this->cipher_name_openssl_ecb, $methods)) {
-echo "size of key at r2 of isvalidengine = ".strlen($this->key) . "\n";
                             $this->openssl_emulate_ctr = true;
                             return true;
                         }
@@ -1786,7 +1785,6 @@ echo "size of key at r2 of isvalidengine = ".strlen($this->key) . "\n";
      */
     function _setup()
     {
-echo "key len in _setup() call = ".strlen($this->key) . "\n";
         $this->_clearBuffers();
         $this->_setupKey();
 
@@ -1925,12 +1923,11 @@ echo "key len in _setup() call = ".strlen($this->key) . "\n";
         // mcrypt's handling of invalid's $iv:
         // $this->encryptIV = $this->decryptIV = strlen($this->iv) == $this->block_size ? $this->iv : str_repeat("\0", $this->block_size);
         $this->encryptIV = $this->decryptIV = str_pad(substr($this->iv, 0, $this->block_size), $this->block_size, "\0");
-//zzzz
-//if ($this->key_size != strlen($this->key)) {
-echo 'actual key size = ' . strlen($this->key) . "\n";
-echo 'forced key size = ' . $this->key_size . "\n";
-//}
-        $this->key = str_pad(substr($this->key, 0, $this->key_size), $this->key_size, "\0");
+
+        if (!$this->skip_key_adjustment) {
+exit('THIS SHOULD NOT BE CALLED');
+            $this->key = str_pad(substr($this->key, 0, $this->key_size), $this->key_size, "\0");
+        }
     }
 
     /**
