@@ -139,6 +139,15 @@ class Crypt_RC2 extends Crypt_Base
     var $orig_key;
 
     /**
+     * Don't truncate / null pad key
+     *
+     * @see Crypt_Base::_clearBuffers
+     * @var bool
+     * @access private
+     */
+    var $skip_key_adjustment = true;
+
+    /**
      * The default password key_size used by setPassword()
      *
      * @see Crypt_Base::password_key_size
@@ -366,11 +375,9 @@ class Crypt_RC2 extends Crypt_Base
     {
         switch ($engine) {
             case CRYPT_ENGINE_OPENSSL:
-                if ($this->current_key_length != 128 || strlen($this->orig_key) != 16) {
-echo "openssl is not supported\n";
+                if ($this->current_key_length != 128 || strlen($this->orig_key) < 16) {
                     return false;
                 }
-echo "openssl is supported\n";
                 $this->cipher_name_openssl_ecb = 'rc2-ecb';
                 $this->cipher_name_openssl = 'rc2-' . $this->_openssl_translate_mode();
         }
@@ -390,13 +397,20 @@ echo "openssl is supported\n";
      */
     function setKeyLength($length)
     {
-        $key_size = $length >> 3;
-        if ($key_size >= 1 && $key_size <= 1024) {
-            $this->key_size = $key_size;
-            $this->default_key_length = $key_size;
-
-            parent::setKeyLength($length);
+        if ($length >= 1 && $length <= 1024) {
+            $this->default_key_length = $length;
         }
+    }
+
+    /**
+     * Returns the current key length
+     *
+     * @access public
+     * @return int
+     */
+    function getKeyLength()
+    {
+        return $this->current_key_length;
     }
 
     /**
@@ -454,7 +468,7 @@ echo "openssl is supported\n";
         // Prepare the key for mcrypt.
         $l[0] = $this->invpitable[$l[0]];
         array_unshift($l, 'C*');
-echo "calling parent::setKey with ".strlen(call_user_func_array('pack', $l)) . "\n";
+
         parent::setKey(call_user_func_array('pack', $l));
     }
 
@@ -470,15 +484,6 @@ echo "calling parent::setKey with ".strlen(call_user_func_array('pack', $l)) . "
      */
     function encrypt($plaintext)
     {
-/*
-$backtrace = debug_backtrace(); 
-for ($i = 0; $i < count($backtrace); $i++) { 
-    unset($backtrace[$i]['args']); 
-    unset($backtrace[$i]['object']); 
-} 
-print_r($backtrace);
-echo "key len when encrypt() is called: " . strlen($this->key) . "\n";
-*/
         if ($this->engine == CRYPT_ENGINE_OPENSSL) {
             $temp = $this->key;
             $this->key = $this->orig_key;
