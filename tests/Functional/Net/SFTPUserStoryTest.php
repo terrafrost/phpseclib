@@ -668,6 +668,6 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
         );
 
         $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, self::$exampleDataLength - 5);
-echo 'sssize = '.$sftp->size() . "\n";
+echo 'sssize = '.$sftp->size('endless.txt') . "\n";
     }
 }
