@@ -660,14 +660,17 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     public function testEndlessLoopOnUpload($sftp)
     {
         $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, 0, 10);
-
         $this->assertSame(
             substr(self::$exampleData, 10),
             $sftp->get('endless.txt'),
             'Failed asserting that portions of a file could be uploaded.'
         );
 
-        $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, self::$exampleDataLength - 5);
-echo 'sssize = '.$sftp->size('endless.txt') . "\n";
+        $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, self::$exampleDataLength - 100);
+        $this->assertSame(
+            substr(self::$exampleData, 10, -100) . self::$exampleData,
+            $sftp->get('endless.txt'),
+            'Failed asserting that you could upload into the middle of a file.'
+        );
     }
 }
