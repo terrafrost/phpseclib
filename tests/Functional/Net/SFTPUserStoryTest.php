@@ -666,5 +666,8 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
             $sftp->get('endless.txt'),
             'Failed asserting that portions of a file could be uploaded.'
         );
+
+        $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, self::$exampleDataLength - 5);
+echo 'sssize = '.$sftp->size() . "\n";
     }
 }
