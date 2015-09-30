@@ -9,6 +9,7 @@ abstract class PhpseclibFunctionalTestCase extends PhpseclibTestCase
 {
     public static function setUpBeforeClass()
     {
+/*
         if (extension_loaded('runkit')) {
             if (extension_loaded('gmp')) {
                 self::ensureConstant(
@@ -29,6 +30,7 @@ abstract class PhpseclibFunctionalTestCase extends PhpseclibTestCase
             self::reRequireFile('Math/BigInteger.php');
             self::reRequireFile('Crypt/Hash.php');
         }
+*/
         parent::setUpBeforeClass();
     }
 
