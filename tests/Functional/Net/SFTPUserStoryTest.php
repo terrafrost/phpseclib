@@ -670,7 +670,7 @@ echo 'size1 = '.$sftp->size('endless.txt') . "\n";
         $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, self::$exampleDataLength - 100);
 echo 'size2 = '.$sftp->size('endless.txt') . "\n";
         $this->assertSame(
-            substr(self::$exampleData, 10, -100) . self::$exampleData,
+            substr(self::$exampleData, 10, -110) . self::$exampleData,
             $sftp->get('endless.txt'),
             'Failed asserting that you could upload into the middle of a file.'
         );
