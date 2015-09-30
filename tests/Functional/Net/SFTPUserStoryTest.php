@@ -669,6 +669,8 @@ echo 'size1 = '.$sftp->size('endless.txt') . "\n";
 
         $sftp->put('endless.txt', 'res.txt', NET_SFTP_LOCAL_FILE, self::$exampleDataLength - 100);
 echo 'size2 = '.$sftp->size('endless.txt') . "\n";
+echo 'size3 = '.count(self::$exampleData, 10, -110) . self::$exampleData)."\n";
+exit;
         $this->assertSame(
             substr(self::$exampleData, 10, -110) . self::$exampleData,
             $sftp->get('endless.txt'),
