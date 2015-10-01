@@ -294,7 +294,7 @@ Ao8eayMp6FcvNucIpUndo1X8dKMv3Y26ZQIDAQAB
         $rsa->setPublicKey();
         $newkey = $rsa->getPublicKey('XML');
 
-        $this->assertSame(preg_replace('#\s#', '', $key), preg_replace('#\s#', '', $newkey));
+        $this->assertSame(strtolower(preg_replace('#\s#', '', $key)), strtolower(preg_replace('#\s#', '', $newkey)));
     }
 
     /**
