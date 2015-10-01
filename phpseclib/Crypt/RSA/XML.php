@@ -128,6 +128,7 @@ class XML
      */
     static function savePublicKey(BigInteger $n, BigInteger $e)
     {
+echo "\n\n\n" . base64_encode($n->toBytes()) . "\n\n\n";
         return "<RSAKeyValue>\r\n" .
                '  <Modulus>' . base64_encode($n->toBytes()) . "</Modulus>\r\n" .
                '  <Exponent>' . base64_encode($e->toBytes()) . "</Exponent>\r\n" .
