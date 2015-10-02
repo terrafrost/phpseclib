@@ -341,13 +341,14 @@ oquF470c9Mm6jf/2zmn6yobE6UUvQ0O3hKSiyOAbAAAAQBGoiuSoSjafUhV7i1cE
 Gpb88h5NBYZzWXGZ37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ
 4p0=
 Private-MAC: 03e2cb74e1d67652fbad063d2ed0478f31bdf256';
+        $key = preg_replace('#(?<!\r)\n#', "\r\n", $key);
         $this->assertTrue($rsa->load($key));
 
         PKCS1::setEncryptionAlgorithm('AES-256-CBC');
         $rsa->setPassword('demo');
 
         $encryptedKey = (string) $rsa;
-echo $encryptedKey . "\n\n";
+//echo $encryptedKey . "\n\n";
 
         $this->assertRegExp('#AES-256-CBC#', $encryptedKey);
 
@@ -357,7 +358,7 @@ echo $encryptedKey . "\n\n";
         $rsa->setPassword();
         $rsa->setPrivateKeyFormat('PuTTY');
         $key2 = (string) $rsa;
-echo $key2."\n\n";
+//echo $key2."\n\n";
 
         $this->assertSame($key, $key2);
     }
