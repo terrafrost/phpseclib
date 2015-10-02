@@ -6,6 +6,7 @@
  */
 
 use phpseclib\Crypt\RSA;
+use phpseclib\Crypt\RSA\PKCS1;
 
 class Unit_Crypt_RSA_LoadKeyTest extends PhpseclibTestCase
 {
@@ -345,10 +346,9 @@ Private-MAC: 03e2cb74e1d67652fbad063d2ed0478f31bdf256';
         PKCS1::setEncryptionAlgorithm('AES-256-CBC');
         $rsa->setPassword('demo');
 
-        $encryptedKey = (string) $key;
+        $encryptedKey = (string) $rsa;
 
-        // change back to the original format to demonstrate that this doesn't break anything
-        PKCS1::setEncryptionAlgorithm('DES-EDE3-CBC');
+        $this->assertRegExp('#AES-256-CBC#', $encryptedKey);
 
         $rsa = new RSA();
         $rsa->setPassword('demo');
