@@ -358,6 +358,9 @@ Private-MAC: 03e2cb74e1d67652fbad063d2ed0478f31bdf256';
         $rsa->setPassword();
         $rsa->setPrivateKeyFormat('PuTTY');
         $key2 = (string) $rsa;
+echo "length\n";
+echo strlen($key) . "\n";
+echo strlen($key2) . "\n";
 //echo $key2."\n\n";
 
         $this->assertSame($key, $key2);
