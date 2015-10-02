@@ -347,6 +347,7 @@ Private-MAC: 03e2cb74e1d67652fbad063d2ed0478f31bdf256';
         $rsa->setPassword('demo');
 
         $encryptedKey = (string) $rsa;
+echo $encryptedKey . "\n\n";
 
         $this->assertRegExp('#AES-256-CBC#', $encryptedKey);
 
@@ -356,6 +357,7 @@ Private-MAC: 03e2cb74e1d67652fbad063d2ed0478f31bdf256';
         $rsa->setPassword();
         $rsa->setPrivateKeyFormat('PuTTY');
         $key2 = (string) $rsa;
+echo $key2."\n\n";
 
         $this->assertSame($key, $key2);
     }
