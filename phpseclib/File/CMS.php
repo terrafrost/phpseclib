@@ -782,7 +782,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
                                        'optional' => true,
                                        'default' => 'id-sha256'
                                    ) + $AlgorithmIdentifier,
-                'certHash' => $Hash, // sha1 hash of entire cert
+                'certHash' => $Hash,
                 'issuerSerial' => array('optional' => true) + $IssuerSerial
             )
         );
@@ -1298,9 +1298,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
         );
         $signerInfo['signedAttrs'][] = array(
             'type' => 'id-signingTime',
-            'value' => array(array(
-                           'generalTime' => @date('D, d M Y H:i:s O')
-                       ))
+            'value' => array($this->_timeField('now'))
         );
         if (isset($contentID)) {
             $signerInfo['signedAttrs'][] = array(
@@ -1357,7 +1355,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
         if (!$result) {
             return false;
         }
-        $this->currentCMS['content']['certificates'][] = array('certificate' => $result);
+        $this->currentCMS['content']['certificates'][] = array('certificate' => new File_ASN1_Element($x509));
         return true;
     }
 
