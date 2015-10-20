@@ -56,13 +56,15 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
 
         $result = array();
 
-        // @codingStandardsIgnoreStart
-        foreach ($modes as $mode)
-        foreach ($plaintexts as $plaintext)
-        foreach ($ivs as $iv)
-        foreach ($keys as $key)
-            $result[] = array($mode, $plaintext, $iv, $key);
-        // @codingStandardsIgnoreEnd
+        foreach ($modes as $mode) {
+            foreach ($plaintexts as $plaintext) {
+                foreach ($ivs as $iv) {
+                    foreach ($keys as $key) {
+                        $result[] = array($mode, $plaintext, $iv, $key);
+                    }
+                }
+            }
+        }
 
         return $result;
     }
@@ -122,10 +124,10 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
     }
 
     /**
-    * Produces all combinations of test values.
-    *
-    * @return array
-    */
+     * Produces all combinations of test values.
+     *
+     * @return array
+     */
     public function continuousBufferBatteryCombos()
     {
         $modes = array(
@@ -153,19 +155,20 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
 
         $result = array();
 
-        // @codingStandardsIgnoreStart
-        foreach ($modes as $mode)
-        foreach ($combos as $combo)
-        foreach (array('encrypt', 'decrypt') as $op)
-            $result[] = array($op, $mode, $combo);
-        // @codingStandardsIgnoreEnd
+        foreach ($modes as $mode) {
+            foreach ($combos as $combo) {
+                foreach (array('encrypt', 'decrypt') as $op) {
+                    $result[] = array($op, $mode, $combo);
+                }
+            }
+        }
 
         return $result;
     }
 
     /**
-    * @dataProvider continuousBufferBatteryCombos
-    */
+     * @dataProvider continuousBufferBatteryCombos
+     */
     public function testContinuousBufferBattery($op, $mode, $test)
     {
         $iv = str_repeat('x', 16);
@@ -209,9 +212,10 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
     }
 
     /**
-    * @dataProvider continuousBufferBatteryCombos
-    */
-    // pretty much the same as testContinuousBufferBattery with the caveat that continuous mode is not enabled
+     * Pretty much the same as testContinuousBufferBattery with the caveat that continuous mode is not enabled.
+     *
+     * @dataProvider continuousBufferBatteryCombos
+     */
     public function testNonContinuousBufferBattery($op, $mode, $test)
     {
         if (count($test) == 1) {
@@ -329,5 +333,40 @@ abstract class Unit_Crypt_AES_TestCase extends PhpseclibTestCase
         $this->assertSame($result, '38f2c7ae10612415d27ca190d27da8b4');
         $result = bin2hex($aes->encrypt(pack('H*', '91fbef2d15a97816060bee1feaa49afe')));
         $this->assertSame($result, '1bc704f1bce135ceb810341b216d7abe');
+    }
+
+    public function testGetKeyLengthDefault()
+    {
+        $aes = new Crypt_AES();
+        $this->assertSame($aes->getKeyLength(), 128);
+    }
+
+    public function testGetKeyLengthWith192BitKey()
+    {
+        $aes = new Crypt_AES();
+        $aes->setKey(str_repeat('a', 24));
+        $this->assertSame($aes->getKeyLength(), 192);
+    }
+
+    public function testSetKeyLengthWithLargerKey()
+    {
+        $aes = new Crypt_AES();
+        $aes->setKeyLength(128);
+        $aes->setKey(str_repeat('a', 24));
+        $this->assertSame($aes->getKeyLength(), 128);
+        $ciphertext = bin2hex($aes->encrypt('a'));
+        $this->assertSame($ciphertext, '82b7b068dfc60ed2a46893b69fecd6c2');
+        $this->assertSame($aes->getKeyLength(), 128);
+    }
+
+    public function testSetKeyLengthWithSmallerKey()
+    {
+        $aes = new Crypt_AES();
+        $aes->setKeyLength(256);
+        $aes->setKey(str_repeat('a', 16));
+        $this->assertSame($aes->getKeyLength(), 256);
+        $ciphertext = bin2hex($aes->encrypt('a'));
+        $this->assertSame($ciphertext, 'fd4250c0d234aa7e1aa592820aa8406b');
+        $this->assertSame($aes->getKeyLength(), 256);
     }
 }
