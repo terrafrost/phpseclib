@@ -1446,7 +1446,15 @@ class File_X509
             '0.4.0.1862.1.1' => 'id-etsi-qcs-QcCompliance',
             '0.4.0.1862.1.2' => 'id-etsi-qcs-QcLimitValue',
             '0.4.0.1862.1.3' => 'id-etsi-qcs-QcRetentionPeriod',
-            '0.4.0.1862.1.4' => 'id-etsi-qcs-QcSSCD'
+            '0.4.0.1862.1.4' => 'id-etsi-qcs-QcSSCD',
+
+            // from RFC3039
+            '1.3.6.1.5.5.7.9.1' => 'id-pda-dateOfBirth',
+            '1.3.6.1.5.5.7.9.2' => 'id-pda-placeOfBirth',
+            '1.3.6.1.5.5.7.9.3' => 'id-pda-gender',
+            '1.3.6.1.5.5.7.9.4' => 'id-pda-countyOfCitizenship',
+            '1.3.6.1.5.5.7.9.5' => 'id-pda-countyOfResidence',
+            '1.3.6.1.5.5.7.9.6' => 'id-pda-dateOfBirth',
         );
     }
 
@@ -1615,22 +1623,36 @@ class File_X509
                     $mapped = $asn1->asn1map($decoded[0], $map, array('iPAddress' => array($this, '_decodeIP')));
                     $value = $mapped === false ? $decoded[0] : $mapped;
 
-                    if ($id == 'id-ce-certificatePolicies') {
-                        for ($j = 0; $j < count($value); $j++) {
-                            if (!isset($value[$j]['policyQualifiers'])) {
-                                continue;
-                            }
-                            for ($k = 0; $k < count($value[$j]['policyQualifiers']); $k++) {
-                                $subid = $value[$j]['policyQualifiers'][$k]['policyQualifierId'];
-                                $map = $this->_getMapping($subid);
-                                $subvalue = &$value[$j]['policyQualifiers'][$k]['qualifier'];
-                                if ($map !== false) {
-                                    $decoded = $asn1->decodeBER($subvalue);
-                                    $mapped = $asn1->asn1map($decoded[0], $map);
-                                    $subvalue = $mapped === false ? $decoded[0] : $mapped;
+                    switch ($id) {
+                        case 'id-ce-certificatePolicies':
+                            for ($j = 0; $j < count($value); $j++) {
+                                if (!isset($value[$j]['policyQualifiers'])) {
+                                    continue;
+                                }
+                                for ($k = 0; $k < count($value[$j]['policyQualifiers']); $k++) {
+                                    $subid = $value[$j]['policyQualifiers'][$k]['policyQualifierId'];
+                                    $map = $this->_getMapping($subid);
+                                    $subvalue = &$value[$j]['policyQualifiers'][$k]['qualifier'];
+                                    if ($map !== false) {
+                                        $decoded = $asn1->decodeBER($subvalue);
+                                        $mapped = $asn1->asn1map($decoded[0], $map);
+                                        $subvalue = $mapped === false ? $decoded[0] : $mapped;
+                                    }
                                 }
                             }
-                        }
+                            break;
+                        case 'id-pe-qcStatements':
+                            for ($j = 0; $j < count($value); $j++) {
+                                if (!isset($value[$j]['statementInfo'])) {
+                                    continue;
+                                }
+                                if ($value[$j]['statementId'] == 'id-etsi-qcs-QcLimitValue') {
+                                    $map = $this->_getMapping('id-etsi-qcs-QcLimitValue');
+                                    $decoded = $asn1->decodeBER($value[$j]['statementInfo']);
+                                    $mapped = $asn1->asn1map($decoded[0], $map);
+                                    $value[$j]['statementInfo'] = $mapped === false ? $decoded[0] : $mapped;
+                                }
+                            }
                     }
                 } else {
                     $value = base64_encode($value);
@@ -1687,6 +1709,19 @@ class File_X509
                                 $value['authorityCertSerialNumber'] = new File_ASN1_Element($temp);
                             }
                         }
+                        break;
+                    case 'id-pe-qcStatements':
+                            for ($j = 0; $j < count($value); $j++) {
+                                if (!isset($value[$j]['statementInfo'])) {
+                                    continue;
+                                }
+                                if ($value[$j]['statementId'] == 'id-etsi-qcs-QcLimitValue') {
+                                    $map = $this->_getMapping('id-etsi-qcs-QcLimitValue');
+                                    if ($map !== false) {
+                                        $value[$j]['statementInfo'] = new File_ASN1_Element($asn1->encodeDER($value[$j]['statementInfo'], $map));
+                                    }
+                                }
+                            }
                 }
 
                 /* [extnValue] contains the DER encoding of an ASN.1 value
@@ -3301,7 +3336,9 @@ class File_X509
             if (!empty($subject->publicKey)) {
                 $this->currentCert['tbsCertificate']['subjectPublicKeyInfo'] = $subjectPublicKey;
             }
-            $this->removeExtension('id-ce-authorityKeyIdentifier');
+            if (isset($issuer->currentKeyIdentifier)) {
+                $this->removeExtension('id-ce-authorityKeyIdentifier');
+            }
             if (isset($subject->domains)) {
                 $this->removeExtension('id-ce-subjectAltName');
             }

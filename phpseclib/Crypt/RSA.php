@@ -2855,6 +2855,36 @@ class Crypt_RSA
         return $s;
     }
 
+    function _emsa_pkcs1_v1_5_encode2($m, $emLen)
+    {
+        $h = $this->hash->hash($m);
+        if ($h === false) {
+            return false;
+        }
+
+        // see http://tools.ietf.org/html/rfc3447#page-43
+        switch ($this->hashName) {
+            case 'sha256':
+                $t = pack('H*', '302f300b06096086480165030402010420');
+                break;
+            default:
+                return false;
+        }
+        $t.= $h;
+        $tLen = strlen($t);
+
+        if ($emLen < $tLen + 11) {
+            user_error('Intended encoded message length too short');
+            return false;
+        }
+
+        $ps = str_repeat(chr(0xFF), $emLen - $tLen - 3);
+
+        $em = "\0\1$ps\0$t";
+
+        return $em;
+    }
+
     /**
      * RSASSA-PKCS1-V1_5-VERIFY
      *
@@ -2896,7 +2926,11 @@ class Crypt_RSA
         }
 
         // Compare
-        return $this->_equals($em, $em2);
+        if ($this->_equals($em, $em2)) {
+            return true;
+        }
+
+        return $this->_equals($em, $this->_emsa_pkcs1_v1_5_encode2($m, $this->k));
     }
 
     /**
