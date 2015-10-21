@@ -61,6 +61,12 @@ $x509->setExtension('id-ce-authorityKeyIdentifier', $ext);
 $ext = $keyIdentifier; // the same as the above since this is a self-signed cert
 $x509->setExtension('id-ce-subjectKeyIdentifier', $ext);
 
+$ext = array(array(
+    'accessMethod' => 'id-ad-ocsp',
+    'accessLocation' => array('uniformResourceIdentifier' => 'http://ocsp.sc.infocert.it/')
+));
+$x509->setExtension('id-pe-authorityInfoAccess', $ext);
+
 $result = $x509->sign($issuer, $x509);
 
 echo "the stunnel.pem contents are as follows:\r\n\r\n";
