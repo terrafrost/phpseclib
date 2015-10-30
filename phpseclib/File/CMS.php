@@ -603,7 +603,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             'type' => FILE_ASN1_TYPE_SET,
             'min' => 1,
             'max' => -1,
-            'children' => $CertificateChoices                
+            'children' => $CertificateChoices
         );
 
         $OtherRevocationInfoFormat = array(
@@ -630,7 +630,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             'type' => FILE_ASN1_TYPE_SET,
             'min' => 1,
             'max' => -1,
-            'children' => $RevocationInfoChoice                
+            'children' => $RevocationInfoChoice
         );
 
         $IssuerAndSerialNumber = array(
@@ -697,7 +697,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             'type' => FILE_ASN1_TYPE_SET,
             'min' => 1,
             'max' => -1,
-            'children' => $SignerInfo                
+            'children' => $SignerInfo
         );
 
         $this->SignedData = array(
@@ -897,7 +897,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
                 $decoded = $asn1->decodeBER($cms['content']->element);
                 $cms['content'] = $asn1->asn1map($decoded[0], $this->SignedData);
                 if (isset($cms['content']['certificates'])) {
-                    foreach ($cms['content']['certificates'] as $i=>$cert) {
+                    foreach ($cms['content']['certificates'] as $i => $cert) {
                         if (isset($cert['certificate'])) {
                             $temp = $decoded[0]['content'][3]['content'][$i];
                             $cert = substr($signatureContainer, $temp['start'], $temp['length']);
@@ -905,7 +905,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
                         }
                     }
                 }
-                foreach ($cms['content']['signerInfos'] as $key=>&$signerInfo) {
+                foreach ($cms['content']['signerInfos'] as $key => &$signerInfo) {
                     /*
                        The result of the message digest calculation process depends on
                        whether the signedAttrs field is present.  When the field is absent,
@@ -990,7 +990,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
 
         $matches = 0;
         $this->signingCerts = array();
-        foreach ($this->currentCMS['content']['signerInfos'] as $i=>$signerInfo) {
+        foreach ($this->currentCMS['content']['signerInfos'] as $i => $signerInfo) {
             foreach ($signerInfo['signedAttrs'] as $attr) {
                 switch ($attr['type']) {
                     case 'id-messageDigest':
@@ -1009,7 +1009,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
               by any means, but the preferred method is from a certificate obtained
               from the SignedData certificates field.
             */
-            foreach ($this->currentCMS['content']['certificates'] as $j=>$cert) {
+            foreach ($this->currentCMS['content']['certificates'] as $j => $cert) {
                 switch (true) {
                     case isset($cert['certificate']):
                         $issuer = $cert['certificate']['tbsCertificate']['issuer'];
@@ -1033,7 +1033,6 @@ class File_CMS extends File_X509 // File_CMS_SignedData
                 }
 
                 if (isset($signerInfo['sid']['issuerAndSerialNumber'])) {
-
                     switch (true) {
                         case $issuer != $signerInfo['sid']['issuerAndSerialNumber']['issuer']:
                         case !$sn->equals($signerInfo['sid']['issuerAndSerialNumber']['serialNumber']):
@@ -1077,7 +1076,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
         $matches = 0;
         $this->essSigningCerts = array();
 
-        foreach ($this->currentCMS['content']['signerInfos'] as $i=>$signerInfo) {
+        foreach ($this->currentCMS['content']['signerInfos'] as $i => $signerInfo) {
             unset($hash, $expectedHash, $expectedIssuer, $expectedSN);
             foreach ($signerInfo['signedAttrs'] as $attr) {
                 switch ($attr['type']) {
@@ -1106,7 +1105,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
                 return false;
             }
 
-            foreach ($this->currentCMS['content']['certificates'] as $j=>$cert) {
+            foreach ($this->currentCMS['content']['certificates'] as $j => $cert) {
                 switch (true) {
                     case isset($cert['certificate']):
                         $issuer = $cert['certificate']['tbsCertificate']['issuer'];
@@ -1250,7 +1249,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
     }
 
     // the X509 cert needs to be a string; the privatekey needs to be a Crypt_RSA object
-    function addSigner($x509, $privatekey, $contentID = NULL)
+    function addSigner($x509, $privatekey, $contentID = null)
     {
         $this->keys[] = $privatekey;
         if (!$this->addCert($x509)) {
@@ -1364,14 +1363,14 @@ class File_CMS extends File_X509 // File_CMS_SignedData
     function save()
     {
         $cms = $this->currentCMS;
-        foreach ($cms['content']['signerInfos'] as $key=>&$signerInfo) {
+        foreach ($cms['content']['signerInfos'] as $key => &$signerInfo) {
             if (isset($signerInfo['signedAttrs']) && count($signerInfo['signedAttrs'])) {
                 $temp = $this->signatureSubjects[$key];
                 $temp[0] = chr(FILE_ASN1_CLASS_CONTEXT_SPECIFIC | 0x20);
                 $signerInfo['signedAttrs'] = new File_ASN1_Element($temp);
             }
         }
-        foreach ($cms['content']['certificates'] as $key=>&$cert) {
+        foreach ($cms['content']['certificates'] as $key => &$cert) {
             if (isset($cert['certificate'])) {
                 $cert = new File_ASN1_Element($this->certs[$key]);
             }
