@@ -780,7 +780,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             'children' => array(
                 'hashAlgorithm' => array(
                                        'optional' => true,
-                                       'default' => 'id-sha256'
+                                       'default' => array('algorithm' => 'id-sha256', 'parameters' => array('null' => '')),
                                    ) + $AlgorithmIdentifier,
                 'certHash' => $Hash,
                 'issuerSerial' => array('optional' => true) + $IssuerSerial
@@ -1084,7 +1084,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
                     case 'id-aa-signingCertificate':
                     case 'id-aa-signingCertificateV2':
                         $hash = $attr['type'] == 'id-aa-signingCertificateV2' ?
-                            preg_replace('#^id-#', '', $attr['value'][0]['certs'][0]['hashAlgorithm']) :
+                            preg_replace('#^id-#', '', $attr['value'][0]['certs'][0]['hashAlgorithm']['algorithm']) :
                             'sha1';
                         $hash = new Crypt_Hash($hash);
                         $expectedHash = base64_decode($attr['value'][0]['certs'][0]['certHash']);
@@ -1287,7 +1287,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             'type' => 'id-aa-signingCertificateV2',
             'value' => array(array(
                            'certs' => array(array(
-                                          'hashAlgorithm' => 'id-' . $this->hash,
+                                          'hashAlgorithm' => array('algorithm' => 'id-' . $this->hash, 'parameters' => array('null' => '')),
                                           'certHash' => base64_encode($hash->hash($this->_extractBER($x509))),
                                           'issuerSerial' => array(
                                               'issuer' => array(array('directoryName' => $result['tbsCertificate']['issuer'])),
@@ -1312,6 +1312,8 @@ class File_CMS extends File_X509 // File_CMS_SignedData
         $asn1 = new File_ASN1();
         $asn1->loadOIDs($this->oids);
 
+        // the 2 in $signerInfo['signedAttrs'][2]['value'][0] in the next few lines corresponds to the
+        // location of the id-aa-signingCertificateV2 attribute
         $temp = $signerInfo['signedAttrs'][2]['value'][0];
 
         $encoded = $asn1->encodeDER($signerInfo['signedAttrs'][2]['value'][0], $this->SigningCertificateV2);
