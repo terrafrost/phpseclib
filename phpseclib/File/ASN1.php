@@ -292,7 +292,8 @@ class File_ASN1
     {
         $current = array('start' => $start);
 
-        $type = ord($this->_string_shift($encoded));
+        $type = ord($encoded[0]);
+        $encoded = substr($encoded, 1);
         $start++;
 
         $constructed = ($type >> 5) & 1;
@@ -310,7 +311,8 @@ class File_ASN1
         }
 
         // Length, as discussed in paragraph 8.1.3 of X.690-0207.pdf#page=13
-        $length = ord($this->_string_shift($encoded));
+        $length = ord($encoded[0]);
+        $encoded = substr($encoded, 1);
         $start++;
         if ($length == 0x80) { // indefinite length
             // "[A sender shall] use the indefinite form (see 8.1.3.6) if the encoding is constructed and is not all
@@ -439,13 +441,14 @@ class File_ASN1
                     $length = 0;
                     while (substr($content, 0, 2) != "\0\0") {
                         $temp = $this->_decode_ber($content, $length + $start);
-                        $this->_string_shift($content, $temp['length']);
-                        // all subtags should be octet strings
-                        //if ($temp['type'] != FILE_ASN1_TYPE_OCTET_STRING) {
-                        //    return false;
-                        //}
-                        $current['content'].= $temp['content'];
-                        $length+= $temp['length'];
+                        $templength = $temp['length'] - $temp['headerlength'];
+                        $taglength = chr($temp['type']) . $this->_encodeLength($templength);
+                        $taglength = preg_quote($taglength, '#');
+                        $temp = preg_replace('#((?:' . $taglength . '.{' . $templength . '})*).*#s', '$1', $content);
+                        $content = substr($content, strlen($temp));
+                        $length+= strlen($temp);
+                        $temp = preg_replace('#' . $taglength . '(.{' . $templength . '})#s', '$1', $temp);
+                        $current['content'].= $temp;
                     }
                     if (substr($content, 0, 2) == "\0\0") {
                         $length+= 2; // +2 for the EOC
