@@ -1711,17 +1711,17 @@ class File_X509
                         }
                         break;
                     case 'id-pe-qcStatements':
-                            for ($j = 0; $j < count($value); $j++) {
-                                if (!isset($value[$j]['statementInfo'])) {
-                                    continue;
-                                }
-                                if ($value[$j]['statementId'] == 'id-etsi-qcs-QcLimitValue') {
-                                    $map = $this->_getMapping('id-etsi-qcs-QcLimitValue');
-                                    if ($map !== false) {
-                                        $value[$j]['statementInfo'] = new File_ASN1_Element($asn1->encodeDER($value[$j]['statementInfo'], $map));
-                                    }
+                        for ($j = 0; $j < count($value); $j++) {
+                            if (!isset($value[$j]['statementInfo'])) {
+                                continue;
+                            }
+                            if ($value[$j]['statementId'] == 'id-etsi-qcs-QcLimitValue') {
+                                $map = $this->_getMapping('id-etsi-qcs-QcLimitValue');
+                                if ($map !== false) {
+                                    $value[$j]['statementInfo'] = new File_ASN1_Element($asn1->encodeDER($value[$j]['statementInfo'], $map));
                                 }
                             }
+                        }
                 }
 
                 /* [extnValue] contains the DER encoding of an ASN.1 value
