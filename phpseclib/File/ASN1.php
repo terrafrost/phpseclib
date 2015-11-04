@@ -292,6 +292,10 @@ class File_ASN1
     {
         $current = array('start' => $start);
 
+        if (strlen($encoded) < 2) {
+            return false;
+        }
+
         $type = ord($encoded[0]);
         $encoded = substr($encoded, 1);
         $start++;
