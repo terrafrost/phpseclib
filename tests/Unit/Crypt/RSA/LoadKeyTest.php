@@ -321,7 +321,6 @@ JWrQdxx/WNN+ABG426rgYYbeGcIlWLZCw6Bx/1HtN5ef6nVEoiGNChYKIRB4QFOi
         $this->assertSame(preg_replace('#\s#', '', $key), preg_replace('#\s#', '', $newkey));
     }
 
-<<<<<<< HEAD
     public function testPKCS1EncryptionChange()
     {
         $rsa = new RSA();
@@ -471,6 +470,7 @@ ILaEujU=
         $this->assertSame($rsa->getLoadedFormat(), 'PuTTY');
 
         $this->assertGreaterThanOrEqual(1, strlen("$rsa"));
+    }
 
     /**
      * @group github861
