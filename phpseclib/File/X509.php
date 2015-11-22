@@ -3182,7 +3182,83 @@ class File_X509
         }
 
         $asn1->loadOIDs($this->oids);
-        $decoded = $asn1->decodeBER($crl);
+        $decoded = $asn1->decodeBER($crl, 2);
+        $offset = 0;
+        $revokedCertsIdx = -1;
+        for ($j = 0; $j <= 1; $j++) {
+            for ($i = 0; $i < count($decoded[0]['content'][$j]['content']); $i++) {
+                $temp = &$decoded[0]['content'][$j]['content'][$i]['content'];
+                if ($i == 0 && $temp[0] == chr(FILE_ASN1_TYPE_INTEGER)) {
+                    $offset++;
+                }
+                if ($i == 3 + $offset && $temp[0] == chr(FILE_ASN1_TYPE_UTC_TIME)) {
+                    $offset++;
+                }
+                if ($i == 3 + $offset && $temp[0] == chr(FILE_ASN1_TYPE_SEQUENCE | 0x20)) {
+                    $revokedCertsIdx = 3 + $offset;
+                    continue;
+                }
+                $temp = $asn1->decodeBER($temp);
+                $temp = $temp[0]['content'];
+            }
+        }
+
+        if ($revokedCertsIdx != -1) {
+            $start = $decoded[0]['content'][0]['content'][$revokedCertsIdx - 1]['start'];
+            $revokedCerts = &$decoded[0]['content'][0]['content'][$revokedCertsIdx];
+            if ($revokedCerts['content'][0] != "\x30") {
+                return false;
+            }
+            $temp = substr($revokedCerts['content'], 1 + strlen($asn1->_encodeLength($revokedCerts['length'])));
+            $revokedCerts['content'] = array();
+            while (strlen($temp)) {
+                $sample = $asn1->decodeBER($temp);
+                $pattern = substr($temp, 0, $sample[0]['headerlength']);
+                $pattern.= substr($temp, $sample[0]['content'][0]['start'], $sample[0]['content'][0]['headerlength']);
+                $pattern = preg_quote($pattern, '#');
+                $pattern.= '(.{' . ($sample[0]['content'][0]['length'] - $sample[0]['content'][0]['headerlength']) . '})'; // userCertificate
+                $pattern.= '(\x17\x0D.{13}|\x18\x0F.{15})'; // revocationDate
+                if (isset($sample[0]['content'][2]['content'])) { // crlEntryExtensions
+                    $subpattern = substr($temp, $sample[0]['content'][2]['start'], $sample[0]['content'][2]['length']);
+                    $pattern.= preg_quote("($subpattern)", '#');
+                }
+                $subtemp = preg_replace("#^((?:$pattern){1,1000}).*#s", '$1', $temp);
+                preg_match_all("#$pattern#s", $subtemp, $matches);
+                $size = 0;
+                //$revokedCerts['content'] = array();
+                for ($i = 0; $i < count($matches[0]); $i++) {
+                    $timeType = strlen($matches[2][$i]) == 15 ? FILE_ASN1_TYPE_UTC_TIME : FILE_ASN1_TYPE_GENERAL_TIME;
+                    $content = array(
+                        // userCertificate
+                        array(
+                            'start' => $start + $sample[0]['headerlength'],
+                            'headerlength' => $sample[0]['content'][0]['headerlength'],
+                            'type' => FILE_ASN1_TYPE_INTEGER,
+                            'content' => new Math_BigInteger($matches[1][$i], -256)
+                        ),
+                        // revocationDate
+                        array(
+                            'start' => $start + $sample[0]['headerlength'] + $sample[0]['content'][0]['length'],
+                            'headerlength' => 2,
+                            'type' => $timeType,
+                            'content' => $asn1->_decodeTime(substr($matches[2][$i], 2), $timeType)
+                        ),
+                        // crlEntryExtensions - needs to be done
+                    );
+                    $current = array(
+                        'start' => $start,
+                        'headerlength' => $sample[0]['headerlength'],
+                        'type' => FILE_ASN1_TYPE_SEQUENCE,
+                        'length' => strlen($matches[0][$i]),
+                        'content' => $content
+                    );
+                    $start+= $sample[0]['headerlength'] + $sample[0]['content'][0]['length'] + strlen($matches[2][$i]);
+                    $revokedCerts['content'][] = $current;
+                    $size+= strlen($matches[0][$i]);
+                }
+                $temp = substr($temp, $size);
+            }
+        }
 
         if (empty($decoded)) {
             $this->currentCert = false;
@@ -3196,7 +3272,6 @@ class File_X509
         }
 
         $this->signatureSubject = substr($orig, $decoded[0]['content'][0]['start'], $decoded[0]['content'][0]['length']);
-
         $this->_mapInExtensions($crl, 'tbsCertList/crlExtensions', $asn1);
         $rclist = &$this->_subArray($crl, 'tbsCertList/revokedCertificates');
         if (is_array($rclist)) {

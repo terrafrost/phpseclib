@@ -265,7 +265,7 @@ class File_ASN1
      * @return array
      * @access public
      */
-    function decodeBER($encoded)
+    function decodeBER($encoded, $maxDepth = -1, $start = 0)
     {
         if (is_object($encoded) && strtolower(get_class($encoded)) == 'file_asn1_element') {
             $encoded = $encoded->element;
@@ -273,7 +273,7 @@ class File_ASN1
 
         $this->encoded = $encoded;
         // encapsulate in an array for BC with the old decodeBER
-        return array($this->_decode_ber($encoded));
+        return array($this->_decode_ber($encoded, $start, 0, $maxDepth));
     }
 
     /**
@@ -288,7 +288,7 @@ class File_ASN1
      * @return array
      * @access private
      */
-    function _decode_ber($encoded, $start = 0)
+    function _decode_ber($encoded, $start = 0, $depth = 0, $maxDepth = -1)
     {
         $current = array('start' => $start);
 
@@ -366,10 +366,20 @@ class File_ASN1
                     );
                 }
 
+                if ($maxDepth >= 0 && $depth == $maxDepth) {
+                    $current = $current + array(
+                        'length'   => strlen($content) + $current['headerlength'],
+                        'content'  => chr($type) . $this->_encodeLength(strlen($content)) . $content,
+                        'type'     => $class,
+                        'constant' => $tag
+                    );
+                    return $current;
+                }
+
                 $newcontent = array();
                 $remainingLength = $length;
                 while ($remainingLength > 0) {
-                    $temp = $this->_decode_ber($content, $start);
+                    $temp = $this->_decode_ber($content, $start, $depth + 1, $maxDepth);
                     $length = $temp['length'];
                     // end-of-content octets - see paragraph 8.1.5
                     if (substr($content, $length, 2) == "\0\0") {
@@ -398,6 +408,12 @@ class File_ASN1
 
         $current+= array('type' => $tag);
 
+        if ($maxDepth >= 0 && $depth >= $maxDepth) {
+            $current['length'] = strlen($content) + $current['headerlength'];
+            $current['content'] = chr($type) . $this->_encodeLength(strlen($content)) . $content;
+            return $current;
+        }
+
         // decode UNIVERSAL tags
         switch ($tag) {
             case FILE_ASN1_TYPE_BOOLEAN:
@@ -420,7 +436,7 @@ class File_ASN1
                 if (!$constructed) {
                     $current['content'] = $content;
                 } else {
-                    $temp = $this->_decode_ber($content, $start);
+                    $temp = $this->_decode_ber($content, $start, $depth + 1, $maxDepth);
                     $length-= strlen($content);
                     $last = count($temp) - 1;
                     for ($i = 0; $i < $last; $i++) {
@@ -444,7 +460,7 @@ class File_ASN1
                     $current['content'] = '';
                     $length = 0;
                     while (substr($content, 0, 2) != "\0\0") {
-                        $temp = $this->_decode_ber($content, $length + $start);
+                        $temp = $this->_decode_ber($content, $length + $start, $depth + 1, $maxDepth);
                         $templength = $temp['length'] - $temp['headerlength'];
                         $taglength = chr($temp['type']) . $this->_encodeLength($templength);
                         $taglength = preg_quote($taglength, '#');
@@ -476,7 +492,7 @@ class File_ASN1
                         $length = $offset + 2; // +2 for the EOC
                         break 2;
                     }
-                    $temp = $this->_decode_ber($content, $start + $offset);
+                    $temp = $this->_decode_ber($content, $start + $offset, $depth + 1, $maxDepth);
                     $this->_string_shift($content, $temp['length']);
                     $current['content'][] = $temp;
                     $offset+= $temp['length'];
@@ -684,7 +700,7 @@ class File_ASN1
                 }
 
                 // Fail mapping if all input items have not been consumed.
-                return $i < $n? null: $map;
+                return $i < $n ? null: $map;
 
             // the main diff between sets and sequences is the encapsulation of the foreach in another for loop
             case FILE_ASN1_TYPE_SET:
