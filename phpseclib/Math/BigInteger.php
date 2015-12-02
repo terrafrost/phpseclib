@@ -818,7 +818,7 @@ class Math_BigInteger
      *
      * @access public
      */
-    function __debugaaaInfo()
+    function __debugInfo()
     {
 $engine = 'zzz';
         return array(
