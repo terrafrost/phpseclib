@@ -820,6 +820,8 @@ class Math_BigInteger
      */
     function __debugInfo()
     {
+return array(
+'zzz' => 'zzz');
         $opts = array();
         switch (MATH_BIGINTEGER_MODE) {
             case MATH_BIGINTEGER_MODE_GMP:
