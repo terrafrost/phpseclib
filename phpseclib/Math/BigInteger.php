@@ -820,7 +820,10 @@ class Math_BigInteger
      */
     function __debugInfo()
     {
-return 'zzz';
+return array(
+'value' => 'zzz',
+'engine' => 'zzz'
+);
 $engine = 'zzz';
         return array(
             'value' => '0x' . $this->toHex(true),
