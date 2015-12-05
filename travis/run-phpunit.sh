@@ -20,15 +20,8 @@ then
   PHPUNIT_ARGS="$PHPUNIT_ARGS -d zend.enable_gc=0"
 fi
 
-if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
-then
-  find tests -type f -name "*Test.php" | \
-    parallel --gnu --keep-order \
-      "echo '== {} =='; \"$PHPUNIT\" $PHPUNIT_ARGS {};"
-else
   "$PHPUNIT" \
     $PHPUNIT_ARGS \
     --coverage-text \
     --coverage-clover code_coverage/clover.xml \
     --coverage-html code_coverage/
-fi
