@@ -1,5 +1,10 @@
 language: php
 
+addons:
+  apt:
+    packages:
+      - parallel
+
 php:
   - 5.3.3
   - 5.3
@@ -14,11 +19,6 @@ env:
     # Defines CODE_COVERAGE_PASSPHRASE which is the passphrase for unlocking
     # the travis/code_coverage_id_rsa RSA private key.
     - secure: "jtQTZKQBnzUlp/jz7NlM6470ZDnLGVAs53sgvIm4tcYqf9TWSXSXjIYvFsrS\nKPR2eyZaAevYysUkIGRFTUXTlG6tC36YngMp9+6FPxASl8mnGXsTbKcm613B\n59vD3242pgIgqhhmgFQ0c8gbvnE8PuF2aS4/hluP3r+AxhWN56E="
-
-addons:
-  apt:
-    packages:
-      - parallel
 
 before_install: true
 
