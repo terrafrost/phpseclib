@@ -838,7 +838,7 @@ class Math_BigInteger
         if (!empty($opts)) {
             $engine.= ' (' . implode($opts, ', ') . ')';
         }
-exit('zzz');
+//exit('zzz');
         return array(
             'value' => '0x' . $this->toHex(true),
             'engine' => $engine
