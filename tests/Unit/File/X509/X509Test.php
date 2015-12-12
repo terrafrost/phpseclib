@@ -9,5 +9,8 @@ require_once 'File/X509.php';
 
 class Unit_File_X509_X509Test extends PhpseclibTestCase
 {
-
+    public function testTest()
+    {
+        $this->assertTrue(true);
+    }
 }
