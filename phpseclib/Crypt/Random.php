@@ -279,6 +279,18 @@ if (!function_exists('phpseclib_safe_serialize')) {
         if (!is_array($arr)) {
             return serialize($arr);
         }
+        switch (true) {
+            case version_compare(PHP_VERSION, '5.3.15', '>=') && version_compare(PHP_VERSION, '5.4', '<'):
+            case version_compare(PHP_VERSION, '5.4.5', '>='):
+                break;
+            default:
+                foreach (array_keys($arr) as $key) {
+                    if (is_object($arr[$key]) || is_array($arr[$key])) {
+                        unset($arr[$key]);
+                    }
+                }
+                return serialize($safearr);
+        }
         $safearr = array();
         foreach (array_keys($arr) as $key) {
             if (is_object($arr[$key])) {
