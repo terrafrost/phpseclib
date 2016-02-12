@@ -271,7 +271,7 @@ if (!function_exists('phpseclib_safe_serialize')) {
      * @param array $refs optional
      * @access public
      */
-    function phpseclib_safe_serialize($arr, $refs = array())
+    function phpseclib_safe_serialize($arr)
     {
         if (is_object($arr)) {
             return '';
@@ -289,7 +289,7 @@ if (!function_exists('phpseclib_safe_serialize')) {
                         unset($arr[$key]);
                     }
                 }
-                return serialize($safearr);
+                return serialize($arr);
         }
         $safearr = array();
         foreach (array_keys($arr) as $key) {
@@ -298,13 +298,10 @@ if (!function_exists('phpseclib_safe_serialize')) {
             }
             // without this recursive arrays (eg. $a = []; $a[] = &$a;) would result in an
             // "Allowed memory size of ... bytes exhausted" Fatal error
-            foreach ($refs as $ref) {
-                if ($ref === $arr[$key]) {
-                    continue 2;
-                }
+            if ($arr === $arr[$key]) {
+                continue;
             }
-            $refs[] = &$arr[$key];
-            $safearr[$key] = is_array($arr[$key]) ? phpseclib_safe_serialize($arr[$key], $refs) : $arr[$key];
+            $safearr[$key] = is_array($arr[$key]) ? phpseclib_safe_serialize($arr[$key]) : $arr[$key];
         }
         return serialize($safearr);
     }
