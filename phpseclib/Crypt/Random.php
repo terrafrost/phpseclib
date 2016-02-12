@@ -268,6 +268,7 @@ if (!function_exists('phpseclib_safe_serialize')) {
      * PHP 5.3 will emit a warning.
      *
      * @param mixed $arr
+     * @param string $arr_name Name of the variable to be serialized
      * @param array $refs optional
      * @access public
      */
