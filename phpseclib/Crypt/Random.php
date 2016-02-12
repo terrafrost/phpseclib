@@ -148,13 +148,13 @@ if (!function_exists('crypt_random_string')) {
             session_start();
 
             $v = $seed = $_SESSION['seed'] = pack('H*', sha1(
-                phpseclib_safe_serialize($_SERVER) .
-                phpseclib_safe_serialize($_POST) .
-                phpseclib_safe_serialize($_GET) .
-                phpseclib_safe_serialize($_COOKIE) .
-                phpseclib_safe_serialize($GLOBALS) .
-                phpseclib_safe_serialize($_SESSION) .
-                phpseclib_safe_serialize($_OLD_SESSION)
+                phpseclib_safe_serialize($_SERVER, '_SERVER') .
+                phpseclib_safe_serialize($_POST, '_POST') .
+                phpseclib_safe_serialize($_GET, '_GET') .
+                phpseclib_safe_serialize($_COOKIE, '_COOKIE') .
+                phpseclib_safe_serialize($GLOBALS, 'GLOBALS') .
+                phpseclib_safe_serialize($_SESSION, '_SESSION') .
+                phpseclib_safe_serialize($_OLD_SESSION, '_OLD_SESSION')
             ));
             if (!isset($_SESSION['count'])) {
                 $_SESSION['count'] = 0;
@@ -268,10 +268,11 @@ if (!function_exists('phpseclib_safe_serialize')) {
      * PHP 5.3 will emit a warning.
      *
      * @param mixed $arr
+     * @param string $arr_name Name of the variable to be serialized
      * @param array $refs optional
      * @access public
      */
-    function phpseclib_safe_serialize($arr, $refs = array())
+    function phpseclib_safe_serialize($arr, $arr_name, $refs = array())
     {
         if (is_object($arr)) {
             return '';
@@ -286,13 +287,11 @@ if (!function_exists('phpseclib_safe_serialize')) {
             }
             // without this recursive arrays (eg. $a = []; $a[] = &$a;) would result in an
             // "Allowed memory size of ... bytes exhausted" Fatal error
-            foreach ($refs as $ref) {
-                if ($ref === $arr[$key]) {
-                    continue 2;
-                }
+            if ($arr_name === $key) {
+                continue;
             }
             $refs[] = &$arr[$key];
-            $safearr[$key] = is_array($arr[$key]) ? phpseclib_safe_serialize($arr[$key], $refs) : $arr[$key];
+            $safearr[$key] = is_array($arr[$key]) ? phpseclib_safe_serialize($arr[$key], $key, $refs) : $arr[$key];
         }
         return serialize($safearr);
     }
