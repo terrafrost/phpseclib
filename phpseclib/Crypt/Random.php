@@ -148,10 +148,10 @@ if (!function_exists('crypt_random_string')) {
             session_start();
 
             $v = $seed = $_SESSION['seed'] = pack('H*', sha1(
-                phpseclib_safe_serialize($_SERVER) .
-                phpseclib_safe_serialize($_POST) .
-                phpseclib_safe_serialize($_GET) .
-                phpseclib_safe_serialize($_COOKIE) .
+                (isset($_SERVER) ? phpseclib_safe_serialize($_SERVER) : '') .
+                (isset($_POST) ? phpseclib_safe_serialize($_POST) : '') .
+                (isset($_GET) ? phpseclib_safe_serialize($_GET) : '') .
+                (isset($_COOKIE) ? phpseclib_safe_serialize($_COOKIE) : '') .
                 phpseclib_safe_serialize($GLOBALS) .
                 phpseclib_safe_serialize($_SESSION) .
                 phpseclib_safe_serialize($_OLD_SESSION)
@@ -284,8 +284,10 @@ if (!function_exists('phpseclib_safe_serialize')) {
             // do not recurse on:
             // - the '__phpseclib_marker' key itself
             // - a circular reference (marked with that key)
-            if ($key !== '__phpseclib_marker' && !isset($arr[$key]['__phpseclib_marker'])) {
-                $safearr[$key] = is_array($arr[$key]) ? phpseclib_safe_serialize($arr[$key]) : $arr[$key];
+            switch (true) {
+                case !is_array($arr[$key]):
+                case $key !== '__phpseclib_marker' && !isset($arr[$key]['__phpseclib_marker']):
+                    $safearr[$key] = self::safe_serialize($arr[$key]);
             }
         }
         unset($arr['__phpseclib_marker']);
