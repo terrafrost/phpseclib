@@ -1313,19 +1313,49 @@ class Crypt_RSA
                 $components['privateExponent'] = new Math_BigInteger($this->_string_shift($key, $length), 256);
                 $this->_string_shift($key);
                 $length = $this->_decodeLength($key);
-                $components['primes'] = array(1 => new Math_BigInteger($this->_string_shift($key, $length), 256));
+                $temp = $this->_string_shift($key, $length);
+                if ($length != strlen($temp)) {
+                    return false;
+                }
+                if (!preg_match('#^\0*$#', $temp)) {
+                    $components['primes'] = array(1 => new Math_BigInteger($temp, 256));
+                }
                 $this->_string_shift($key);
                 $length = $this->_decodeLength($key);
-                $components['primes'][] = new Math_BigInteger($this->_string_shift($key, $length), 256);
+                $temp = $this->_string_shift($key, $length);
+                if ($length != strlen($temp)) {
+                    return false;
+                }
+                if (!preg_match('#^\0*$#', $temp)) {
+                    $components['primes'][] = new Math_BigInteger($temp, 256);
+                }
                 $this->_string_shift($key);
                 $length = $this->_decodeLength($key);
-                $components['exponents'] = array(1 => new Math_BigInteger($this->_string_shift($key, $length), 256));
+                $temp = $this->_string_shift($key, $length);
+                if ($length != strlen($temp)) {
+                    return false;
+                }
+                if (!preg_match('#^\0*$#', $temp)) {
+                    $components['exponents'] = array(1 => new Math_BigInteger($temp, 256));
+                }
                 $this->_string_shift($key);
                 $length = $this->_decodeLength($key);
-                $components['exponents'][] = new Math_BigInteger($this->_string_shift($key, $length), 256);
+                $temp = $this->_string_shift($key, $length);
+                if ($length != strlen($temp)) {
+                    return false;
+                }
+                if (!preg_match('#^\0*$#', $temp) && isset($components['exponents'])) {
+                    $components['exponents'][] = new Math_BigInteger($temp, 256);
+                }
                 $this->_string_shift($key);
                 $length = $this->_decodeLength($key);
-                $components['coefficients'] = array(2 => new Math_BigInteger($this->_string_shift($key, $length), 256));
+                $temp = $this->_string_shift($key, $length);
+                if ($length != strlen($temp)) {
+                    return false;
+                }
+                if (!preg_match('#^\0*$#', $temp)) {
+                    $components['coefficients'] = array(2 => new Math_BigInteger($temp, 256));
+                }
 
                 if (!empty($key)) {
                     if (ord($this->_string_shift($key)) != CRYPT_RSA_ASN1_SEQUENCE) {
@@ -1339,13 +1369,31 @@ class Crypt_RSA
                         $this->_decodeLength($key);
                         $key = substr($key, 1);
                         $length = $this->_decodeLength($key);
-                        $components['primes'][] = new Math_BigInteger($this->_string_shift($key, $length), 256);
+                        $temp = $this->_string_shift($key, $length);
+                        if ($length != strlen($temp)) {
+                            return false;
+                        }
+                        if (!preg_match('#^\0*$#', $temp) && isset($components['primes'])) {
+                            $components['primes'][] = new Math_BigInteger($temp, 256);
+                        }
                         $this->_string_shift($key);
                         $length = $this->_decodeLength($key);
-                        $components['exponents'][] = new Math_BigInteger($this->_string_shift($key, $length), 256);
+                        $temp = $this->_string_shift($key, $length);
+                        if ($length != strlen($temp)) {
+                            return false;
+                        }
+                        if (!preg_match('#^\0*$#', $temp) && isset($components['exponents'])) {
+                            $components['exponents'][] = new Math_BigInteger($temp, 256);
+                        }
                         $this->_string_shift($key);
                         $length = $this->_decodeLength($key);
-                        $components['coefficients'][] = new Math_BigInteger($this->_string_shift($key, $length), 256);
+                        $temp = $this->_string_shift($key, $length);
+                        if ($length != strlen($temp)) {
+                            return false;
+                        }
+                        if (!preg_match('#^\0*$#', $temp) && isset($components['coefficients'])) {
+                            $components['coefficients'][] = new Math_BigInteger($temp, 256);
+                        }
                     }
                 }
 
