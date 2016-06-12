@@ -62,6 +62,7 @@ use phpseclib\Crypt\Twofish;
 use phpseclib\Math\BigInteger; // Used to do Diffie-Hellman key exchange and DSA/RSA signature verification.
 use phpseclib\System\SSH\Agent;
 use phpseclib\Exception\NoSupportedAlgorithmsException;
+use phpseclib\Exception\KeepAliveException;
 
 /**
  * Pure-PHP implementation of SSHv2.
@@ -1121,6 +1122,30 @@ class SSH2
     }
 
     /**
+     * Attempt to reconnect to a server
+     *
+     * Won't work if you're using a custom socket resource
+     *
+     * @access protected
+     * @return bool
+     */
+    function _reconnect()
+    {
+        $this->fsock = $this->hmac_check = $this->hmac_create = $this->decrypt = $this->encrypt = $this->session_id = false;
+        $this->decrypt_block_size = $this->encrypt_block_size = 8;
+        $old_host_key = $this->getServerPublicHostKey();
+        if ($old_host_key === false) {
+// maybe we should throw an exception here?
+            return false;
+        }
+        $this->bitmap = 0;
+        $this->_connect();
+// we'd also need to be able to replay the login
+        $new_host_key = $this->getServerPublicHostKey();
+        return $old_host_key === $new_host_key;
+    }
+
+    /**
      * Generates the SSH identifier
      *
      * You should overwrite this method in your own class if you want to use another identifier
@@ -1130,7 +1155,7 @@ class SSH2
      */
     function _generate_identifier()
     {
-        $identifier = 'SSH-2.0-phpseclib_2.0';
+        $identifier = 'SSH-2.0-phpseclib_3.0';
 
         $ext = array();
         if (extension_loaded('libsodium')) {
@@ -1426,13 +1451,11 @@ class SSH2
 
                 $response = $this->_get_binary_packet();
                 if ($response === false) {
-                    user_error('Connection closed by server');
-                    return false;
+                    throw new \RuntimeException('Connection closed by server');
                 }
                 extract(unpack('Ctype', $this->_string_shift($response, 1)));
                 if ($type != NET_SSH2_MSG_KEXDH_GEX_GROUP) {
-                    user_error('Expected SSH_MSG_KEX_DH_GEX_GROUP');
-                    return false;
+                    throw new \RuntimeException('Expected SSH_MSG_KEX_DH_GEX_GROUP');
                 }
 
                 extract(unpack('NprimeLength', $this->_string_shift($response, 4)));
@@ -1542,8 +1565,7 @@ class SSH2
 
         if ($kex_algorithm === 'curve25519-sha256@libssh.org') {
             if (strlen($fBytes) !== 32) {
-                user_error('Received curve25519 public key of invalid length.');
-                return false;
+                throw new \RuntimeException('Received curve25519 public key of invalid length.');
             }
             $key = new BigInteger(\Sodium\crypto_scalarmult($x, $fBytes), 256);
             \Sodium\memzero($x);
@@ -2418,7 +2440,12 @@ class SSH2
 
         $this->channel_status[self::CHANNEL_EXEC] = NET_SSH2_MSG_CHANNEL_OPEN;
 
-        $response = $this->_get_channel_packet(self::CHANNEL_EXEC);
+        try {
+            $response = $this->_get_channel_packet(self::CHANNEL_EXEC);
+        } catch (KeepAliveException $e) {
+            $this->_reconnect();
+            return $this->exec($command, $callback);            
+        }
         if ($response === false) {
             return false;
         }
@@ -3029,11 +3056,15 @@ class SSH2
         if (($this->bitmap & self::MASK_CONNECTED) && ($this->bitmap & self::MASK_LOGIN)) {
             switch (ord($payload[0])) {
                 case NET_SSH2_MSG_GLOBAL_REQUEST: // see http://tools.ietf.org/html/rfc4254#section-4
+                    $this->_string_shift($payload, 1);
                     extract(unpack('Nlength', $this->_string_shift($payload, 4)));
-                    $this->errors[] = 'SSH_MSG_GLOBAL_REQUEST: ' . $this->_string_shift($payload, $length);
+                    $data = $this->_string_shift($payload, $length);
+                    $this->errors[] = 'SSH_MSG_GLOBAL_REQUEST: ' . $data;
 
-                    if (!$this->_send_binary_packet(pack('C', NET_SSH2_MSG_REQUEST_FAILURE))) {
-                        return $this->_disconnect(NET_SSH2_DISCONNECT_BY_APPLICATION);
+                    try {
+                        $this->_send_binary_packet(pack('C', NET_SSH2_MSG_REQUEST_FAILURE));
+                    } catch (\RuntimeException $e) {
+                        throw $data == 'keepalive@openssh.com' ? new KeepAliveException('Error responding to keep-alive global request') : $e;
                     }
 
                     $payload = $this->_get_binary_packet();
@@ -3364,6 +3395,12 @@ class SSH2
                             // -- http://tools.ietf.org/html/rfc4254#section-6.10
 
                             break;
+                        case 'keepalive@openssh.com':
+                            $packet = pack('CN', NET_SSH2_MSG_CHANNEL_FAILURE, $this->server_channels[$channel]);
+                            if (!$this->_send_binary_packet($packet)) {
+                                return $this->_disconnect(NET_SSH2_DISCONNECT_BY_APPLICATION);
+                            }
+                            break;
                         default:
                             // "Some systems may not implement signals, in which case they SHOULD ignore this message."
                             //  -- http://tools.ietf.org/html/rfc4254#section-6.9
@@ -3620,13 +3657,15 @@ class SSH2
      */
     function _disconnect($reason)
     {
-        if ($this->bitmap & self::MASK_CONNECTED) {
+        if ($this->bitmap & NET_SSH2_MASK_CONNECTED && is_resource($this->fsock) && !feof($this->fsock)) {
             $data = pack('CNNa*Na*', NET_SSH2_MSG_DISCONNECT, $reason, 0, '', 0, '');
             $this->_send_binary_packet($data);
-            $this->bitmap = 0;
-            fclose($this->fsock);
-            return false;
         }
+        if (is_resource($this->fsock)) {
+            fclose($this->fsock);
+        }
+        $this->bitmap = 0;
+        return false;
     }
 
     /**
