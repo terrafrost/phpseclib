@@ -4713,7 +4713,11 @@ class X509
         $temp = preg_replace('#-+[^-]+-+#', '', $temp);
         // remove new lines
         $temp = str_replace(array("\r", "\n", ' '), '', $temp);
+try {
         $temp = preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? Base64::decode($temp) : false;
+} catch (Exception $e) {
+	echo "temp = $temp\n";
+}
         return $temp != false ? $temp : $str;
     }
 
