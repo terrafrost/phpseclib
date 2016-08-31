@@ -1643,7 +1643,7 @@ class X509
      */
     function _mapOutExtensions(&$root, $path, $asn1)
     {
-        $extensions = &$this->_subArray($root, $path);
+        $extensions = &$this->_subArray(&$root, $path);
 
         if (is_array($extensions)) {
             $size = count($extensions);
@@ -1709,7 +1709,7 @@ class X509
      */
     function _mapInAttributes(&$root, $path, $asn1)
     {
-        $attributes = &$this->_subArray($root, $path);
+        $attributes = &$this->_subArray(&$root, $path);
 
         if (is_array($attributes)) {
             for ($i = 0; $i < count($attributes); $i++) {
@@ -1750,7 +1750,7 @@ class X509
      */
     function _mapOutAttributes(&$root, $path, $asn1)
     {
-        $attributes = &$this->_subArray($root, $path);
+        $attributes = &$this->_subArray(&$root, $path);
 
         if (is_array($attributes)) {
             $size = count($attributes);
@@ -1793,7 +1793,7 @@ class X509
      */
     function _mapInDNs(&$root, $path, $asn1)
     {
-        $dns = &$this->_subArray($root, $path);
+        $dns = &$this->_subArray(&$root, $path);
 
         if (is_array($dns)) {
             for ($i = 0; $i < count($dns); $i++) {
@@ -1823,7 +1823,7 @@ class X509
      */
     function _mapOutDNs(&$root, $path, $asn1)
     {
-        $dns = &$this->_subArray($root, $path);
+        $dns = &$this->_subArray(&$root, $path);
 
         if (is_array($dns)) {
             $size = count($dns);
@@ -2922,7 +2922,7 @@ class X509
 
         if (isset($this->currentCert) && is_array($this->currentCert)) {
             foreach (array('tbsCertificate/subjectPublicKeyInfo', 'certificationRequestInfo/subjectPKInfo') as $path) {
-                $keyinfo = $this->_subArray($this->currentCert, $path);
+                $keyinfo = $this->_subArray(&$this->currentCert, $path);
                 if (!empty($keyinfo)) {
                     break;
                 }
@@ -3043,7 +3043,7 @@ class X509
         }
 
         switch (true) {
-            case !($algorithm = $this->_subArray($csr, 'certificationRequestInfo/subjectPKInfo/algorithm/algorithm')):
+            case !($algorithm = $this->_subArray(&$csr, 'certificationRequestInfo/subjectPKInfo/algorithm/algorithm')):
             case is_object($csr['certificationRequestInfo']['subjectPKInfo']['subjectPublicKey']):
                 break;
             default:
@@ -3169,7 +3169,7 @@ class X509
             return false;
         }
 
-        $algorithm = $this->_subArray($spkac, 'publicKeyAndChallenge/spki/algorithm/algorithm');
+        $algorithm = $this->_subArray(&$spkac, 'publicKeyAndChallenge/spki/algorithm/algorithm');
         switch (true) {
             case !$algorithm:
             case is_object($spkac['publicKeyAndChallenge']['spki']['subjectPublicKey']):
@@ -3250,7 +3250,7 @@ class X509
             $this->_mapInExtensions($crl, 'tbsCertList/crlExtensions', $asn1);
         }
         if ($this->_isSubArrayValid($crl, 'tbsCertList/revokedCertificates')) {
-            $rclist_ref = &$this->_subArrayUnchecked($crl, 'tbsCertList/revokedCertificates');
+            $rclist_ref = &$this->_subArrayUnchecked(&$crl, 'tbsCertList/revokedCertificates');
             if ($rclist_ref) {
                 $rclist = $crl['tbsCertList']['revokedCertificates'];
                 foreach ($rclist as $i => $extension) {
@@ -3307,7 +3307,7 @@ class X509
 
         $this->_mapOutDNs($crl, 'tbsCertList/issuer/rdnSequence', $asn1);
         $this->_mapOutExtensions($crl, 'tbsCertList/crlExtensions', $asn1);
-        $rclist = &$this->_subArray($crl, 'tbsCertList/revokedCertificates');
+        $rclist = &$this->_subArray(&$crl, 'tbsCertList/revokedCertificates');
         if (is_array($rclist)) {
             foreach ($rclist as $i => $extension) {
                 $this->_mapOutExtensions($rclist, "$i/crlEntryExtensions", $asn1);
@@ -4007,7 +4007,7 @@ class X509
                 break;
             case isset($root['certificationRequestInfo']):
                 $pth = 'certificationRequestInfo/attributes';
-                $attributes = &$this->_subArray($root, $pth, $create);
+                $attributes = &$this->_subArray(&$root, $pth, $create);
 
                 if (is_array($attributes)) {
                     foreach ($attributes as $key => $value) {
@@ -4025,7 +4025,7 @@ class X509
                 break;
         }
 
-        $extensions = &$this->_subArray($root, $path, $create);
+        $extensions = &$this->_subArray(&$root, $path, $create);
 
         if (!is_array($extensions)) {
             $false = false;
