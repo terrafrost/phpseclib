@@ -186,6 +186,22 @@ class BigInteger
     /**#@-*/
 
     /**
+     * Pre-computed zero
+     *
+     * @var \phpseclib\Math\BigInteger
+     * @access private
+     */
+    public static $zero;
+
+    /**
+     * Pre-computed one
+     *
+     * @var \phpseclib\Math\BigInteger
+     * @access private
+     */
+    public static $one;
+
+    /**
      * Holds the BigInteger's value.
      *
      * @var array
@@ -3704,3 +3720,6 @@ class BigInteger
         return ($x - ($x % $y)) / $y;
     }
 }
+
+BigInteger::$zero = new BigInteger();
+BigInteger::$one  = new BigInteger(1);
