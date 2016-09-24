@@ -11,10 +11,12 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
 {
     public static function setUpBeforeClass()
     {
-exit('zzzz');
+$start = microtime(true);
         parent::setUpBeforeClass();
 
         self::reRequireFile('Math/BigInteger.php');
+$elapsed = microtime(true) - $start;
+exit("took $elapsed seconds");
     }
 
     public function getInstance($x = 0, $base = 10)
