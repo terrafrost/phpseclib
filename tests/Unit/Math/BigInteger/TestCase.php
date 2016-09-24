@@ -15,8 +15,9 @@ $start = microtime(true);
         parent::setUpBeforeClass();
 
         self::reRequireFile('Math/BigInteger.php');
+echo "testing mode " . MATH_BIGINTEGER_MODE . "\n";
 $elapsed = microtime(true) - $start;
-exit("took $elapsed seconds");
+echo "took $elapsed seconds\n";
     }
 
     public function getInstance($x = 0, $base = 10)
