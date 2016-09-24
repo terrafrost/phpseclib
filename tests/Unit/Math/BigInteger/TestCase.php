@@ -23,9 +23,11 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
 
     public function testConstructorBase2()
     {
-if (MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_INTERNAL) exit('zzzz');
+$start = microtime(true);
         // 2**65 = 36893488147419103232
         $this->assertSame('36893488147419103232', (string) $this->getInstance('1' . str_repeat('0', 65), 2));
+$elapsed = microtime(true) - $start;
+if (MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_INTERNAL) exit("took $elapsed seconds");
     }
 
     public function testConstructorBase10()
