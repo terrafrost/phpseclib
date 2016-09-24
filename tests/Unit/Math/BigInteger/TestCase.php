@@ -29,6 +29,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
 
     public function testConstructorBase10()
     {
+if (MATH_BIGINTEGER_MODE == MATH_BIGINTEGER_MODE_INTERNAL) exit('zzzz');
         $this->assertSame('18446744073709551616', (string) $this->getInstance('18446744073709551616'));
     }
 

@@ -9,7 +9,6 @@ class Unit_Math_BigInteger_InternalTest extends Unit_Math_BigInteger_TestCase
 {
     public static function setUpBeforeClass()
     {
-exit('this far');
         parent::setUpBeforeClass();
 
         self::ensureConstant('MATH_BIGINTEGER_MODE', MATH_BIGINTEGER_MODE_INTERNAL);
