@@ -11,6 +11,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
 {
     public static function setUpBeforeClass()
     {
+exit('zzzz');
         parent::setUpBeforeClass();
 
         self::reRequireFile('Math/BigInteger.php');
