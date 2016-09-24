@@ -9,7 +9,6 @@ class Unit_Math_BigInteger_GMPTest extends Unit_Math_BigInteger_TestCase
 {
     public static function setUpBeforeClass()
     {
-exit('this far');
         if (!extension_loaded('gmp')) {
             self::markTestSkipped('GNU Multiple Precision (GMP) extension is not available.');
         }
