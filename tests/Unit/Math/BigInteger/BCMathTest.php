@@ -9,6 +9,7 @@ class Unit_Math_BigInteger_BCMathTest extends Unit_Math_BigInteger_TestCase
 {
     public static function setUpBeforeClass()
     {
+echo "bcmath test called\n";
         if (!extension_loaded('bcmath')) {
             self::markTestSkipped('BCMath extension is not available.');
         }
