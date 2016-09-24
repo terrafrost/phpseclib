@@ -27,6 +27,7 @@ echo "took $elapsed seconds\n";
 
     public function testConstructorBase2()
     {
+echo "testConstructorBase2 called - " . MATH_BIGINTEGER_MODE . " vs " . MATH_BIGINTEGER_MODE_INTERNAL . "\n";
 $start = microtime(true);
         // 2**65 = 36893488147419103232
         $this->assertSame('36893488147419103232', (string) $this->getInstance('1' . str_repeat('0', 65), 2));

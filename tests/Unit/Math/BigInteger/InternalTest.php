@@ -14,6 +14,7 @@ echo "internaltest constructor called\n";
 
         self::ensureConstant('MATH_BIGINTEGER_MODE', MATH_BIGINTEGER_MODE_INTERNAL);
         self::ensureConstant('MATH_BIGINTEGER_OPENSSL_DISABLE', true);
+echo "MATH_BIGINTEGER_MODE = " . MATH_BIGINTEGER_MODE . "\n";
     }
 
     public function testInternalRepresentation()
