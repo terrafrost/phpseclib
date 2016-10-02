@@ -825,6 +825,11 @@ class Crypt_Hash
         //if (is_int($result) || version_compare(PHP_VERSION, '5.3.0') >= 0 || (PHP_OS & "\xDF\xDF\xDF") === 'WIN') {
         //    return (int) $result;
         //}
+echo "zzz (" . PHP_INT_SIZE . ")\n";
+echo intval($result) . "\n";
+$ddd = (fmod($result, 0x80000000) & 0x7FFFFFFF) |
+            ((fmod(floor($result / 0x80000000), 2) & 1) << 31);;
+echo "$ddd\n";
         return (fmod($result, 0x80000000) & 0x7FFFFFFF) |
             ((fmod(floor($result / 0x80000000), 2) & 1) << 31);
     }
