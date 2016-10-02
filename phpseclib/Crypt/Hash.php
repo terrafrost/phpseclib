@@ -822,9 +822,9 @@ class Crypt_Hash
 
         // PHP 5.3, per http://php.net/releases/5_3_0.php, introduced "more consistent float rounding"
         // PHP_OS & "\xDF\xDF\xDF" == strtoupper(substr(PHP_OS, 0, 3)), but a lot faster
-        if (is_int($result) || version_compare(PHP_VERSION, '5.3.0') >= 0 || (PHP_OS & "\xDF\xDF\xDF") === 'WIN') {
-            return (int) $result;
-        }
+        //if (is_int($result) || version_compare(PHP_VERSION, '5.3.0') >= 0 || (PHP_OS & "\xDF\xDF\xDF") === 'WIN') {
+        //    return (int) $result;
+        //}
         return (fmod($result, 0x80000000) & 0x7FFFFFFF) |
             ((fmod(floor($result / 0x80000000), 2) & 1) << 31);
     }
