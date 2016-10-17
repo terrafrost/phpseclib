@@ -1101,6 +1101,7 @@ class SSH2
 
         fputs($this->fsock, $this->identifier . "\r\n");
 
+/*
         $response = $this->_get_binary_packet();
         if ($response === false) {
             user_error('Connection closed by server');
@@ -1113,6 +1114,11 @@ class SSH2
         }
 
         if (!$this->_key_exchange($response)) {
+            return false;
+        }
+*/
+
+        if (!$this->_key_exchange()) {
             return false;
         }
 
@@ -1163,7 +1169,7 @@ class SSH2
      * @param string $kexinit_payload_server
      * @access private
      */
-    function _key_exchange($kexinit_payload_server)
+    function _key_exchange($kexinit_payload_server = false)
     {
         $kex_algorithms = array(
             // Elliptic Curve Diffie-Hellman Key Agreement (ECDH) using
@@ -1300,6 +1306,51 @@ class SSH2
 
         $client_cookie = Random::string(16);
 
+        $kexinit_payload_client = pack(
+            'Ca*Na*Na*Na*Na*Na*Na*Na*Na*Na*Na*CN',
+            NET_SSH2_MSG_KEXINIT,
+            $client_cookie,
+            strlen($str_kex_algorithms),
+            $str_kex_algorithms,
+            strlen($str_server_host_key_algorithms),
+            $str_server_host_key_algorithms,
+            strlen($encryption_algorithms_client_to_server),
+            $encryption_algorithms_client_to_server,
+            strlen($encryption_algorithms_server_to_client),
+            $encryption_algorithms_server_to_client,
+            strlen($mac_algorithms_client_to_server),
+            $mac_algorithms_client_to_server,
+            strlen($mac_algorithms_server_to_client),
+            $mac_algorithms_server_to_client,
+            strlen($compression_algorithms_client_to_server),
+            $compression_algorithms_client_to_server,
+            strlen($compression_algorithms_server_to_client),
+            $compression_algorithms_server_to_client,
+            0,
+            '',
+            0,
+            '',
+            0,
+            0
+        );
+
+        if (!$this->_send_binary_packet($kexinit_payload_client)) {
+            return false;
+        }
+
+        if ($kexinit_payload_server === false) {
+            $kexinit_payload_server = $this->_get_binary_packet();
+            if ($kexinit_payload_server === false) {
+                user_error('Connection closed by server');
+                return false;
+            }
+
+            if (ord($kexinit_payload_server[0]) != NET_SSH2_MSG_KEXINIT) {
+                user_error('Expected SSH_MSG_KEXINIT');
+                return false;
+            }
+        }
+
         $response = $kexinit_payload_server;
         $this->_string_shift($response, 1); // skip past the message number (it should be SSH_MSG_KEXINIT)
         $server_cookie = $this->_string_shift($response, 16);
@@ -1336,40 +1387,6 @@ class SSH2
 
         extract(unpack('Cfirst_kex_packet_follows', $this->_string_shift($response, 1)));
         $first_kex_packet_follows = $first_kex_packet_follows != 0;
-
-        // the sending of SSH2_MSG_KEXINIT could go in one of two places.  this is the second place.
-        $kexinit_payload_client = pack(
-            'Ca*Na*Na*Na*Na*Na*Na*Na*Na*Na*Na*CN',
-            NET_SSH2_MSG_KEXINIT,
-            $client_cookie,
-            strlen($str_kex_algorithms),
-            $str_kex_algorithms,
-            strlen($str_server_host_key_algorithms),
-            $str_server_host_key_algorithms,
-            strlen($encryption_algorithms_client_to_server),
-            $encryption_algorithms_client_to_server,
-            strlen($encryption_algorithms_server_to_client),
-            $encryption_algorithms_server_to_client,
-            strlen($mac_algorithms_client_to_server),
-            $mac_algorithms_client_to_server,
-            strlen($mac_algorithms_server_to_client),
-            $mac_algorithms_server_to_client,
-            strlen($compression_algorithms_client_to_server),
-            $compression_algorithms_client_to_server,
-            strlen($compression_algorithms_server_to_client),
-            $compression_algorithms_server_to_client,
-            0,
-            '',
-            0,
-            '',
-            0,
-            0
-        );
-
-        if (!$this->_send_binary_packet($kexinit_payload_client)) {
-            return false;
-        }
-        // here ends the second place.
 
         // we need to decide upon the symmetric encryption algorithms before we do the diffie-hellman key exchange
         // we don't initialize any crypto-objects, yet - we do that, later. for now, we need the lengths to make the
