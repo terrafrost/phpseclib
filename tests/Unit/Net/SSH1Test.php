@@ -34,6 +34,8 @@ class Unit_Net_SSH1Test extends PhpseclibTestCase
             ->setMethods(null)
             ->getMock();
 
+var_dump(get_class_methods($ssh));
+
         $result = $ssh->_format_log($message_log, $message_number_log);
 
         $this->assertEquals($expected, $result);
