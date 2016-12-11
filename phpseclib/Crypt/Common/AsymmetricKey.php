@@ -15,6 +15,8 @@
 
 namespace phpseclib\Crypt\Common;
 
+use phpseclib\Math\BigInteger;
+
 /**
  * Base Class for all stream cipher classes
  *
