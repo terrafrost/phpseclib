@@ -50,6 +50,7 @@ use phpseclib\File\ASN1;
 use phpseclib\Math\BigInteger;
 use phpseclib\Common\Functions\Strings;
 use phpseclib\File\ASN1\Maps\DigestInfo;
+use phpseclib\Crypt\Common\AsymmetricKey;
 
 /**
  * Pure-PHP PKCS#1 compliant implementation of RSA.
@@ -58,7 +59,7 @@ use phpseclib\File\ASN1\Maps\DigestInfo;
  * @author  Jim Wigginton <terrafrost@php.net>
  * @access  public
  */
-class RSA
+class RSA extends AsymmetricKey
 {
     /**#@+
      * @access public
@@ -118,54 +119,6 @@ class RSA
      */
     const PADDING_RELAXED_PKCS1 = 5;
     /**#@-*/
-
-    /**#@+
-     * @access private
-     * @see self::__construct()
-     */
-    /**
-     * To use the pure-PHP implementation
-     */
-    const ENGINE_INTERNAL = 1;
-    /**
-     * To use the OpenSSL library
-     *
-     * (if enabled; otherwise, the internal implementation will be used)
-     */
-    const ENGINE_OPENSSL = 2;
-    /**#@-*/
-
-    /**
-     * Precomputed Zero
-     *
-     * @var \phpseclib\Math\BigInteger
-     * @access private
-     */
-    private static $zero;
-
-    /**
-     * Precomputed One
-     *
-     * @var \phpseclib\Math\BigInteger
-     * @access private
-     */
-    private static $one;
-
-    /**
-     * Private Key Format
-     *
-     * @var string
-     * @access private
-     */
-    private $privateKeyFormat = 'PKCS8';
-
-    /**
-     * Public Key Format
-     *
-     * @var string
-     * @access private
-     */
-    private $publicKeyFormat = 'PKCS8';
 
     /**
      * Modulus (ie. n)
@@ -272,51 +225,6 @@ class RSA
     private $publicExponent = false;
 
     /**
-     * Password
-     *
-     * @var string
-     * @access private
-     */
-    private $password = false;
-
-    /**
-     * Loaded File Format
-     *
-     * @var string
-     * @access private
-     */
-    private $format = false;
-
-    /**
-     * OpenSSL configuration file name.
-     *
-     * Set to null to use system configuration file.
-     *
-     * @see self::createKey()
-     * @var mixed
-     * @access public
-     */
-    private static $configFile;
-
-    /**
-     * Supported file formats (lower case)
-     *
-     * @see self::initialize_static_variables()
-     * @var array
-     * @access private
-     */
-    private static $fileFormats = false;
-
-    /**
-     * Supported file formats (original case)
-     *
-     * @see self::initialize_static_variables()
-     * @var array
-     * @access private
-     */
-    private static $origFileFormats = false;
-
-    /**
      * Public exponent
      *
      * @var int
@@ -341,38 +249,12 @@ class RSA
     private static $smallestPrime = 4096;
 
     /**
-     * Engine
+     * Algorithm Name
      *
-     * This is only used for key generation. Valid values are RSA::ENGINE_INTERNAL and RSA::ENGINE_OPENSSL
-     *
-     * @var int
+     * @var string
      * @access private
      */
-    private static $engine = NULL;
-
-    /**
-     * Initialize static variables
-     *
-     * @access private
-     */
-    private static function initialize_static_variables()
-    {
-        if (!isset(self::$zero)) {
-            self::$zero= new BigInteger(0);
-            self::$one = new BigInteger(1);
-            self::$configFile = __DIR__ . '/../openssl.cnf';
-
-            if (self::$fileFormats === false) {
-                self::$fileFormats = [];
-                foreach (glob(__DIR__ . '/RSA/*.php') as $file) {
-                    $name = pathinfo($file, PATHINFO_FILENAME);
-                    $type = 'phpseclib\Crypt\RSA\\' . $name;
-                    self::$fileFormats[strtolower($name)] = $type;
-                    self::$origFileFormats[] = $name;
-                }
-            }
-        }
-    }
+    const ALGORITHM = 'RSA';
 
     /**
      * The constructor
@@ -419,61 +301,6 @@ class RSA
     public static function setSmallestPrime($val)
     {
         self::$smallestPrime = $val;
-    }
-
-    /**
-     * Tests engine validity
-     *
-     * @access public
-     * @param int $val
-     */
-    public static function isValidEngine($val)
-    {
-        switch ($val) {
-            case self::ENGINE_OPENSSL:
-                return extension_loaded('openssl') && file_exists(self::$configFile);
-            case self::ENGINE_INTERNAL:
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Sets the engine
-     *
-     * Only used in RSA::createKey. Valid values are RSA::ENGINE_OPENSSL and RSA::ENGINE_INTERNAL
-     *
-     * @access public
-     * @param int $val
-     */
-    public static function setPreferredEngine($val)
-    {
-        self::$engine = null;
-        $candidateEngines = [
-            $val,
-            self::ENGINE_OPENSSL
-        ];
-        foreach ($candidateEngines as $engine) {
-            if (self::isValidEngine($engine)) {
-                self::$engine = $engine;
-                break;
-            }
-        }
-        if (!isset(self::$engine)) {
-            self::$engine = self::ENGINE_INTERNAL;
-        }
-    }
-
-    /**
-     * Returns the engine
-     *
-     * @access public
-     * @return int
-     */
-    public static function getEngine($val)
-    {
-        return self::$engine;
     }
 
     /**
@@ -622,42 +449,6 @@ class RSA
     }
 
     /**
-     * Add a fileformat plugin
-     *
-     * The plugin needs to either already be loaded or be auto-loadable.
-     * Loading a plugin whose shortname overwrite an existing shortname will overwrite the old plugin.
-     *
-     * @see self::load()
-     * @param string $fullname
-     * @access public
-     * @return bool
-     */
-    public static function addFileFormat($fullname)
-    {
-        self::initialize_static_variables();
-
-        if (class_exists($fullname)) {
-            $meta = new \ReflectionClass($path);
-            $shortname = $meta->getShortName();
-            self::$fileFormats[strtolower($shortname)] = $fullname;
-            self::$origFileFormats[] = $shortname;
-        }
-    }
-
-    /**
-     * Returns a list of supported formats.
-     *
-     * @access public
-     * @return array
-     */
-    public static function getSupportedFormats()
-    {
-        self::initialize_static_variables();
-
-        return self::$origFileFormats;
-    }
-
-    /**
      * Loads a public or private key
      *
      * Returns true on success and false on failure (ie. an incorrect password was provided or the key was malformed)
@@ -671,6 +462,7 @@ class RSA
         if ($key instanceof RSA) {
             $this->privateKeyFormat = $key->privateKeyFormat;
             $this->publicKeyFormat = $key->publicKeyFormat;
+            $this->format = $key->format;
             $this->k = $key->k;
             $this->hLen = $key->hLen;
             $this->sLen = $key->sLen;
@@ -711,32 +503,10 @@ class RSA
             return true;
         }
 
-        $components = false;
-        if ($type === false) {
-            foreach (self::$fileFormats as $format) {
-                try {
-                    $components = $format::load($key, $this->password);
-                } catch (\Exception $e) {
-                    $components = false;
-                }
-                if ($components !== false) {
-                    break;
-                }
-            }
-        } else {
-            $format = strtolower($type);
-            if (isset(self::$fileFormats[$format])) {
-                $format = self::$fileFormats[$format];
-                $components = $format::load($key, $this->password);
-            }
-        }
-
+        $components = parent::load($key, $type);
         if ($components === false) {
-            $this->format = false;
             return false;
         }
-
-        $this->format = $format;
 
         $this->modulus = $components['modulus'];
         $this->k = $this->modulus->getLengthInBytes();
@@ -758,26 +528,6 @@ class RSA
         }
 
         return true;
-    }
-
-    /**
-     * Returns the format of the loaded key.
-     *
-     * If the key that was loaded wasn't in a valid or if the key was auto-generated
-     * with RSA::createKey() then this will return false.
-     *
-     * @see self::load()
-     * @access public
-     * @return mixed
-     */
-    public function getLoadedFormat()
-    {
-        if ($this->format === false) {
-            return false;
-        }
-
-        $meta = new \ReflectionClass($this->format);
-        return $meta->getShortName();
     }
 
     /**
@@ -834,6 +584,39 @@ class RSA
 
         return $type::savePrivateKey($this->modulus, $this->publicExponent, $this->exponent, $primes, $exponents, $coefficients, $this->password);
         */
+    }
+
+    /**
+     * Returns a minimalistic private key
+     *
+     * Returns the private key without the prime number constituants.  Structurally identical to a public key that
+     * hasn't been set as the public key
+     *
+     * @see self::getPrivateKey()
+     * @access private
+     * @param string $type optional
+     * @return mixed
+     */
+    private function getPrivatePublicKey($type = 'PKCS8')
+    {
+        $type = strtolower($type);
+        if (!isset(self::$fileFormats[static::ALGORITHM][$type])) {
+            return false;
+        }
+        $type = self::$fileFormats[static::ALGORITHM][$type];
+        if (!method_exists($type, 'savePublicKey')) {
+            return false;
+        }
+
+        if (empty($this->modulus) || empty($this->exponent)) {
+            return false;
+        }
+
+        $oldFormat = $this->publicKeyFormat;
+        $this->publicKeyFormat = $type;
+        $temp = $type::savePublicKey($this->modulus, $this->exponent);
+        $this->publicKeyFormat = $oldFormat;
+        return $temp;
     }
 
     /**
@@ -898,39 +681,10 @@ class RSA
             return true;
         }
 
-        $components = false;
-        if ($type === false) {
-            foreach (self::$fileFormats as $format) {
-                if (!method_exists($format, 'savePublicKey')) {
-                    continue;
-                }
-                try {
-                    $components = $format::load($key, $this->password);
-                } catch (\Exception $e) {
-                    $components = false;
-                }
-                if ($components !== false) {
-                    break;
-                }
-            }
-        } else {
-            $format = strtolower($type);
-            if (isset(self::$fileFormats[$format])) {
-                $format = self::$fileFormats[$format];
-                try {
-                    $components = $format::load($key, $this->password);
-                } catch (\Exception $e) {
-                    $components = false;
-                }
-            }
-        }
-
+        $components = parent::setPublicKey($key, $type);
         if ($components === false) {
-            $this->format = false;
             return false;
         }
-
-        $this->format = $format;
 
         if (empty($this->modulus) || !$this->modulus->equals($components['modulus'])) {
             $this->modulus = $components['modulus'];
@@ -1040,97 +794,6 @@ class RSA
             default:
                 return false;
         }
-    }
-
-    /**
-     * Returns a minimalistic private key
-     *
-     * Returns the private key without the prime number constituants.  Structurally identical to a public key that
-     * hasn't been set as the public key
-     *
-     * @see self::getPrivateKey()
-     * @access private
-     * @param string $type optional
-     * @return mixed
-     */
-    private function getPrivatePublicKey($type = 'PKCS8')
-    {
-        $type = strtolower($type);
-        if (!isset(self::$fileFormats[$type])) {
-            return false;
-        }
-        $type = self::$fileFormats[$type];
-        if (!method_exists($type, 'savePublicKey')) {
-            return false;
-        }
-
-        if (empty($this->modulus) || empty($this->exponent)) {
-            return false;
-        }
-
-        $oldFormat = $this->publicKeyFormat;
-        $this->publicKeyFormat = $type;
-        $temp = $type::savePublicKey($this->modulus, $this->exponent);
-        $this->publicKeyFormat = $oldFormat;
-        return $temp;
-    }
-
-
-    /**
-     * __toString() magic method
-     *
-     * @access public
-     * @return string
-     */
-    public function __toString()
-    {
-        try {
-            $key = $this->getPrivateKey($this->privateKeyFormat);
-            if (is_string($key)) {
-                return $key;
-            }
-            $key = $this->getPrivatePublicKey($this->publicKeyFormat);
-            return is_string($key) ? $key : '';
-        } catch (\Exception $e) {
-            return '';
-        }
-    }
-
-    /**
-     * __clone() magic method
-     *
-     * @access public
-     * @return \phpseclib\Crypt\RSA
-     */
-    public function __clone()
-    {
-        $key = new RSA();
-        $key->load($this);
-        return $key;
-    }
-
-    /**
-     * Determines the private key format
-     *
-     * @see self::__toString()
-     * @access public
-     * @param string $format
-     */
-    public function setPrivateKeyFormat($format)
-    {
-        $this->privateKeyFormat = $format;
-    }
-
-    /**
-     * Determines the public key format
-     *
-     * @see self::__toString()
-     * @access public
-     * @param string $format
-     */
-    public function setPublicKeyFormat($format)
-    {
-        $this->publicKeyFormat = $format;
     }
 
     /**
