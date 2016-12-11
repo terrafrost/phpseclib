@@ -110,14 +110,6 @@ abstract class AsymmetricKey
      */
     protected $publicKeyFormat = 'PKCS8';
 
-    /**
-     * Loaded Format
-     *
-     * @var string
-     * @access private
-     */
-    protected $format;
-
     /**#@+
      * @access private
      * @see self::__construct()
