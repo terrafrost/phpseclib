@@ -219,7 +219,7 @@ abstract class AsymmetricKey
     {
         $components = false;
         if ($type === false) {
-            foreach (static::$fileFormats[static::ALGORITHM] as $format) {
+            foreach (self::$fileFormats[static::ALGORITHM] as $format) {
                 try {
                     $components = $format::load($key, $this->password);
                 } catch (\Exception $e) {
@@ -231,8 +231,8 @@ abstract class AsymmetricKey
             }
         } else {
             $format = strtolower($type);
-            if (isset(static::$fileFormats[static::ALGORITHM][$format])) {
-                $format = static::$fileFormats[static::ALGORITHM][$format];
+            if (isset(self::$fileFormats[static::ALGORITHM][$format])) {
+                $format = self::$fileFormats[static::ALGORITHM][$format];
                 $components = $format::load($key, $this->password);
             }
         }
