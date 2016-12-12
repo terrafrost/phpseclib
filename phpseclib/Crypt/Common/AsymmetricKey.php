@@ -69,7 +69,7 @@ abstract class AsymmetricKey
      * @var array
      * @access private
      */
-    private static $fileFormats = [];
+    protected static $fileFormats = [];
 
     /**
      * Supported file formats (original case)
