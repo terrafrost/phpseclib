@@ -196,7 +196,7 @@ abstract class AsymmetricKey
             self::$configFile = __DIR__ . '/../openssl.cnf';
         }
 
-        if (!isset(self::$fileFormats)) {
+        if (!isset(self::$fileFormats[static::ALGORITHM])) {
             self::$fileFormats[static::ALGORITHM] = [];
             foreach (glob(__DIR__ . '/' . static::ALGORITHM . '/*.php') as $file) {
                 $name = pathinfo($file, PATHINFO_FILENAME);
