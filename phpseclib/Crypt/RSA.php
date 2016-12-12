@@ -597,7 +597,7 @@ class RSA extends AsymmetricKey
      * @param string $type optional
      * @return mixed
      */
-    private function getPrivatePublicKey($type = 'PKCS8')
+    protected function getPrivatePublicKey($type = 'PKCS8')
     {
         $type = strtolower($type);
         if (!isset(self::$fileFormats[static::ALGORITHM][$type])) {
