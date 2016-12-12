@@ -198,7 +198,7 @@ abstract class AsymmetricKey
 
         if (!isset(self::$fileFormats[static::ALGORITHM])) {
             self::$fileFormats[static::ALGORITHM] = [];
-            foreach (glob(__DIR__ . '/' . static::ALGORITHM . '/*.php') as $file) {
+            foreach (glob(__DIR__ . '/../' . static::ALGORITHM . '/*.php') as $file) {
                 $name = pathinfo($file, PATHINFO_FILENAME);
                 $type = 'phpseclib\Crypt\\' . static::ALGORITHM . '\\' . $name;
                 self::$fileFormats[static::ALGORITHM][strtolower($name)] = $type;
