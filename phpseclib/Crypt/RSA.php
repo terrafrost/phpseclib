@@ -543,10 +543,10 @@ class RSA extends AsymmetricKey
     public function getPrivateKey($type = 'PKCS1')
     {
         $type = strtolower($type);
-        if (!isset(self::$fileFormats[$type])) {
+        if (!isset(self::$fileFormats[static::ALGORITHM][$type])) {
             return false;
         }
-        $type = self::$fileFormats[$type];
+        $type = self::$fileFormats[static::ALGORITHM][$type];
         if (!method_exists($type, 'savePrivateKey')) {
             return false;
         }
@@ -746,10 +746,10 @@ class RSA extends AsymmetricKey
     public function getPublicKey($type = 'PKCS8')
     {
         $type = strtolower($type);
-        if (!isset(self::$fileFormats[$type])) {
+        if (!isset(self::$fileFormats[static::ALGORITHM][$type])) {
             return false;
         }
-        $type = self::$fileFormats[$type];
+        $type = self::$fileFormats[static::ALGORITHM][$type];
         if (!method_exists($type, 'savePublicKey')) {
             return false;
         }
