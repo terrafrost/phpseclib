@@ -17,7 +17,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\RSA;
+namespace phpseclib\Crypt\RSA\Keys;
 
 use ParagonIE\ConstantTime\Base64;
 use phpseclib\Math\BigInteger;
