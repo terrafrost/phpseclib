@@ -606,12 +606,13 @@ abstract class SymmetricKey
      * @see Crypt/Hash.php
      * @param string $password
      * @param string $method
+     * @param mixed $args,... Parameters for the various KDFs
      * @throws \LengthException if pbkdf1 is being used and the derived key length exceeds the hash length
      * @return bool
      * @access public
      * @internal Could, but not must, extend by the child Crypt_* class
      */
-    public function setPassword($password, $method = 'pbkdf2')
+    public function setPassword($password, $method = 'pbkdf2', ...$args)
     {
         $key = '';
 
@@ -620,23 +621,21 @@ abstract class SymmetricKey
             case 'pkcs12': // from https://tools.ietf.org/html/rfc7292#appendix-B.2
             case 'pbkdf1':
             case 'pbkdf2':
-                $func_args = func_get_args();
-
                 // Hash function
-                $hash = isset($func_args[2]) ? strtolower($func_args[2]) : 'sha1';
+                $hash = isset($args[0]) ? strtolower($args[0]) : 'sha1';
                 $hashObj = new Hash();
                 $hashObj->setHash($hash);
 
                 // WPA and WPA2 use the SSID as the salt
-                $salt = isset($func_args[3]) ? $func_args[3] : $this->password_default_salt;
+                $salt = isset($args[1]) ? $args[1] : $this->password_default_salt;
 
                 // RFC2898#section-4.2 uses 1,000 iterations by default
                 // WPA and WPA2 use 4,096.
-                $count = isset($func_args[4]) ? $func_args[4] : 1000;
+                $count = isset($args[2]) ? $args[2] : 1000;
 
                 // Keylength
-                if (isset($func_args[5])) {
-                    $dkLen = $func_args[5];
+                if (isset($args[3])) {
+                    $dkLen = $args[3];
                 } else {
                     $key_length = $this->explicit_key_length !== false ? $this->explicit_key_length : $this->key_length;
                     $dkLen = $method == 'pbkdf1' ? 2 * $key_length : $key_length;
