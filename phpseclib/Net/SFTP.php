@@ -2106,7 +2106,7 @@ class SFTP extends SSH2
             return false;
         }
 
-        if (!($mode & NET_SFTP_NO_REALPATH)) {
+        if (!($mode & self::NO_REALPATH)) {
             $remote_file = $this->_realpath($remote_file);
             if ($remote_file === false) {
                 return false;
