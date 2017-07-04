@@ -565,7 +565,7 @@ class File_ASN1
         switch (true) {
             case $mapping['type'] == FILE_ASN1_TYPE_ANY:
                 $intype = $decoded['type'];
-                if (isset($decoded['constant']) || !isset($this->ANYmap[$intype]) || ($this->encoded[$decoded['start']] & 0x20)) {
+                if (isset($decoded['constant']) || !isset($this->ANYmap[$intype]) || (ord($this->encoded[$decoded['start']]) & 0x20)) {
                     return new File_ASN1_Element(substr($this->encoded, $decoded['start'], $decoded['length']));
                 }
                 $inmap = $this->ANYmap[$intype];
@@ -887,10 +887,10 @@ class File_ASN1
             case FILE_ASN1_TYPE_SET:    // Children order is not important, thus process in sequence.
             case FILE_ASN1_TYPE_SEQUENCE:
                 $tag|= 0x20; // set the constructed bit
-                $value = '';
 
                 // ignore the min and max
                 if (isset($mapping['min']) && isset($mapping['max'])) {
+                    $value = array();
                     $child = $mapping['children'];
 
                     foreach ($source as $content) {
@@ -898,11 +898,21 @@ class File_ASN1
                         if ($temp === false) {
                             return false;
                         }
-                        $value.= $temp;
+                        $value[]= $temp;
                     }
+                    /* "The encodings of the component values of a set-of value shall appear in ascending order, the encodings being compared
+                        as octet strings with the shorter components being padded at their trailing end with 0-octets.
+                        NOTE - The padding octets are for comparison purposes only and do not appear in the encodings."
+
+                       -- sec 11.6 of http://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf  */
+                    if ($mapping['type'] == FILE_ASN1_TYPE_SET) {
+                        sort($value);
+                    }
+                    $value = implode($value, '');
                     break;
                 }
 
+                $value = '';
                 foreach ($mapping['children'] as $key => $child) {
                     if (!array_key_exists($key, $source)) {
                         if (!isset($child['optional'])) {

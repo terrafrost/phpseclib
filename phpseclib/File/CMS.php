@@ -982,7 +982,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
      * @access public
      * @return Boolean
      */
-    function validateSignature()
+    function validateSignature($caonly = true)
     {
         if (!is_array($this->currentCMS) || !isset($this->signatureSubjects)) {
             return null;
