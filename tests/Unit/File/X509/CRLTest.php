@@ -11,7 +11,6 @@ class Unit_File_X509_CRLTest extends PhpseclibTestCase
 {
     public function testLoadCRL()
     {
-echo 'dirrrr = '.__DIR__; exit;
         $test = file_get_contents('crl.bin');
 
         $x509 = new X509();
