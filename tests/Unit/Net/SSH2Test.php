@@ -110,6 +110,65 @@ class Unit_Net_SSH2Test extends PhpseclibTestCase
         $this->assertFalse($ssh->isQuietModeEnabled());
     }
 
+    public function testDefaultEncryptionAlgorithms()
+    {
+        $ssh = $this->createSSHMock();
+
+        $this->assertSame(
+            array (
+                'arcfour256',
+                'arcfour128',
+                'aes128-ctr',
+                'aes192-ctr',
+                'aes256-ctr',
+                'twofish128-ctr',
+                'twofish192-ctr',
+                'twofish256-ctr',
+                'aes128-cbc',
+                'aes192-cbc',
+                'aes256-cbc',
+                'twofish128-cbc',
+                'twofish192-cbc',
+                'twofish256-cbc',
+                'twofish-cbc',
+                'blowfish-ctr',
+                'blowfish-cbc',
+                '3des-ctr',
+                '3des-cbc',
+            ),
+            $ssh->getEncryptionAlgorithms()
+        );
+    }
+
+    public function testOverwrittenEncryptionAlgorithms()
+    {
+        $ssh = $this->createSSHMock();
+        $ssh->setEncryptionAlgorithms(array(
+            'aes128-ctr',
+            'aes192-ctr',
+            'aes256-ctr',
+        ));
+
+        $this->assertSame(
+            array (
+                'aes128-ctr',
+                'aes192-ctr',
+                'aes256-ctr',
+            ),
+            $ssh->getEncryptionAlgorithms()
+        );
+    }
+
+    public function testUnsupportedEncryptionAlgorithms()
+    {
+        $this->setExpectedException('PHPUnit_Framework_Error_Notice', 'Encryption algorithms are not supported: unsupported-algorithm');
+        $ssh = $this->createSSHMock();
+        $ssh->setEncryptionAlgorithms(array(
+            'aes128-ctr',
+            'unsupported-algorithm'
+        ));
+    }
+
     /**
      * @return \phpseclib\Net\SSH2
      */
