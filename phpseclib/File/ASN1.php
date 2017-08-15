@@ -707,7 +707,7 @@ class ASN1
                 if (isset($mapping['implicit'])) {
                     $decoded['content'] = $this->_decodeTime($decoded['content'], $decoded['type']);
                 }
-                return @date($this->format, $decoded['content']);
+                return $decoded['content'] ? $decoded['content']->format($this->format) : false;
             case self::TYPE_BIT_STRING:
                 if (isset($mapping['mapping'])) {
                     $offset = ord($decoded['content'][0]);
@@ -956,7 +956,8 @@ class ASN1
             case self::TYPE_GENERALIZED_TIME:
                 $format = $mapping['type'] == self::TYPE_UTC_TIME ? 'y' : 'Y';
                 $format.= 'mdHis';
-                $value = @gmdate($format, strtotime($source)) . 'Z';
+                $date = new DateTime($source, new DateTimeZone('GMT'));
+                $value = $date->format($format) . 'Z';
                 break;
             case self::TYPE_BIT_STRING:
                 if (isset($mapping['mapping'])) {
@@ -1137,33 +1138,26 @@ class ASN1
            http://tools.ietf.org/html/rfc5280#section-4.1.2.5.2
            http://www.obj-sys.com/asn1tutorial/node14.html */
 
-        $pattern = $tag == self::TYPE_UTC_TIME ?
-            '#^(..)(..)(..)(..)(..)(..)?(.*)$#' :
-            '#(....)(..)(..)(..)(..)(..).*([Z+-].*)$#';
-
-        preg_match($pattern, $content, $matches);
-
-        list(, $year, $month, $day, $hour, $minute, $second, $timezone) = $matches;
+        $format = 'YmdHis';
 
         if ($tag == self::TYPE_UTC_TIME) {
-            $year = $year >= 50 ? "19$year" : "20$year";
+            $prefix = substr($content, 0, 2) >= 50 ? '19' : '20';
+            $content = $prefix . $content;
+        } elseif (strpos($content, '.') !== false) {
+            $format.= '.u';
         }
 
-        if ($timezone == 'Z') {
-            $mktime = 'gmmktime';
-            $timezone = 0;
-        } elseif (preg_match('#([+-])(\d\d)(\d\d)#', $timezone, $matches)) {
-            $mktime = 'gmmktime';
-            $timezone = 60 * $matches[3] + 3600 * $matches[2];
-            if ($matches[1] == '-') {
-                $timezone = -$timezone;
-            }
-        } else {
-            $mktime = 'mktime';
-            $timezone = 0;
+        if ($content[strlen($content) - 1] == 'Z') {
+            $content = substr($content, 0, -1) . '+0000';
         }
 
-        return @$mktime((int)$hour, (int)$minute, (int)$second, (int)$month, (int)$day, (int)$year) + $timezone;
+        if (strpos($content, '-') !== false || strpos($content, '+') !== false) {
+            $format.= 'O';
+        }
+
+        // error supression isn't necessary as of PHP 7.0:
+        // http://php.net/manual/en/migration70.other-changes.php
+        return @DateTime::createFromFormat($format, $content);
     }
 
     /**
