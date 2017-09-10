@@ -396,7 +396,7 @@ abstract class Engine implements \Serializable
     /**
      * Logical Not
      *
-     * @return Engine|string
+     * @return Engine
      */
     public function bitwise_not()
     {
@@ -404,7 +404,7 @@ abstract class Engine implements \Serializable
         // (will always result in a smaller number.  ie. ~1 isn't 1111 1110 - it's 0)
         $temp = $this->toBytes();
         if ($temp == '') {
-            return '';
+            return clone static::$zero;
         }
         $pre_msb = decbin(ord($temp[0]));
         $temp = ~$temp;
@@ -618,7 +618,7 @@ abstract class Engine implements \Serializable
 
         // precompute $this^0 through $this^$window_size
         $powers = [];
-        $powers[1] = static::prepareReduce($x->value, $n_value, $class);
+        $powers[1] = static::reduce(static::prepareReduce($x->value, $n_value, $class), $n_value, $class);
         $powers[2] = static::squareReduce($powers[1], $n_value, $class);
 
         // we do every other number since substr($e_bits, $i, $j+1) (see below) is supposed to end
@@ -630,7 +630,7 @@ abstract class Engine implements \Serializable
         }
 
         $result = new $class(1);
-        $result = static::prepareReduce($result->value, $n_value, $class);
+        $result = static::reduce(static::prepareReduce($result->value, $n_value, $class), $n_value, $class);
 
         for ($i = 0; $i < $e_length;) {
             if (!$e_bits[$i]) {
@@ -1035,5 +1035,63 @@ abstract class Engine implements \Serializable
             $max = $max->compare($nums[$i]) < 0 ? $nums[$i] : $max;
         }
         return $max;
+    }
+
+    /**
+     * Modular reduction preperation
+     *
+     * @param array|string $x
+     * @param array|string $n
+     * @param string $class
+     * @see self::slidingWindow()
+     * @return array|string
+     */
+    protected static function prepareReduce($x, $n, $class)
+    {
+        return $x;
+    }
+
+    /**
+     * Get Recurring Modulo Function
+     *
+     * Sometimes it may be desirable to do repeated modulos with the same number outside of
+     * modular exponentiation
+     *
+     * @param Engine $modulo
+     * @return callable
+     */
+    protected static function getRecurringModuloFunctionHelper(Engine $modulo)
+    {
+        $class = static::$modexpEngine;
+        if ($class[1] == 'OpenSSL') {
+            $class[1] = 'DefaultEngine';
+        }
+
+        if (!method_exists($class, 'reduce')) {
+            return function($x) use ($modulo) {
+                list(, $mod) = $x->divide($modulo);
+                return $mod;
+            };
+        }
+
+        if (method_exists($class, 'generateCustomReduction')) {
+            $reduction = $class::generateCustomReduction($modulo, static::class);
+            return function($x) use ($class, $reduction) {
+                $class::setCustomReduction($reduction);
+                $temp = new static();
+                $temp->value = $class::reduce($x->value, null, static::class);
+                return $temp;
+            };
+        }
+
+        $modulo = $modulo->value;
+
+        return function($x) use ($class, $modulo) {
+            $x = $class::prepareReduce($x->value, $modulo, static::class);
+
+            $temp = new static();
+            $temp->value = $class::reduce($x, $modulo, static::class);
+            return $temp;
+        };
     }
 }

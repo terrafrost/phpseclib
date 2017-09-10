@@ -63,21 +63,21 @@ class GMP extends Engine
      *
      * @var \phpseclib\Math\BigInteger\Engines\GMP
      */
-    protected static $zero;
+    public static $zero;
 
     /**
      * BigInteger(1)
      *
      * @var \phpseclib\Math\BigInteger\Engines\GMP
      */
-    protected static $one;
+    public static $one;
 
     /**
      * BigInteger(2)
      *
      * @var \phpseclib\Math\BigInteger\Engines\GMP
      */
-    protected static $two;
+    public static $two;
 
     /**
      * Primes > 2 and < 1000
@@ -136,8 +136,10 @@ class GMP extends Engine
     {
         switch (abs($base)) {
             case 256:
-                $sign = $this->is_negative ? '-' : '';
-                $this->value = gmp_init($sign . '0x' . Hex::encode($this->value));
+                $this->value = gmp_import($this->value);
+                if ($this->is_negative) {
+                    $this->value = gmp_neg($this->value);
+                }
                 break;
             case 16:
                 $temp = $this->is_negative ? '-0x' . $this->value : '0x' . $this->value;
@@ -174,9 +176,8 @@ class GMP extends Engine
             return $this->precision > 0 ? str_repeat(chr(0), ($this->precision + 1) >> 3) : '';
         }
 
-        $temp = gmp_strval(gmp_abs($this->value), 16);
-        $temp = (strlen($temp) & 1) ? '0' . $temp : $temp;
-        $temp = Hex::decode($temp);
+        // maybe we should do gmp_abs() before gmp_export()?
+        $temp = gmp_export($this->value);
 
         return $this->precision > 0 ?
             substr(str_pad($temp, $this->precision >> 3, chr(0), STR_PAD_LEFT), -($this->precision >> 3)) :
@@ -511,7 +512,7 @@ class GMP extends Engine
      * BigInteger::randomRange($min, $max)
      * BigInteger::randomRange($max, $min)
      *
-     * @return \phpseclib\Math\BigInteger\Engines\Engine\GMP
+     * @return \phpseclib\Math\BigInteger\Engines\GMP
      */
     public static function randomRange(GMP $min, GMP $max)
     {
@@ -528,6 +529,16 @@ class GMP extends Engine
     protected function make_odd()
     {
         gmp_setbit($this->value, 0);
+    }
+
+    /**
+     * Is the current number odd or not?
+     *
+     * @return bool
+     */
+    public function isOdd()
+    {
+        return gmp_testbit($this->value, 0);
     }
 
     /**
@@ -596,5 +607,22 @@ class GMP extends Engine
     public function between(GMP $min, GMP $max)
     {
         return $this->compare($min) >= 0 && $this->compare($max) <= 0;
+    }
+
+    /**
+     * Get Recurring Modulo Function
+     *
+     * Sometimes it may be desirable to do repeated modulos with the same number outside of
+     * modular exponentiation
+     *
+     * @param GMP $modulo
+     * @return callable
+     */
+    public static function getRecurringModuloFunction(GMP $modulo)
+    {
+        $func = static::getRecurringModuloFunctionHelper($modulo);
+        return function(GMP $x) use ($func) {
+            return $func($x);
+        };
     }
 }

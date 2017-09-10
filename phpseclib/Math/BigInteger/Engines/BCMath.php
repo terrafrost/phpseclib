@@ -63,21 +63,21 @@ class BCMath extends Engine
      *
      * @var \phpseclib\Math\BigInteger\Engines\BCMath
      */
-    protected static $zero;
+    public static $zero;
 
     /**
      * BigInteger(1)
      *
      * @var \phpseclib\Math\BigInteger\Engines\BCMath
      */
-    protected static $one;
+    public static $one;
 
     /**
      * BigInteger(2)
      *
      * @var \phpseclib\Math\BigInteger\Engines\BCMath
      */
-    protected static $two;
+    public static $two;
 
     /**
      * Primes > 2 and < 1000
@@ -549,7 +549,7 @@ class BCMath extends Engine
      * BigInteger::randomRange($min, $max)
      * BigInteger::randomRange($max, $min)
      *
-     * @return \phpseclib\Math\BigInteger\Engines\Engine\BCMath
+     * @return \phpseclib\Math\BigInteger\Engines\BCMath
      */
     public static function randomRange(BCMath $min, BCMath $max)
     {
@@ -565,9 +565,19 @@ class BCMath extends Engine
      */
     protected function make_odd()
     {
-        if ($this->value[strlen($this->value) - 1] % 2 == 0) {
+        if ($this->isOdd()) {
             $this->value = bcadd($this->value, '1');
         }
+    }
+
+    /**
+     * Is the current number odd or not?
+     *
+     * @return bool
+     */
+    public function isOdd()
+    {
+        return $this->value[strlen($this->value) - 1] % 2 == 0;
     }
 
     /**
@@ -673,5 +683,22 @@ class BCMath extends Engine
     {
         $temp = parent::setBitmask($bits);
         return $temp->add(static::$one);
+    }
+
+    /**
+     * Get Recurring Modulo Function
+     *
+     * Sometimes it may be desirable to do repeated modulos with the same number outside of
+     * modular exponentiation
+     *
+     * @param BCMath $modulo
+     * @return callable
+     */
+    public static function getRecurringModuloFunction(BCMath $modulo)
+    {
+        $func = static::getRecurringModuloFunctionHelper($modulo);
+        return function(BCMath $x) use ($func) {
+            return $func($x);
+        };
     }
 }

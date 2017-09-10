@@ -35,17 +35,32 @@ abstract class EvalBarrett extends Base
     private static $custom_reduction;
 
     /**
+     * Set Custom Reduction Function
+     *
+     * @param callable $reduction
+     */
+    protected static function setCustomReduction($reduction)
+    {
+        self::$custom_reduction = $reduction;
+    }
+
+    /**
      * Barrett Modular Reduction
+     *
+     * Returns $n % $m
      *
      * This calls a dynamically generated loop unrolled function that's specific to a given modulo.
      * Array lookups are avoided as are if statements testing for how many bits the host OS supports, etc.
+     * Altho $m is a parameter (so that it might have the same method signature as every other class)
+     * it technically isn't utilized. If you /knew/ that no other engine was going to be used you
+     * could simply use [] as $m but alas we do not know where else this is being utilized
      *
      * @param array $n
      * @param array $m
      * @param string $class
      * @return array
      */
-    protected static function reduce(array $n, array $m, $class)
+    protected static function reduce(array $n, array $m = null, $class)
     {
         $inline = self::$custom_reduction;
         return $inline($n);
@@ -73,9 +88,9 @@ abstract class EvalBarrett extends Base
                 return $temp->value;
             ';
             eval('$func = function ($x) { ' . $code . '};');
+            //$func = \Closure::bind($func, $m, $class);
             self::$custom_reduction = $func;
-            //self::$custom_reduction = \Closure::bind($func, $m, $class);
-            return;
+            return $func;
         }
 
         $lhs = new $class();
@@ -130,9 +145,11 @@ abstract class EvalBarrett extends Base
 
         eval('$func = function ($n) { ' . $code . '};');
 
+        //$func = \Closure::bind($func, $m, $class);
+
         self::$custom_reduction = $func;
 
-        //self::$custom_reduction = \Closure::bind($func, $m, $class);
+        return $func;
     }
 
     /**

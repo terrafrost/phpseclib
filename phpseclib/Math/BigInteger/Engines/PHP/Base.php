@@ -104,20 +104,6 @@ abstract class Base extends PHP
     }
 
     /**
-     * Modular reduction preperation
-     *
-     * @param array $x
-     * @param array $n
-     * @param string $class
-     * @see self::slidingWindow()
-     * @return array
-     */
-    protected static function prepareReduce(array $x, array $n, $class)
-    {
-        return static::reduce($x, $n, $class);
-    }
-
-    /**
      * Modular multiply
      *
      * @param array $x

@@ -76,21 +76,21 @@ class PHP32 extends PHP
      *
      * @var \phpseclib\Math\BigInteger\Engines\PHP32
      */
-    protected static $zero;
+    public static $zero;
 
     /**
      * BigInteger(1)
      *
      * @var \phpseclib\Math\BigInteger\Engines\PHP32
      */
-    protected static $one;
+    public static $one;
 
     /**
      * BigInteger(2)
      *
      * @var \phpseclib\Math\BigInteger\Engines\PHP32
      */
-    protected static $two;
+    public static $two;
 
     /**
      * Test for engine validity
@@ -294,7 +294,7 @@ class PHP32 extends PHP
      * BigInteger::randomRange($min, $max)
      * BigInteger::randomRange($max, $min)
      *
-     * @return \phpseclib\Math\BigInteger\Engines\Engine\PHP32
+     * @return \phpseclib\Math\BigInteger\Engines\PHP32
      */
     public static function randomRange(PHP32 $min, PHP32 $max)
     {
@@ -339,5 +339,22 @@ class PHP32 extends PHP
     public function between(PHP32 $min, PHP32 $max)
     {
         return $this->compare($min) >= 0 && $this->compare($max) <= 0;
+    }
+
+    /**
+     * Get Recurring Modulo Function
+     *
+     * Sometimes it may be desirable to do repeated modulos with the same number outside of
+     * modular exponentiation
+     *
+     * @param PHP32 $modulo
+     * @return callable
+     */
+    public static function getRecurringModuloFunction(PHP32 $modulo)
+    {
+        $func = static::getRecurringModuloFunctionHelper($modulo);
+        return function(PHP32 $x) use ($func) {
+            return $func($x);
+        };
     }
 }

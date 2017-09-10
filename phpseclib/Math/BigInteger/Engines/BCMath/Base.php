@@ -77,20 +77,6 @@ abstract class Base extends BCMath
     }
 
     /**
-     * Modular reduction preperation
-     *
-     * @param string $x
-     * @param string $n
-     * @param string $class
-     * @see self::slidingWindow()
-     * @return string
-     */
-    protected static function prepareReduce($x, $n, $class)
-    {
-        return static::reduce($x, $n);
-    }
-
-    /**
      * Modular multiply
      *
      * @param string $x
@@ -102,7 +88,7 @@ abstract class Base extends BCMath
      */
     protected static function multiplyReduce($x, $y, $n, $class)
     {
-        return static::reduce(bcmul($x, $y), $n);
+        return static::reduce(bcmul($x, $y), $n, $class);
     }
 
     /**
@@ -116,6 +102,6 @@ abstract class Base extends BCMath
      */
     protected static function squareReduce($x, $n, $class)
     {
-        return static::reduce(bcmul($x, $x), $n);
+        return static::reduce(bcmul($x, $x), $n, $class);
     }
 }

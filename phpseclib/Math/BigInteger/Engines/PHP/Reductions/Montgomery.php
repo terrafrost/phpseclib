@@ -34,7 +34,7 @@ abstract class Montgomery extends Progenitor
      * @param string $class
      * @return array
      */
-    protected static function prepareReduce(array $x, array $n, $class)
+    protected static function prepareReduce($x, $n, $class)
     {
         $lhs = new $class();
         $lhs->value = array_merge(self::array_repeat(0, count($n)), $x);

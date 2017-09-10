@@ -76,21 +76,21 @@ class PHP64 extends PHP
      *
      * @var \phpseclib\Math\BigInteger\Engines\PHP64
      */
-    protected static $zero;
+    public static $zero;
 
     /**
      * BigInteger(1)
      *
      * @var \phpseclib\Math\BigInteger\Engines\PHP64
      */
-    protected static $one;
+    public static $one;
 
     /**
      * BigInteger(2)
      *
      * @var \phpseclib\Math\BigInteger\Engines\PHP64
      */
-    protected static $two;
+    public static $two;
 
     /**
      * Test for engine validity
@@ -294,7 +294,7 @@ class PHP64 extends PHP
      * BigInteger::randomRange($min, $max)
      * BigInteger::randomRange($max, $min)
      *
-     * @return \phpseclib\Math\BigInteger\Engines\Engine\PHP64
+     * @return \phpseclib\Math\BigInteger\Engines\PHP64
      */
     public static function randomRange(PHP64 $min, PHP64 $max)
     {
@@ -339,5 +339,22 @@ class PHP64 extends PHP
     public function between(PHP64 $min, PHP64 $max)
     {
         return $this->compare($min) >= 0 && $this->compare($max) <= 0;
+    }
+
+    /**
+     * Get Recurring Modulo Function
+     *
+     * Sometimes it may be desirable to do repeated modulos with the same number outside of
+     * modular exponentiation
+     *
+     * @param PHP64 $modulo
+     * @return callable
+     */
+    public static function getRecurringModuloFunction(PHP64 $modulo)
+    {
+        $func = static::getRecurringModuloFunctionHelper($modulo);
+        return function(PHP64 $x) use ($func) {
+            return $func($x);
+        };
     }
 }

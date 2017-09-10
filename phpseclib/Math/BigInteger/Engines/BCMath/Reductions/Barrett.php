@@ -61,9 +61,10 @@ abstract class Barrett extends Base
      *
      * @param string $n
      * @param string $m
-     * @return array|string
+     * @param string $class
+     * @return string
      */
-    protected static function reduce($n, $m)
+    protected static function reduce($n, $m, $class)
     {
         static $cache = [
             self::VARIABLE => [],

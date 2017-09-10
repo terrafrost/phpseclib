@@ -29,6 +29,8 @@ abstract class Barrett extends Base
     /**
      * Barrett Modular Reduction
      *
+     * Returns $n % $m
+     *
      * See {@link http://www.cacr.math.uwaterloo.ca/hac/about/chap14.pdf#page=14 HAC 14.3.3} /
      * {@link http://math.libtomcrypt.com/files/tommath.pdf#page=165 MPM 6.2.5} for more information.  Modified slightly,
      * so as not to require negative numbers (initially, this script didn't support negative numbers).

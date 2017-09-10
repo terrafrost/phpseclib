@@ -71,6 +71,27 @@ class BigInteger implements \Serializable
     private $value;
 
     /**
+     * BigInteger(0)
+     *
+     * @var \phpseclib\Math\BigInteger
+     */
+    public static $zero;
+
+    /**
+     * BigInteger(1)
+     *
+     * @var \phpseclib\Math\BigInteger
+     */
+    public static $one;
+
+    /**
+     * BigInteger(2)
+     *
+     * @var \phpseclib\Math\BigInteger
+     */
+    public static $two;
+
+    /**
      * Sets engine type.
      *
      * Throws an exception if the type is invalid
@@ -91,7 +112,7 @@ class BigInteger implements \Serializable
         }
         self::$mainEngine = $fqmain;
 
-        if (!in_array('Default', $modexps)) {
+        if (!in_array('DefaultEngine', $modexps)) {
             $modexps[] = 'DefaultEngine';
         }
 
@@ -108,6 +129,10 @@ class BigInteger implements \Serializable
         if (!$found) {
             throw new BadConfigurationException("No valid modular exponentiation engine found for $main");
         }
+
+        self::$zero = new static();
+        self::$one = new static(1);
+        self::$two = new static(2);
 
         self::$modexpEngine = $modexp;
 
@@ -150,6 +175,17 @@ class BigInteger implements \Serializable
         } else {
             $this->value = new self::$mainEngine($x, $base);
         }
+    }
+
+    /**
+     * Returns the engine that's currently in use
+     *
+     * @return array
+     */
+    public static function getEngine()
+    {
+        new BigInteger();
+        return self::$engines;
     }
 
     /**
@@ -713,10 +749,40 @@ class BigInteger implements \Serializable
     }
 
     /**
+     * Is the current number odd or not?
+     *
+     * @return bool
+     */
+    public function isOdd()
+    {
+        return $this->value->isOdd();
+    }
+
+    /**
      * Clone
      */
     public function __clone()
     {
         $this->value = clone $this->value;
     }
+
+    /**
+     * Get Recurring Modulo Function
+     *
+     * Sometimes it may be desirable to do repeated modulos with the same number outside of
+     * modular exponentiation
+     *
+     * @param Engine $modulo
+     * @return callable
+     */
+    public static function getRecurringModuloFunction(BigInteger $modulo)
+    {
+        $class = self::$mainEngine;
+        $func = $class::getRecurringModuloFunction($modulo->value);
+        return function(BigInteger $x) use ($func) {
+            return $func($x->value);
+        };
+    }
+
+
 }

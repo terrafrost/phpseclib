@@ -1255,6 +1255,16 @@ abstract class PHP extends Engine
     }
 
     /**
+     * Is the current number odd or not?
+     *
+     * @return bool
+     */
+    public function isOdd()
+    {
+        return (bool) $this->value[0] & 1;
+    }
+
+    /**
      * Test the number against small primes.
      *
      * @see self::isPrime()

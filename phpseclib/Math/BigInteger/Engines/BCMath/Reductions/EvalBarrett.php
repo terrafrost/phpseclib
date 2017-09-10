@@ -35,6 +35,16 @@ abstract class EvalBarrett extends Base
     private static $custom_reduction;
 
     /**
+     * Set Custom Reduction Function
+     *
+     * @param callable $reduction
+     */
+    protected static function setCustomReduction($reduction)
+    {
+        self::$custom_reduction = $reduction;
+    }
+
+    /**
      * Barrett Modular Reduction
      *
      * This calls a dynamically generated loop unrolled function that's specific to a given modulo.
@@ -42,9 +52,10 @@ abstract class EvalBarrett extends Base
      *
      * @param string $n
      * @param string $m
+     * @param string $class
      * @return string
      */
-    protected static function reduce($n, $m)
+    protected static function reduce($n, $m, $class)
     {
         $inline = self::$custom_reduction;
         return $inline($n);
@@ -55,7 +66,7 @@ abstract class EvalBarrett extends Base
      *
      * @param array $m
      * @param string $class
-     * @return callable|void
+     * @return callable
      */
     protected static function generateCustomReduction(BCMath $m, $class)
     {
@@ -65,7 +76,7 @@ abstract class EvalBarrett extends Base
             $code = 'return bcmod($x, $n);';
             eval('$func = function ($n) { ' . $code . '};');
             self::$custom_reduction = $func;
-            return;
+            return $func;
         }
 
         $lhs = '1' . str_repeat('0', $m_length + ($m_length >> 1));
@@ -106,5 +117,7 @@ abstract class EvalBarrett extends Base
         eval('$func = function ($n) { ' . $code . '};');
 
         self::$custom_reduction = $func;
+
+        return $func;
     }
 }
