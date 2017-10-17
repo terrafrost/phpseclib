@@ -734,27 +734,15 @@ class Crypt_Base
      * @access private
      * @param string $plaintext
      * @param int $mode
+     * @param &string $iv
      * @param &int $pos
      * @param &int $len
      * @return string $ciphertext
      */
-    function handleCFB($plaintext, $mode, &$pos, &$len)
+    function handleCFB($plaintext, $mode, &$iv, &$pos, &$len)
     {
         // cfb loosely routines inspired by openssl's:
         // {@link http://cvs.openssl.org/fileview?f=openssl/crypto/modes/cfb128.c&v=1.3.2.2.2.1}
-
-        if ($this->continuousBuffer) {
-            if ($mode === CRYPT_ENCRYPT) {
-                $iv = &$this->encryptIV;
-                $pos = &$this->enbuffer['pos'];
-            } else {
-                $iv = &$this->decryptIV;
-                $pos = &$this->debuffer['pos'];
-            }
-        } else {
-            $pos = 0;
-            $iv = $mode == CRYPT_ENCRYPT ? $this->encryptIV : $this->decryptIV;
-        }
 
         $len = strlen($plaintext);
         $i = 0;
@@ -811,6 +799,16 @@ class Crypt_Base
             $plaintext = $this->_pad($plaintext);
         }
 
+        if ($this->mode == CRYPT_MODE_CFB) {
+            if ($this->continuousBuffer) {
+                $iv = &$this->encryptIV;
+                $pos = &$this->enbuffer['pos'];
+            } else {
+                $iv = $this->encryptIV;
+                $pos = 0;
+            }
+        }
+
         if ($this->engine === CRYPT_ENGINE_OPENSSL) {
             if ($this->changed) {
                 $this->_clearBuffers();
@@ -834,8 +832,7 @@ class Crypt_Base
                 case CRYPT_MODE_CTR:
                     return $this->_openssl_ctr_process($plaintext, $this->encryptIV, $this->enbuffer);
                 case CRYPT_MODE_CFB:
-                    $ciphertext = $this->handleCFB($plaintext, CRYPT_ENCRYPT, $pos, $len);
-                    $iv = $this->encryptIV;
+                    $ciphertext = $this->handleCFB($plaintext, CRYPT_ENCRYPT, $iv, $pos, $len);
                     $plaintext = substr($plaintext, strlen($ciphertext));
 
                     $overflow = $len % $this->block_size;
@@ -875,8 +872,7 @@ class Crypt_Base
             // rewritten CFB implementation the above outputs the same thing twice.
             if ($this->mode == CRYPT_MODE_CFB && $this->continuousBuffer) {
                 $block_size = $this->block_size;
-                $ciphertext = $this->handleCFB($plaintext, CRYPT_ENCRYPT, $pos, $len);
-                $iv = $this->encryptIV;
+                $ciphertext = $this->handleCFB($plaintext, CRYPT_ENCRYPT, $iv, $pos, $len);
                 if ($pos) {
                     $this->enbuffer['enmcrypt_init'] = true;
                 }
@@ -977,8 +973,7 @@ class Crypt_Base
                 }
                 break;
             case CRYPT_MODE_CFB:
-                $ciphertext = $this->handleCFB($plaintext, CRYPT_ENCRYPT, $pos, $len);
-                $iv = $this->encryptIV;
+                $ciphertext = $this->handleCFB($plaintext, CRYPT_ENCRYPT, $iv, $pos, $len);
                 while ($len >= $block_size) {
                     $iv = $this->_encryptBlock($iv) ^ substr($plaintext, $i, $block_size);
                     $ciphertext.= $iv;
@@ -1047,6 +1042,16 @@ class Crypt_Base
             $ciphertext = str_pad($ciphertext, strlen($ciphertext) + ($this->block_size - strlen($ciphertext) % $this->block_size) % $this->block_size, chr(0));
         }
 
+        if ($this->mode == CRYPT_MODE_CFB) {
+            if ($this->continuousBuffer) {
+                $iv = &$this->decryptIV;
+                $pos = &$this->debuffer['pos'];
+            } else {
+                $iv = $this->decryptIV;
+                $pos = 0;
+            }
+        }
+
         if ($this->engine === CRYPT_ENGINE_OPENSSL) {
             if ($this->changed) {
                 $this->_clearBuffers();
@@ -1079,8 +1084,7 @@ class Crypt_Base
                     $plaintext = $this->_openssl_ctr_process($ciphertext, $this->decryptIV, $this->debuffer);
                     break;
                 case CRYPT_MODE_CFB:
-                    $plaintext = $this->handleCFB($ciphertext, CRYPT_DECRYPT, $pos, $len);
-                    $iv = $this->decryptIV;
+                    $plaintext = $this->handleCFB($ciphertext, CRYPT_DECRYPT, $iv, $pos, $len);
                     $ciphertext = substr($ciphertext, strlen($plaintext));
                     $overflow = $len % $this->block_size;
                     if ($overflow) {
@@ -1116,8 +1120,7 @@ class Crypt_Base
             }
 
             if ($this->mode == CRYPT_MODE_CFB && $this->continuousBuffer) {
-                $plaintext = $this->handleCFB($ciphertext, CRYPT_DECRYPT, $pos, $len);
-                $iv = $this->decryptIV;
+                $plaintext = $this->handleCFB($ciphertext, CRYPT_DECRYPT, $iv, $pos, $len);
 
                 if ($len >= $block_size) {
                     $cb = substr($ciphertext, $i, $len - $len % $block_size);
@@ -1202,8 +1205,7 @@ class Crypt_Base
                 }
                 break;
             case CRYPT_MODE_CFB:
-                $plaintext = $this->handleCFB($ciphertext, CRYPT_DECRYPT, $pos, $len);
-                $iv = $this->decryptIV;
+                $plaintext = $this->handleCFB($ciphertext, CRYPT_DECRYPT, $iv, $pos, $len);
 
                 while ($len >= $block_size) {
                     $iv = $this->_encryptBlock($iv);
