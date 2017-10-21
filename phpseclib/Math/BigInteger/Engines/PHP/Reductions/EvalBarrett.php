@@ -27,6 +27,7 @@ use phpseclib\Math\BigInteger\Engines\PHP;
  */
 abstract class EvalBarrett extends Base
 {
+private static $zzz;
     /**
      * Custom Reduction Function
      *
@@ -48,6 +49,9 @@ abstract class EvalBarrett extends Base
     protected static function reduce(array $n, array $m, $class)
     {
         $inline = self::$custom_reduction;
+print_r($n);
+print_r($m);
+echo self::$zzz;
         return $inline($n);
     }
 
@@ -127,6 +131,7 @@ abstract class EvalBarrett extends Base
         $code.= self::generateInlineCompare($m, 'temp', $subcode);
 
         $code.= 'return $temp;';
+$zzz = '$func = function ($n) { ' . $code . '};';
 
         eval('$func = function ($n) { ' . $code . '};');
 
