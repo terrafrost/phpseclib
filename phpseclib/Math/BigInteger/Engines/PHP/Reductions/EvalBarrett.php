@@ -27,7 +27,7 @@ echo $zzz;
 exit;
 }
 
-set_error_handler('process_errors');
+set_error_handler('\phpseclib\Math\BigInteger\Engines\PHP\Reductions\process_errors');
 
 /**
  * PHP Dynamic Barrett Modular Exponentiation Engine
