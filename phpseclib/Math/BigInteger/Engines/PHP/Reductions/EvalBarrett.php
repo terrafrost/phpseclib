@@ -18,6 +18,17 @@ namespace phpseclib\Math\BigInteger\Engines\PHP\Reductions;
 use phpseclib\Math\BigInteger\Engines\PHP\Base;
 use phpseclib\Math\BigInteger\Engines\PHP;
 
+function process_errors($number, $message, $file, $line, $vars)
+{
+	global $zzz, $zzn, $zzm;
+print_r($n);
+print_r($m);
+echo $zzz;
+exit;
+}
+
+set_error_handler('process_errors');
+
 /**
  * PHP Dynamic Barrett Modular Exponentiation Engine
  *
@@ -27,7 +38,6 @@ use phpseclib\Math\BigInteger\Engines\PHP;
  */
 abstract class EvalBarrett extends Base
 {
-private static $zzz;
     /**
      * Custom Reduction Function
      *
@@ -48,11 +58,12 @@ private static $zzz;
      */
     protected static function reduce(array $n, array $m, $class)
     {
+global $zzn, $zzm;
         $inline = self::$custom_reduction;
-print_r($n);
-print_r($m);
-echo self::$zzz;
-        return $inline($n);
+$zzn = $n;
+$zzm = $m;
+$temp = $inline($n);
+        return $temp;
     }
 
     /**
@@ -64,6 +75,7 @@ echo self::$zzz;
      */
     protected static function generateCustomReduction(PHP $m, $class)
     {
+global $zzz;
         $m_length = count($m->value);
 
         if ($m_length < 5) {
