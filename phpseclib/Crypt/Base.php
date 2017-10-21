@@ -800,13 +800,8 @@ class Crypt_Base
         }
 
         if ($this->mode == CRYPT_MODE_CFB) {
-            if ($this->continuousBuffer) {
-                $iv = &$this->encryptIV;
-                $pos = &$this->enbuffer['pos'];
-            } else {
-                $iv = $this->encryptIV;
-                $pos = 0;
-            }
+            $iv = &$this->encryptIV;
+            $pos = &$this->enbuffer['pos'];
         }
 
         if ($this->engine === CRYPT_ENGINE_OPENSSL) {
@@ -1043,13 +1038,8 @@ class Crypt_Base
         }
 
         if ($this->mode == CRYPT_MODE_CFB) {
-            if ($this->continuousBuffer) {
-                $iv = &$this->decryptIV;
-                $pos = &$this->debuffer['pos'];
-            } else {
-                $iv = $this->decryptIV;
-                $pos = 0;
-            }
+            $iv = &$this->decryptIV;
+            $pos = &$this->debuffer['pos'];
         }
 
         if ($this->engine === CRYPT_ENGINE_OPENSSL) {
