@@ -50,6 +50,7 @@ static $zzz;
     protected static function reduce(array $n, array $m, $class)
     {
         $inline = self::$custom_reduction;
+echo "==================================================================\n";
 $a = new $class();
 $a->value = $n;
 echo $a . "\n\n";
