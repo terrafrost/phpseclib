@@ -53,9 +53,12 @@ static $zzz;
 $a = new $class();
 $a->value = $n;
 echo $a . "\n\n";
+$b = new $class();
+$b->value = $m;
+echo $b . "\n\n";
 //print_r($n);
-echo static::$zzz;
-$temp = $inline($n);
+//echo static::$zzz;
+//$temp = $inline($n);
         return $temp;
     }
 

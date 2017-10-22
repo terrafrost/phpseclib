@@ -7,7 +7,7 @@
 
 use \phpseclib\Math\BigInteger\Engines\PHP32;
 
-abstract class Unit_Math_BigInteger_PHP32Test extends Unit_Math_BigInteger_TestCase
+class Unit_Math_BigInteger_PHP32Test extends Unit_Math_BigInteger_TestCase
 {
     public static function setUpBeforeClass()
     {
