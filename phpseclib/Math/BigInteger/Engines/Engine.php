@@ -695,6 +695,7 @@ abstract class Engine implements \Serializable
      */
     protected static function randomRangePrimeOuter(Engine $min, Engine $max)
     {
+echo "randomrangeprimeouter called\n";
         $compare = $max->compare($min);
 
         if (!$compare) {
@@ -724,6 +725,7 @@ abstract class Engine implements \Serializable
      */
     protected static function randomRangeHelper(Engine $min, Engine $max)
     {
+echo "randomrangehelper called\n";
         $compare = $max->compare($min);
 
         if (!$compare) {
@@ -786,6 +788,7 @@ echo "in while loop\n";
      */
     protected static function randomRangePrimeInner(Engine $x, Engine $min, Engine $max)
     {
+echo "randomrangeprimeinner called\n";
         if (!isset(static::$two)) {
             static::$two = new static('2');
         }
@@ -862,6 +865,7 @@ echo "in while loop\n";
      */
     protected function testPrimality($t)
     {
+echo "testprimality\n";
         if (!$this->testSmallPrimes()) {
             return false;
         }
@@ -874,11 +878,13 @@ echo "in while loop\n";
         $s = static::scan1divide($r);
 
         for ($i = 0; $i < $t; ++$i) {
+echo "in for i loop\n";
             $a = static::randomRange(static::$two, $n_2);
             $y = $a->modPow($r, $n);
 
             if (!$y->equals(static::$one) && !$y->equals($n_1)) {
                 for ($j = 1; $j < $s && !$y->equals($n_1); ++$j) {
+echo "in for j loop\n";
                     $y = $y->modPow(static::$two, $n);
                     if ($y->equals(static::$one)) {
                         return false;
