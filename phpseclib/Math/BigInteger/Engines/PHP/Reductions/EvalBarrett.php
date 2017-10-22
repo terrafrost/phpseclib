@@ -59,7 +59,7 @@ $b->value = $m;
 echo $b . "\n\n";
 //print_r($n);
 //echo static::$zzz;
-//$temp = $inline($n);
+$temp = $inline($n);
         return $temp;
     }
 

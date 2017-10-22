@@ -1326,4 +1326,10 @@ abstract class PHP extends Engine
 
         return $temp;
     }
+
+function testModReduce($b) {
+$class = static::$modexpEngine;
+$r = $class::reduce($this->value, $b->value, static::class);
+return $r;
+}
 }
