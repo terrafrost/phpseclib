@@ -720,6 +720,17 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             )
         );
 
+        $CompressionAlgorithmIdentifier = $AlgorithmIdentifier;
+
+        $this->CompressedData = array(
+            'type' => FILE_ASN1_TYPE_SEQUENCE,
+            'children' => array(
+                'version' => $CMSVersion,
+                'compressionAlgorithm' => $CompressionAlgorithmIdentifier,
+                'encapContentInfo' => $EncapsulatedContentInfo
+            )
+        );
+
         $Hash = array('type' => FILE_ASN1_TYPE_OCTET_STRING);
 
         $ESSCertID = array(
@@ -809,6 +820,7 @@ class File_CMS extends File_X509 // File_CMS_SignedData
         $this->oids = array(
             '1.2.840.113549.1.7.1' => 'id-data', // https://tools.ietf.org/html/rfc5652#section-4
             '1.2.840.113549.1.7.2' => 'id-signedData', // https://tools.ietf.org/html/rfc5652#section-5
+            '1.2.840.113549.1.9.16.1.9' => 'id-ct-compressedData', // // https://tools.ietf.org/html/rfc3274#section-1.1
             // the rest are currently unsupported
             '1.2.840.113549.1.7.3' => 'id-envelopedData', // https://tools.ietf.org/html/rfc5652#section-6
             '1.2.840.113549.1.7.5' => 'id-digestedData', // https://tools.ietf.org/html/rfc5652#section-7
@@ -831,7 +843,10 @@ class File_CMS extends File_X509 // File_CMS_SignedData
             '2.16.840.1.101.3.4.2.4' => 'id-sha224',
             '2.16.840.1.101.3.4.2.1' => 'id-sha256',
             '2.16.840.1.101.3.4.2.2' => 'id-sha384',
-            '2.16.840.1.101.3.4.2.3' => 'id-sha512'
+            '2.16.840.1.101.3.4.2.3' => 'id-sha512',
+
+            // from RFC3274
+            '1.2.840.113549.1.9.16.3.8' => 'id-alg-zlibCompress'
         ) + $this->oids;
 
         $this->baseSignedData = array(
@@ -892,6 +907,12 @@ class File_CMS extends File_X509 // File_CMS_SignedData
         }
 
         switch ($cms['contentType']) {
+            case 'id-ct-compressedData':
+                $compressedData = $cms['content']->element;
+                $decoded = $asn1->decodeBER($cms['content']->element);
+                $cms['content'] = $asn1->asn1map($decoded[0], $this->CompressedData);
+
+                return $cms;
             case 'id-signedData':
                 $signatureContainer = $cms['content']->element; //substr($src, $decoded[0]['content'][1]['start'], $decoded[0]['content'][1]['length']);
                 $decoded = $asn1->decodeBER($cms['content']->element);
