@@ -4,6 +4,5 @@ then
 cp travis/composer.legacy.json ../composer.json
 cp travis/composer.legacy.lock ../composer.lock
 fi
-travis/install-php-extensions.sh; fi"
 composer self-update --no-interaction
 composer install --no-interaction
