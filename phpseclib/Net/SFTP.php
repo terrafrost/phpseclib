@@ -2051,6 +2051,7 @@ class Net_SFTP extends Net_SSH2
                     $temp = substr($response, 4);
                     $offset+= strlen($temp);
                     if ($local_file === false) {
+echo '*';
                         $content.= $temp;
                     } else {
                         fputs($fp, $temp);
@@ -2075,6 +2076,9 @@ class Net_SFTP extends Net_SSH2
 
         if ($length > 0 && $length <= $offset - $start) {
             if ($local_file === false) {
+echo "\n<br>\n";
+echo "content length = " . strlen($content) . "\n<br>\n";
+echo "trimming to $length";
                 $content = substr($content, 0, $length);
             } else {
                 ftruncate($fp, $length + $res_offset);
