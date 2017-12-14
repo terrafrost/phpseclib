@@ -2199,11 +2199,16 @@ class File_X509
                                 $subjectKeyID = $this->getExtension('id-ce-subjectKeyIdentifier', $ca);
                                 switch (true) {
                                     case !is_array($authorityKey):
+echo 'a';
                                     case !$subjectKeyID:
+echo 'b';
                                     case isset($authorityKey['keyIdentifier']) && $authorityKey['keyIdentifier'] === $subjectKeyID:
+echo 'c';
                                         if (is_array($authorityKey) && isset($authorityKey['authorityCertSerialNumber']) && $authorityKey['authorityCertSerialNumber'] != $ca['tbsCertificate']['serialNumber']) {
+echo 'd';
                                             break 2; // serial mismatch - check other ca
                                         }
+echo 'e';
                                         $signingCert = $ca; // working cert
                                         break 3;
                                 }
