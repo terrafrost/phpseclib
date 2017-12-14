@@ -2192,12 +2192,14 @@ class File_X509
                         // even if the cert is a self-signed one we still want to see if it's a CA;
                         // if not, we'll conditionally return an error
                         $ca = $this->CAs[$i];
+echo "\n";
                         switch (true) {
                             case !defined('FILE_X509_IGNORE_TYPE') && $this->currentCert['tbsCertificate']['issuer'] === $ca['tbsCertificate']['subject']:
                             case defined('FILE_X509_IGNORE_TYPE') && $this->getDN(FILE_X509_DN_STRING, $this->currentCert['tbsCertificate']['issuer']) === $this->getDN(FILE_X509_DN_STRING, $ca['tbsCertificate']['subject']):
                                 $authorityKey = $this->getExtension('id-ce-authorityKeyIdentifier');
                                 $subjectKeyID = $this->getExtension('id-ce-subjectKeyIdentifier', $ca);
                                 switch (true) {
+//bcd (bad) vs bce (good)
                                     case !is_array($authorityKey):
 echo 'a';
                                     case !$subjectKeyID:
@@ -2209,6 +2211,12 @@ echo 'd';
                                             break 2; // serial mismatch - check other ca
                                         }
 echo 'e';
+echo "\n";
+echo 'is_array = '.(is_array($authorityKey) ? 'true' : 'false')."\n";
+echo 'isset = ' . (isset($authorityKey['authorityCertSerialNumber']) ? 'true' : 'false')."\n";
+var_dump($authorityKey['authorityCertSerialNumber']);
+var_dump($ca['tbsCertificate']['serialNumber']);
+
                                         $signingCert = $ca; // working cert
                                         break 3;
                                 }
