@@ -2208,6 +2208,8 @@ echo 'b';
 echo 'c';
                                         if (is_array($authorityKey) && isset($authorityKey['authorityCertSerialNumber']) && $authorityKey['authorityCertSerialNumber'] != $ca['tbsCertificate']['serialNumber']) {
 echo 'd';
+var_dump($authorityKey['authorityCertSerialNumber']);
+var_dump($ca['tbsCertificate']['serialNumber']);
                                             break 2; // serial mismatch - check other ca
                                         }
 echo 'e';
