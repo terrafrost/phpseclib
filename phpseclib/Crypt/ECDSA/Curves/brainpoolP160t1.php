@@ -35,7 +35,7 @@ class brainpoolP160t1 extends Prime
 {
     public function __construct()
     {
-        $this->setModulo(new BigInteger('E95E4A5F737059DC60DFC7AD95B3D8139515620F', 16));
+        $this->setModulo(new BigInteger('E95E4A5F737059DC60DFC7AD95B3D8139515620F', 16));
         $this->setCoefficients(
             new BigInteger('E95E4A5F737059DC60DFC7AD95B3D8139515620C', 16), // eg. -3
             new BigInteger('7A556B6DAE535B7B51ED2C4D7DAA7A0B5C55F380', 16)

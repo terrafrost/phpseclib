@@ -1240,8 +1240,8 @@ abstract class ASN1
      */
     public static function loadOIDs($oids)
     {
-        self::$oids+= $oids;
-        self::$reverseOIDs = array_flip(self::$oids);
+        self::$reverseOIDs+= $oids;
+        self::$oids = array_flip(self::$reverseOIDs);
     }
 
     /**

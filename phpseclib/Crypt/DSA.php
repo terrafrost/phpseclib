@@ -35,6 +35,7 @@ use phpseclib\File\ASN1;
 use phpseclib\Math\BigInteger;
 use phpseclib\Crypt\Common\AsymmetricKey;
 use phpseclib\Math\PrimeField;
+use phpseclib\Crypt\ECDSA\Signature\ASN1 as ASN1Signature;
 
 /**
  * Pure-PHP FIPS 186-4 compliant implementation of DSA.
@@ -265,9 +266,7 @@ class DSA extends AsymmetricKey
             $this->g = $components['g'];
         }
 
-        if (isset($components['x'])) {
-            $this->x = $components['x'];
-        }
+        $this->x = isset($components['x']) ? $components['x'] : null;
 
         if (isset($components['y'])) {
             $this->y = $components['y'];
@@ -393,7 +392,7 @@ class DSA extends AsymmetricKey
             return $key;
         }
 
-        $public = new static();
+        $public = clone $this;
         $public->load($key);
 
         return $public;
@@ -450,6 +449,7 @@ class DSA extends AsymmetricKey
      */
     public function sign($message, $format = 'ASN1')
     {
+        $shortFormat = $format;
         $format = self::validatePlugin('Signature', $format);
         if ($format === false) {
             return false;

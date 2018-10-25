@@ -29,7 +29,7 @@ class Ed448 extends TwistedEdwards
         // 2^448 - 2^224 - 1
         $this->setModulo(new BigInteger(
             'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE' .
-            'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16));
+            'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16));
         $this->setCoefficients(
             new BigInteger(1),
             // -39081

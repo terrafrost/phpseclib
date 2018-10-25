@@ -450,7 +450,8 @@ class RSA extends AsymmetricKey
             $this->isPublic = $key->isPublic;
 
             if (is_object($key->hash)) {
-                $this->hash = new Hash($key->hash->getHash());
+                $this->hashName = $key->hash->getHash();
+                $this->hash = new Hash($this->hashName);
             }
             if (is_object($key->mgfHash)) {
                 $this->mgfHash = new Hash($key->mgfHash->getHash());
@@ -771,7 +772,7 @@ class RSA extends AsymmetricKey
             return $key;
         }
 
-        $public = new static();
+        $public = clone $this;
         $public->load($key);
 
         return $public;

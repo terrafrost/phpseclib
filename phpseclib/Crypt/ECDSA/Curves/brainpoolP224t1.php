@@ -22,7 +22,7 @@ class brainpoolP224t1 extends Prime
 {
     public function __construct()
     {
-        $this->setModulo(new BigInteger('D7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF', 16));
+        $this->setModulo(new BigInteger('D7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF', 16));
         $this->setCoefficients(
             new BigInteger('D7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FC', 16), // eg. -3
             new BigInteger('4B337D934104CD7BEF271BF60CED1ED20DA14C08B3BB64F18A60888D', 16)

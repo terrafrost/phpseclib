@@ -34,7 +34,7 @@ class brainpoolP320t1 extends Prime
             new BigInteger('925BE9FB01AFC6FB4D3E7D4990010F813408AB106C4F09CB7EE07868CC136FFF' .
                            '3357F624A21BED52', 16),
             new BigInteger('63BA3A7A27483EBF6671DBEF7ABB30EBEE084E58A0B077AD42A5A0989D1EE71B' .
-                           '1B9BC0455FB0D2C3', 16)
+                           '1B9BC0455FB0D2C3', 16)
         );
         $this->setOrder(new BigInteger('D35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D4' .
                                        '82EC7EE8658E98691555B44C59311', 16));

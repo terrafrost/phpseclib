@@ -357,7 +357,7 @@ class ECDSA extends AsymmetricKey
 
         $key = $type::savePublicKey($this->curve, $this->QA);
         if ($returnObj) {
-            $public = new static();
+            $public = clone $this;
             $public->load($key);
 
             return $public;
