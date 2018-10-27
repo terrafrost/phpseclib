@@ -85,7 +85,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $this->assertSame('20', (string) $bigInteger);
     }
 
-    public function testPow()
+    public function zzztestPow()
     {
         $bigInteger = $this->getInstance('20');
         $two = $this->getInstance('2');
@@ -96,7 +96,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $this->assertSame('64000000', (string) $bigInteger); // (20^2)^3
     }
 
-    public function testMax()
+    public function zzztestMax()
     {
         $class = static::getStaticClass();
         $min = $this->getInstance('20');
@@ -105,7 +105,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $this->assertSame((string) $max, (string) $class::max($max, $min));
     }
 
-    public function testMin()
+    public function zzztestMin()
     {
         $class = static::getStaticClass();
         $min = $this->getInstance('20');
@@ -114,7 +114,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $this->assertSame((string) $min, (string) $class::min($max, $min));
     }
 
-    public function testRandomPrime()
+    public function zzztestRandomPrime()
     {
         $class = static::getStaticClass();
         $prime = $class::randomPrime(128);
@@ -124,7 +124,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     /**
      * @group github1260
      */
-    public function testZeros()
+    public function zzztestZeros()
     {
         $a = $this->getInstance();
         $b = $this->getInstance('00', 16);
@@ -134,7 +134,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     /**
      * @group github1264
      */
-    public function test48ToHex()
+    public function zzztest48ToHex()
     {
         $temp = $this->getInstance(48);
         $this->assertSame($temp->toHex(true), '30');
