@@ -76,7 +76,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $x->powMod($e, $n);
     }
 
-    public function testRoot()
+    public function zzztestRoot()
     {
         $bigInteger = $this->getInstance('64000000'); // (20^2)^3
         $bigInteger = $bigInteger->root();
@@ -114,7 +114,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $this->assertSame((string) $min, (string) $class::min($max, $min));
     }
 
-    public function zzztestRandomPrime()
+    public function testRandomPrime()
     {
         $class = static::getStaticClass();
         $prime = $class::randomPrime(128);
