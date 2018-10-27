@@ -239,6 +239,10 @@ abstract class Strings
      */
     public static function bits2bin($x)
     {
+        if (!defined('PHP_INT_MIN')) {
+            define('PHP_INT_MIN', ~PHP_INT_MAX);
+        }
+
         /*
         // the pure-PHP approach is faster than the GMP approach
         if (function_exists('gmp_export')) {
