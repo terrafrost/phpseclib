@@ -7,12 +7,10 @@
 
 abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
 {
-
-
     /**
      * @group github279
      */
-    public function testDiffieHellmanKeyAgreement()
+    public function zztestDiffieHellmanKeyAgreement()
     {
         // "Oakley Group 14" 2048-bit modular exponentiation group as used in
         // SSH2 diffie-hellman-group14-sha1
@@ -68,31 +66,6 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     }
 
     /**
-     * @requires PHP 5.6
-     */
-    public function testDebugInfo()
-    {
-        $num = $this->getInstance(50);
-        $str = print_r($num, true);
-        $this->assertContains('[value] => 0x32', $str);
-    }
-
-    public function testPrecision()
-    {
-        $a = $this->getInstance(51);
-        $this->assertSame($a->getPrecision(), -1);
-        $b = $a;
-        $c = clone $a;
-        $b->setPrecision(1);
-        $this->assertSame($a->getPrecision(), 1);
-        $this->assertSame("$a", '1');
-        $this->assertSame($b->getPrecision(), 1);
-        $this->assertSame("$b", '1');
-        $this->assertSame($c->getPrecision(), -1);
-        $this->assertSame("$c", '51');
-    }
-
-    /**
      * @group github954
      */
     public function testSlidingWindow()
@@ -101,69 +74,5 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $x = $this->getInstance(1);
         $n = $this->getInstance(2);
         $x->powMod($e, $n);
-    }
-
-    public function testRoot()
-    {
-        $bigInteger = $this->getInstance('64000000'); // (20^2)^3
-        $bigInteger = $bigInteger->root();
-        $this->assertSame('8000', (string) $bigInteger);
-        $bigInteger = $bigInteger->root(3);
-        $this->assertSame('20', (string) $bigInteger);
-    }
-
-    public function testPow()
-    {
-        $bigInteger = $this->getInstance('20');
-        $two = $this->getInstance('2');
-        $three = $this->getInstance('3');
-        $bigInteger = $bigInteger->pow($two);
-        $this->assertSame('400', (string) $bigInteger);
-        $bigInteger = $bigInteger->pow($three);
-        $this->assertSame('64000000', (string) $bigInteger); // (20^2)^3
-    }
-
-    public function testMax()
-    {
-        $class = static::getStaticClass();
-        $min = $this->getInstance('20');
-        $max = $this->getInstance('20000');
-        $this->assertSame((string) $max, (string) $class::max($min, $max));
-        $this->assertSame((string) $max, (string) $class::max($max, $min));
-    }
-
-    public function testMin()
-    {
-        $class = static::getStaticClass();
-        $min = $this->getInstance('20');
-        $max = $this->getInstance('20000');
-        $this->assertSame((string) $min, (string) $class::min($min, $max));
-        $this->assertSame((string) $min, (string) $class::min($max, $min));
-    }
-
-    public function testRandomPrime()
-    {
-        $class = static::getStaticClass();
-        $prime = $class::randomPrime(128);
-        $this->assertSame(128, $prime->getLength());
-    }
-
-    /**
-     * @group github1260
-     */
-    public function testZeros()
-    {
-        $a = $this->getInstance();
-        $b = $this->getInstance('00', 16);
-        $this->assertTrue($a->equals($b));
-    }
-
-    /**
-     * @group github1264
-     */
-    public function test48ToHex()
-    {
-        $temp = $this->getInstance(48);
-        $this->assertSame($temp->toHex(true), '30');
     }
 }
