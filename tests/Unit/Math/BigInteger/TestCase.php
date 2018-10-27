@@ -10,7 +10,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     /**
      * @group github279
      */
-    public function zztestDiffieHellmanKeyAgreement()
+    public function testDiffieHellmanKeyAgreement()
     {
         // "Oakley Group 14" 2048-bit modular exponentiation group as used in
         // SSH2 diffie-hellman-group14-sha1
@@ -68,7 +68,7 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     /**
      * @group github954
      */
-    public function testSlidingWindow()
+    public function zzztestSlidingWindow()
     {
         $e = $this->getInstance(str_repeat('1', 1794), 2);
         $x = $this->getInstance(1);
