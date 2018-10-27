@@ -68,11 +68,75 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     /**
      * @group github954
      */
-    public function zzztestSlidingWindow()
+    public function testSlidingWindow()
     {
         $e = $this->getInstance(str_repeat('1', 1794), 2);
         $x = $this->getInstance(1);
         $n = $this->getInstance(2);
         $x->powMod($e, $n);
+    }
+
+    public function testRoot()
+    {
+        $bigInteger = $this->getInstance('64000000'); // (20^2)^3
+        $bigInteger = $bigInteger->root();
+        $this->assertSame('8000', (string) $bigInteger);
+        $bigInteger = $bigInteger->root(3);
+        $this->assertSame('20', (string) $bigInteger);
+    }
+
+    public function testPow()
+    {
+        $bigInteger = $this->getInstance('20');
+        $two = $this->getInstance('2');
+        $three = $this->getInstance('3');
+        $bigInteger = $bigInteger->pow($two);
+        $this->assertSame('400', (string) $bigInteger);
+        $bigInteger = $bigInteger->pow($three);
+        $this->assertSame('64000000', (string) $bigInteger); // (20^2)^3
+    }
+
+    public function testMax()
+    {
+        $class = static::getStaticClass();
+        $min = $this->getInstance('20');
+        $max = $this->getInstance('20000');
+        $this->assertSame((string) $max, (string) $class::max($min, $max));
+        $this->assertSame((string) $max, (string) $class::max($max, $min));
+    }
+
+    public function testMin()
+    {
+        $class = static::getStaticClass();
+        $min = $this->getInstance('20');
+        $max = $this->getInstance('20000');
+        $this->assertSame((string) $min, (string) $class::min($min, $max));
+        $this->assertSame((string) $min, (string) $class::min($max, $min));
+    }
+
+    public function testRandomPrime()
+    {
+        $class = static::getStaticClass();
+        $prime = $class::randomPrime(128);
+        $this->assertSame(128, $prime->getLength());
+    }
+
+    /**
+     * @group github1260
+     */
+    public function testZeros()
+    {
+        $a = $this->getInstance();
+        $b = $this->getInstance('00', 16);
+        $this->assertTrue($a->equals($b));
+    }
+
+    /**
+     * @group github1264
+     */
+    public function test48ToHex()
+    {
+        $temp = $this->getInstance(48);
+        $this->assertSame($temp->toHex(true), '30');
     }
 }
