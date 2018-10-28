@@ -8,9 +8,6 @@
 
 use phpseclib\Crypt\ECDSA;
 
-/**
- * @requires PHP 7.0
- */`
 class Unit_Crypt_ECDSA_CurveTest extends PhpseclibTestCase
 {
     public function testBasePoint()
@@ -33,24 +30,6 @@ echo __DIR__; exit;
 */
 
         ECDSA::useBestEngine();
-    }
-
-    /**
-     * @depends testCreateParameters
-     */
-    public function testCreateKey($params)
-    {
-        extract(DSA::createKey());
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $privatekey);
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $publickey);
-
-        extract(DSA::createKey($params));
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $privatekey);
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $publickey);
-
-        extract(DSA::createKey(512, 160));
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $privatekey);
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $publickey);
     }
 }
 
