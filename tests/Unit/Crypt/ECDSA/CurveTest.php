@@ -6,27 +6,33 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-use phpseclib\Crypt\DSA;
+use phpseclib\Crypt\ECDSA;
 
 /**
  * @requires PHP 7.0
- */
-class Unit_Crypt_DSA_CreateKeyTest extends PhpseclibTestCase
+ */`
+class Unit_Crypt_ECDSA_CurveTest extends PhpseclibTestCase
 {
-    public function testCreateParameters()
+    public function testBasePoint()
     {
-        $dsa = DSA::createParameters();
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $dsa);
-        $this->assertRegexp('#BEGIN DSA PARAMETERS#', "$dsa");
+        ECDSA::useInternalEngine();
 
-        $dsa = DSA::createParameters(100, 100);
-        $this->assertFalse($dsa);
+echo __DIR__; exit;
+/*
+        foreach (new \DirectoryIterator(__DIR__ . '/../Curves/') as $file) {
+            if ($file->getExtension() != 'php') {
+                continue;
+            }
+            $testName = $file->getBasename('.php');
+            $class = 'phpseclib\Crypt\ECDSA\Curves\\' . $testName;
+            $reflect = new \ReflectionClass($class);
+            if ($reflect->isFinal()) {
+                continue;
+            }
+        }
+*/
 
-        $dsa = DSA::createParameters(512, 160);
-        $this->assertInstanceOf('\phpseclib\Crypt\DSA', $dsa);
-        $this->assertRegexp('#BEGIN DSA PARAMETERS#', "$dsa");
-
-        return $dsa;
+        ECDSA::useBestEngine();
     }
 
     /**
