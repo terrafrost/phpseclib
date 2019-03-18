@@ -3577,12 +3577,14 @@ class SSH2
         }
 
         $adjustLength = false;
-        switch ($this->decrypt->name) {
-            case 'aes128-gcm@openssh.com':
-            case 'aes256-gcm@openssh.com':
-            case 'chacha20-poly1305@openssh.com':
-                $remaining_length+= $this->decrypt_block_size - 4;
-                $adjustLength = true;
+        if ($this->decrypt) {
+            switch ($this->decrypt->name) {
+                case 'aes128-gcm@openssh.com':
+                case 'aes256-gcm@openssh.com':
+                case 'chacha20-poly1305@openssh.com':
+                    $remaining_length+= $this->decrypt_block_size - 4;
+                    $adjustLength = true;
+            }
         }
 
         // quoting <http://tools.ietf.org/html/rfc4253#section-6.1>,
