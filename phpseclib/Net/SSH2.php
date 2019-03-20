@@ -1888,6 +1888,7 @@ class SSH2
 
         $this->encrypt = $this->encryption_algorithm_to_crypt_instance($encrypt);
         if ($this->encrypt) {
+echo "encrypt = $encrypt\n";
             if ($this->crypto_engine) {
                 $this->encrypt->setPreferredEngine($this->crypto_engine);
             }
@@ -1932,6 +1933,7 @@ class SSH2
 
         $this->decrypt = $this->encryption_algorithm_to_crypt_instance($decrypt);
         if ($this->decrypt) {
+echo "decrypt = $decrypt\n";
             if ($this->crypto_engine) {
                 $this->decrypt->setPreferredEngine($this->crypto_engine);
             }
