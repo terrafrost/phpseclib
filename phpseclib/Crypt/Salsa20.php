@@ -345,6 +345,7 @@ class Salsa20 extends StreamCipher
         $this->setup();
         if (!$this->continuousBuffer) {
             if ($this->engine == self::ENGINE_OPENSSL) {
+echo "USING OPENSSL\n";
                 $iv = pack('V', $this->counter) . $this->p2;
                 return openssl_encrypt(
                     $text,
@@ -354,6 +355,7 @@ class Salsa20 extends StreamCipher
                     $iv
                 );
             }
+echo "NOT USING OPENSSL\n";
             $i = $this->counter;
             $blocks = str_split($text, 64);
             foreach ($blocks as &$block) {
