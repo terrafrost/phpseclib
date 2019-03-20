@@ -52,6 +52,7 @@ class ChaCha20 extends Salsa20
     {
         switch ($engine) {
             case self::ENGINE_LIBSODIUM:
+return false;
                 // PHP 7.2.0 (30 Nov 2017) added support for libsodium
 
                 // we could probably make it so that if $this->counter == 0 then the first block would be done with either OpenSSL
