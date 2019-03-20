@@ -93,7 +93,7 @@ class ChaCha20 extends Salsa20
         $this->setup();
 
         if ($this->engine == self::ENGINE_LIBSODIUM) {
-echo "(encrypt) USING LIBSODIUM\n";
+//echo "(encrypt) USING LIBSODIUM\n";
             return $this->encrypt_with_libsodium($plaintext);
         }
 
@@ -116,7 +116,7 @@ echo "(encrypt) USING LIBSODIUM\n";
         $this->setup();
 
         if ($this->engine == self::ENGINE_LIBSODIUM) {
-echo "(decrypt) USING LIBSODIUM\n";
+//echo "(decrypt) USING LIBSODIUM\n";
             return $this->decrypt_with_libsodium($ciphertext);
         }
 
