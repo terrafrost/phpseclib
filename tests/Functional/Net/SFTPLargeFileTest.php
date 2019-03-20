@@ -26,17 +26,20 @@ class Functional_Net_SFTPLargeFileTest extends Functional_Net_SFTPTestCase
      */
     public function testPutSizeLocalFile()
     {
-define('NET_SSH2_LOGGING', 3);
-        $tmp_filename = $this->createTempFile(128, 1024 * 1024);
+//define('NET_SSH2_LOGGING', 3);
+        $tmp_filename = $this->createTempFile(64, 1024 * 1024);
         $filename = 'file-large-from-local.txt';
 
+$start = microtime(true);
         $this->assertTrue(
             $this->sftp->put($filename, $tmp_filename, SFTP::SOURCE_LOCAL_FILE),
             'Failed asserting that local file could be successfully put().'
         );
+$elapsed = microtime(true) - $start;
+echo "took $elapsed seconds\n";
 
         $this->assertSame(
-            128 * 1024 * 1024,
+            64 * 1024 * 1024,
             $this->sftp->size($filename),
             'Failed asserting that uploaded local file has the expected length.'
         );
