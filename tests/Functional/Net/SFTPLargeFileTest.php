@@ -26,6 +26,7 @@ class Functional_Net_SFTPLargeFileTest extends Functional_Net_SFTPTestCase
      */
     public function testPutSizeLocalFile()
     {
+define('NET_SSH2_LOGGING', 3);
         $tmp_filename = $this->createTempFile(128, 1024 * 1024);
         $filename = 'file-large-from-local.txt';
 
