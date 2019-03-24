@@ -108,6 +108,13 @@ abstract class SymmetricKey
     const MODE_STREAM = 6;
     /**#@-*/
 
+    /**#@+
+     * @access private
+     */
+    const ENCRYPT = 0;
+    const DECRYPT = 1;
+    /**#@-*/
+
     /**
      * Mode Map
      *
@@ -1051,33 +1058,9 @@ abstract class SymmetricKey
                 case self::MODE_CFB:
                     // cfb loosely routines inspired by openssl's:
                     // {@link http://cvs.openssl.org/fileview?f=openssl/crypto/modes/cfb128.c&v=1.3.2.2.2.1}
-                    $ciphertext = '';
-                    if ($this->continuousBuffer) {
-                        $iv = &$this->encryptIV;
-                        $pos = &$this->enbuffer['pos'];
-                    } else {
-                        $iv = $this->encryptIV;
-                        $pos = 0;
-                    }
-                    $len = strlen($plaintext);
-                    $i = 0;
-                    if ($pos) {
-                        $orig_pos = $pos;
-                        $max = $this->block_size - $pos;
-                        if ($len >= $max) {
-                            $i = $max;
-                            $len-= $max;
-                            $pos = 0;
-                        } else {
-                            $i = $len;
-                            $pos+= $len;
-                            $len = 0;
-                        }
-                        // ie. $i = min($max, $len), $len-= $i, $pos+= $i, $pos%= $blocksize
-                        $ciphertext = substr($iv, $orig_pos) ^ $plaintext;
-                        $iv = substr_replace($iv, $ciphertext, $orig_pos, $i);
-                        $plaintext = substr($plaintext, $i);
-                    }
+                    $this->handleCFB($plaintext, self::ENCRYPT, $pos, $len);
+                    $iv = $this->encryptIV;
+                    $plaintext = substr($plaintext, strlen($ciphertext));
 
                     $overflow = $len % $this->block_size;
 
@@ -1122,25 +1105,10 @@ abstract class SymmetricKey
             // rewritten CFB implementation the above outputs the same thing twice.
             if ($this->mode == self::MODE_CFB && $this->continuousBuffer) {
                 $block_size = $this->block_size;
-                $iv = &$this->encryptIV;
-                $pos = &$this->enbuffer['pos'];
-                $len = strlen($plaintext);
-                $ciphertext = '';
-                $i = 0;
+                $ciphertext = $this->handleCFB($plaintext, self::ENCRYPT, $pos, $len);
+                $iv = $this->encryptIV;
+
                 if ($pos) {
-                    $orig_pos = $pos;
-                    $max = $block_size - $pos;
-                    if ($len >= $max) {
-                        $i = $max;
-                        $len-= $max;
-                        $pos = 0;
-                    } else {
-                        $i = $len;
-                        $pos+= $len;
-                        $len = 0;
-                    }
-                    $ciphertext = substr($iv, $orig_pos) ^ $plaintext;
-                    $iv = substr_replace($iv, $ciphertext, $orig_pos, $i);
                     $this->enbuffer['enmcrypt_init'] = true;
                 }
                 if ($len >= $block_size) {
@@ -1236,33 +1204,9 @@ abstract class SymmetricKey
                 }
                 break;
             case self::MODE_CFB:
-                // cfb loosely routines inspired by openssl's:
-                // {@link http://cvs.openssl.org/fileview?f=openssl/crypto/modes/cfb128.c&v=1.3.2.2.2.1}
-                if ($this->continuousBuffer) {
-                    $iv = &$this->encryptIV;
-                    $pos = &$buffer['pos'];
-                } else {
-                    $iv = $this->encryptIV;
-                    $pos = 0;
-                }
-                $len = strlen($plaintext);
-                $i = 0;
-                if ($pos) {
-                    $orig_pos = $pos;
-                    $max = $block_size - $pos;
-                    if ($len >= $max) {
-                        $i = $max;
-                        $len-= $max;
-                        $pos = 0;
-                    } else {
-                        $i = $len;
-                        $pos+= $len;
-                        $len = 0;
-                    }
-                    // ie. $i = min($max, $len), $len-= $i, $pos+= $i, $pos%= $blocksize
-                    $ciphertext = substr($iv, $orig_pos) ^ $plaintext;
-                    $iv = substr_replace($iv, $ciphertext, $orig_pos, $i);
-                }
+                $ciphertext = $this->handleCFB($plaintext, self::ENCRYPT, $pos, $len);
+                $iv = $this->encryptIV;
+
                 while ($len >= $block_size) {
                     $iv = $this->encryptBlock($iv) ^ substr($plaintext, $i, $block_size);
                     $ciphertext.= $iv;
@@ -1397,35 +1341,10 @@ abstract class SymmetricKey
                     $plaintext = $this->openssl_ctr_process($ciphertext, $this->decryptIV, $this->debuffer);
                     break;
                 case self::MODE_CFB:
-                    // cfb loosely routines inspired by openssl's:
-                    // {@link http://cvs.openssl.org/fileview?f=openssl/crypto/modes/cfb128.c&v=1.3.2.2.2.1}
-                    $plaintext = '';
-                    if ($this->continuousBuffer) {
-                        $iv = &$this->decryptIV;
-                        $pos = &$this->buffer['pos'];
-                    } else {
-                        $iv = $this->decryptIV;
-                        $pos = 0;
-                    }
-                    $len = strlen($ciphertext);
-                    $i = 0;
-                    if ($pos) {
-                        $orig_pos = $pos;
-                        $max = $this->block_size - $pos;
-                        if ($len >= $max) {
-                            $i = $max;
-                            $len-= $max;
-                            $pos = 0;
-                        } else {
-                            $i = $len;
-                            $pos+= $len;
-                            $len = 0;
-                        }
-                        // ie. $i = min($max, $len), $len-= $i, $pos+= $i, $pos%= $this->blocksize
-                        $plaintext = substr($iv, $orig_pos) ^ $ciphertext;
-                        $iv = substr_replace($iv, substr($ciphertext, 0, $i), $orig_pos, $i);
-                        $ciphertext = substr($ciphertext, $i);
-                    }
+                    $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $pos, $len);
+                    $iv = $this->decryptIV;
+                    $ciphertext = substr($ciphertext, strlen($plaintext));
+
                     $overflow = $len % $this->block_size;
                     if ($overflow) {
                         $plaintext.= openssl_decrypt(substr($ciphertext, 0, -$overflow), $this->cipher_name_openssl, $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
@@ -1466,27 +1385,9 @@ abstract class SymmetricKey
             }
 
             if ($this->mode == self::MODE_CFB && $this->continuousBuffer) {
-                $iv = &$this->decryptIV;
-                $pos = &$this->debuffer['pos'];
-                $len = strlen($ciphertext);
-                $plaintext = '';
-                $i = 0;
-                if ($pos) {
-                    $orig_pos = $pos;
-                    $max = $block_size - $pos;
-                    if ($len >= $max) {
-                        $i = $max;
-                        $len-= $max;
-                        $pos = 0;
-                    } else {
-                        $i = $len;
-                        $pos+= $len;
-                        $len = 0;
-                    }
-                    // ie. $i = min($max, $len), $len-= $i, $pos+= $i, $pos%= $blocksize
-                    $plaintext = substr($iv, $orig_pos) ^ $ciphertext;
-                    $iv = substr_replace($iv, substr($ciphertext, 0, $i), $orig_pos, $i);
-                }
+                $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $pos, $len);
+                $iv = $this->decryptIV;
+
                 if ($len >= $block_size) {
                     $cb = substr($ciphertext, $i, $len - $len % $block_size);
                     $plaintext.= @mcrypt_generic($this->ecb, $iv . $cb) ^ $cb;
@@ -1566,31 +1467,9 @@ abstract class SymmetricKey
                 }
                 break;
             case self::MODE_CFB:
-                if ($this->continuousBuffer) {
-                    $iv = &$this->decryptIV;
-                    $pos = &$buffer['pos'];
-                } else {
-                    $iv = $this->decryptIV;
-                    $pos = 0;
-                }
-                $len = strlen($ciphertext);
-                $i = 0;
-                if ($pos) {
-                    $orig_pos = $pos;
-                    $max = $block_size - $pos;
-                    if ($len >= $max) {
-                        $i = $max;
-                        $len-= $max;
-                        $pos = 0;
-                    } else {
-                        $i = $len;
-                        $pos+= $len;
-                        $len = 0;
-                    }
-                    // ie. $i = min($max, $len), $len-= $i, $pos+= $i, $pos%= $blocksize
-                    $plaintext = substr($iv, $orig_pos) ^ $ciphertext;
-                    $iv = substr_replace($iv, substr($ciphertext, 0, $i), $orig_pos, $i);
-                }
+                $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $pos, $len);
+                $iv = $this->decryptIV;
+
                 while ($len >= $block_size) {
                     $iv = $this->encryptBlock($iv);
                     $cb = substr($ciphertext, $i, $block_size);
@@ -2297,6 +2176,53 @@ abstract class SymmetricKey
                 $this->setupKey();
                 $this->setupInlineCrypt();
         }
+    }
+
+    /**
+     * Performs some initial CFB processing
+     *
+     * @see self::decrypt()
+     * @see self::encrypt()
+     * @access private
+     * @param string $plaintext
+     * @param int $mode
+     * @param &string $iv
+     * @param &int $pos
+     * @param &int $len
+     * @return string $ciphertext
+     */
+    private function handleCFB($plaintext, $mode, &$iv, &$pos, &$len)
+    {
+        // cfb loosely routines inspired by openssl's:
+        // {@link http://cvs.openssl.org/fileview?f=openssl/crypto/modes/cfb128.c&v=1.3.2.2.2.1}
+
+        $len = strlen($plaintext);
+        $i = 0;
+        if (!$pos) {
+            return '';
+        }
+        $orig_pos = $pos;
+        $max = $this->block_size - $pos;
+        if ($len >= $max) {
+            $i = $max;
+            $len-= $max;
+            $pos = 0;
+        } else {
+            $i = $len;
+            $pos+= $len;
+            $len = 0;
+        }
+        // ie. $i = min($max, $len), $len-= $i, $pos+= $i, $pos%= $blocksize
+        $ciphertext = substr($iv, $orig_pos) ^ $plaintext;
+
+        $iv = substr_replace(
+            $iv,
+            $mode == self::ENCRYPT ? $ciphertext : substr($plaintext, 0, $i),
+            $orig_pos,
+            $i
+        );
+
+        return $ciphertext;
     }
 
     /**
