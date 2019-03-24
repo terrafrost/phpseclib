@@ -1058,8 +1058,7 @@ abstract class SymmetricKey
                 case self::MODE_CFB:
                     // cfb loosely routines inspired by openssl's:
                     // {@link http://cvs.openssl.org/fileview?f=openssl/crypto/modes/cfb128.c&v=1.3.2.2.2.1}
-                    $this->handleCFB($plaintext, self::ENCRYPT, $pos, $len);
-                    $iv = $this->encryptIV;
+                    $this->handleCFB($plaintext, self::ENCRYPT, $iv, $pos, $len);
                     $plaintext = substr($plaintext, strlen($ciphertext));
 
                     $overflow = $len % $this->block_size;
@@ -1105,8 +1104,7 @@ abstract class SymmetricKey
             // rewritten CFB implementation the above outputs the same thing twice.
             if ($this->mode == self::MODE_CFB && $this->continuousBuffer) {
                 $block_size = $this->block_size;
-                $ciphertext = $this->handleCFB($plaintext, self::ENCRYPT, $pos, $len);
-                $iv = $this->encryptIV;
+                $ciphertext = $this->handleCFB($plaintext, self::ENCRYPT, $iv, $pos, $len);
 
                 if ($pos) {
                     $this->enbuffer['enmcrypt_init'] = true;
@@ -1204,8 +1202,7 @@ abstract class SymmetricKey
                 }
                 break;
             case self::MODE_CFB:
-                $ciphertext = $this->handleCFB($plaintext, self::ENCRYPT, $pos, $len);
-                $iv = $this->encryptIV;
+                $ciphertext = $this->handleCFB($plaintext, self::ENCRYPT, $iv, $pos, $len);
 
                 while ($len >= $block_size) {
                     $iv = $this->encryptBlock($iv) ^ substr($plaintext, $i, $block_size);
@@ -1341,8 +1338,7 @@ abstract class SymmetricKey
                     $plaintext = $this->openssl_ctr_process($ciphertext, $this->decryptIV, $this->debuffer);
                     break;
                 case self::MODE_CFB:
-                    $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $pos, $len);
-                    $iv = $this->decryptIV;
+                    $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $iv, $pos, $len);
                     $ciphertext = substr($ciphertext, strlen($plaintext));
 
                     $overflow = $len % $this->block_size;
@@ -1385,8 +1381,7 @@ abstract class SymmetricKey
             }
 
             if ($this->mode == self::MODE_CFB && $this->continuousBuffer) {
-                $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $pos, $len);
-                $iv = $this->decryptIV;
+                $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $iv, $pos, $len);
 
                 if ($len >= $block_size) {
                     $cb = substr($ciphertext, $i, $len - $len % $block_size);
@@ -1467,8 +1462,7 @@ abstract class SymmetricKey
                 }
                 break;
             case self::MODE_CFB:
-                $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $pos, $len);
-                $iv = $this->decryptIV;
+                $plaintext = $this->handleCFB($ciphertext, self::DECRYPT, $iv, $pos, $len);
 
                 while ($len >= $block_size) {
                     $iv = $this->encryptBlock($iv);
