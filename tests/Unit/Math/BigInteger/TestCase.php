@@ -49,6 +49,8 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
     public function testToBits()
     {
         $this->assertSame('1000001', $this->getInstance('65')->toBits());
+        $this->assertSame('10', $this->getInstance('-2')->toBits());
+        $this->assertSame('11111110', $this->getInstance('-2')->toBits(true));
     }
 
     public function testAdd()
