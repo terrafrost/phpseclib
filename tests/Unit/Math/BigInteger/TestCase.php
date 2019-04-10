@@ -196,6 +196,17 @@ abstract class Unit_Math_BigInteger_TestCase extends PhpseclibTestCase
         $z = $this->getInstance('FFFFFFFFFFFFFFFFFFFFFFF', 16);
 
         $this->assertSame($z->toHex(), $x->bitwise_OR($y)->toHex());
+
+        $x = -0xFFFF;
+        $y = 2;
+        $z = $x ^ $y;
+
+        $x = $this->getInstance($x);
+        $y = $this->getInstance($y);
+        $z = $this->getInstance($z);
+
+        $this->assertSame($z->toString(), $x->bitwise_OR($y)->toString());
+        $this->assertSame($z->toString(), $y->bitwise_OR($x)->toString());
     }
 
     public function testBitwiseXOR()
