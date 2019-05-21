@@ -19,9 +19,6 @@ use phpseclib\Exception\UnsupportedFormatException;
 use phpseclib\Exception\NoKeyLoadedException;
 use phpseclib\Math\BigInteger;
 use phpseclib\Crypt\Hash;
-use phpseclib\Crypt\RSA;
-use phpseclib\Crypt\DSA;
-use phpseclib\Crypt\ECDSA;
 
 /**
  * Base Class for all stream cipher classes
