@@ -825,7 +825,7 @@ uhPlgkgknwIgdDqqKIAF60ouiynsbU53ERS0TwpjeFiYGA48SwYW3Nk=
 
         $this->assertInternalType('string', $result);
 
-        $r = $x509->load($result);
+        $r = $x509->loadX509($result);
         $this->assertArrayHasKey('tbsCertificate', $r);
     }
 
@@ -854,7 +854,7 @@ wkwhE/JaQAEHq2PHnEmvwyBiJcHSdLXkcLzYlg19Ho0BPqVKdulx8GAk
 
         $this->assertInternalType('string', $result);
 
-        $r = $x509->load($result);
+        $r = $x509->loadX509($result);
         $this->assertArrayHasKey('tbsCertificate', $r);
     }
 }
