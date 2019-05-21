@@ -815,7 +815,7 @@ uhPlgkgknwIgdDqqKIAF60ouiynsbU53ERS0TwpjeFiYGA48SwYW3Nk=
         $subject->setPublicKey($public);
 
         $issuer = new X509();
-        $issuer->setPrivateKey($privKey);
+        $issuer->setPrivateKey($private);
         $issuer->setDN($subject->getDN());
 
         $x509 = new X509();
@@ -843,7 +843,7 @@ wkwhE/JaQAEHq2PHnEmvwyBiJcHSdLXkcLzYlg19Ho0BPqVKdulx8GAk
         $subject->setPublicKey($public);
 
         $issuer = new X509();
-        $issuer->setPrivateKey($privKey);
+        $issuer->setPrivateKey($private);
         $issuer->setDN($subject->getDN());
 
         $x509 = new X509();
