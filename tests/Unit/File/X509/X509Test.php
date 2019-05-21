@@ -814,13 +814,41 @@ uhPlgkgknwIgdDqqKIAF60ouiynsbU53ERS0TwpjeFiYGA48SwYW3Nk=
         $subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
         $subject->setPublicKey($public);
 
-        $issuer = new File_X509();
+        $issuer = new X509();
         $issuer->setPrivateKey($privKey);
         $issuer->setDN($subject->getDN());
 
-        $x509 = new File_X509();
+        $x509 = new X509();
 
         $result = $x509->sign($issuer, $subject, 'id-dsa-with-sha256');
+
+        $this->assertInternalType('string', $result);
+
+        $r = $x509->load($result);
+        $this->assertArrayHasKey('tbsCertificate', $r);
+    }
+
+    public function testECDSASave()
+    {
+        $private = '-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgQ0o1byJQbAcuklBt
+MENv2e0W3cE6gRmETxEvTBAxRTShRANCAARdg5FlgVy16RLosh7Ly9rkIuRAJZnD
+wkwhE/JaQAEHq2PHnEmvwyBiJcHSdLXkcLzYlg19Ho0BPqVKdulx8GAk
+-----END PRIVATE KEY-----';
+        $private = PublicKeyLoader::load($private);
+        $public = $private->getPublicKey();
+
+        $subject = new X509();
+        $subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
+        $subject->setPublicKey($public);
+
+        $issuer = new X509();
+        $issuer->setPrivateKey($privKey);
+        $issuer->setDN($subject->getDN());
+
+        $x509 = new X509();
+
+        $result = $x509->sign($issuer, $subject, 'ecdsa-with-SHA256');
 
         $this->assertInternalType('string', $result);
 
