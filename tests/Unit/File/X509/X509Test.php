@@ -821,6 +821,7 @@ uhPlgkgknwIgdDqqKIAF60ouiynsbU53ERS0TwpjeFiYGA48SwYW3Nk=
         $x509 = new X509();
 
         $result = $x509->sign($issuer, $subject, 'id-dsa-with-sha256');
+        $result = $x509->saveX509($result);
 
         $this->assertInternalType('string', $result);
 
@@ -849,6 +850,7 @@ wkwhE/JaQAEHq2PHnEmvwyBiJcHSdLXkcLzYlg19Ho0BPqVKdulx8GAk
         $x509 = new X509();
 
         $result = $x509->sign($issuer, $subject, 'ecdsa-with-SHA256');
+        $result = $x509->saveX509($result);
 
         $this->assertInternalType('string', $result);
 
