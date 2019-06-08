@@ -107,29 +107,12 @@ abstract class OpenSSH extends Progenitor
     }
 
     /**
-     * Convert an ECDSA public key to the appropriate format
+     * Returns the alias that corresponds to a curve
      *
-     * @access public
-     * @param \phpseclib\Crypt\ECDSA\BaseCurves\Base $curve
-     * @param \phpseclib\Math\Common\FiniteField\Integer[] $publicKey
-     * @param array $options optional
      * @return string
      */
-    public static function savePublicKey(BaseCurve $curve, array $publicKey, array $options = [])
+    private static function getAlias(BaseCurve $curve)
     {
-        $comment = isset($options['comment']) ? $options['comment'] : self::$comment;
-
-        if ($curve instanceof Ed25519) {
-            $key = Strings::packSSH2('ss', 'ssh-ed25519', $curve->encodePoint($publicKey));
-
-            if (self::$binary) {
-                return $key;
-            }
-
-            $key = 'ssh-ed25519 ' . Base64::encode($key) . ' ' . $comment;
-            return $key;
-        }
-
         self::initialize_static_variables();
 
         $reflect = new \ReflectionClass($curve);
@@ -152,6 +135,35 @@ abstract class OpenSSH extends Progenitor
             throw new UnsupportedCurveException($name . ' is not a curve that the OpenSSH plugin supports');
         }
 
+        return $alias;
+    }
+
+    /**
+     * Convert an ECDSA public key to the appropriate format
+     *
+     * @access public
+     * @param \phpseclib\Crypt\ECDSA\BaseCurves\Base $curve
+     * @param \phpseclib\Math\Common\FiniteField\Integer[] $publicKey
+     * @param array $options optional
+     * @return string
+     */
+    public static function savePublicKey(BaseCurve $curve, array $publicKey, array $options = [])
+    {
+        $comment = isset($options['comment']) ? $options['comment'] : self::$comment;
+
+        if ($curve instanceof Ed25519) {
+            $key = Strings::packSSH2('ss', 'ssh-ed25519', $curve->encodePoint($publicKey));
+
+            if (self::$binary) {
+                return $key;
+            }
+
+            $key = 'ssh-ed25519 ' . base64_encode($key) . ' ' . $comment;
+            return $key;
+        }
+
+        $alias = self::getAlias($curve);
+
         $points = "\4" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
         $key = Strings::packSSH2('sss', 'ecdsa-sha2-' . $alias, $alias, $points);
 
@@ -159,7 +171,7 @@ abstract class OpenSSH extends Progenitor
             return $key;
         }
 
-        $key = 'ecdsa-sha2-' . $alias . ' ' . Base64::encode($key) . ' ' . $comment;
+        $key = 'ecdsa-sha2-' . $alias . ' ' . base64_encode($key) . ' ' . $comment;
 
         return $key;
     }
@@ -172,38 +184,30 @@ abstract class OpenSSH extends Progenitor
      * @param \phpseclib\Crypt\ECDSA\Curves\Ed25519 $curve
      * @param \phpseclib\Math\Common\FiniteField\Integer[] $publicKey
      * @param string $password optional
+     * @param array $options optional
      * @return string
      */
-    public static function savePrivateKey(Integer $privateKey, Ed25519 $curve, array $publicKey, $password = '')
+    public static function savePrivateKey(Integer $privateKey, BaseCurve $curve, array $publicKey, $password = '', array $options = [])
     {
-        if (!isset($privateKey->secret)) {
-            throw new \RuntimeException('Private Key does not have a secret set');
+        if ($curve instanceof Ed25519) {
+            if (!isset($privateKey->secret)) {
+                throw new \RuntimeException('Private Key does not have a secret set');
+            }
+            if (strlen($privateKey->secret) != 32) {
+                throw new \RuntimeException('Private Key secret is not of the correct length');
+            }
+
+            list(, $checkint) = unpack('N', Random::string(4));
+            $pubKey = $curve->encodePoint($publicKey);
+
+            $publicKey = Strings::packSSH2('ss', 'ssh-ed25519', $pubKey);
+            $privateKey = Strings::packSSH2('sss', 'ssh-ed25519', $pubKey, $privateKey->secret . $pubKey);
+
+            return self::wrapPrivateKey($publicKey, $privateKey, $options);
         }
-        if (strlen($privateKey->secret) != 32) {
-            throw new \RuntimeException('Private Key secret is not of the correct length');
-        }
 
-        list(, $checkint) = unpack('N', Random::string(4));
-        $pubKey = $curve->encodePoint($publicKey);
+        $publicKey = savePublicKey($curve, $publicKey, ['binary' => true]);
 
-        $publicKey = Strings::packSSH2('ss', 'ssh-ed25519', $pubKey);
-        $paddedKey = Strings::packSSH2('NNssss', $checkint, $checkint, 'ssh-ed25519', $pubKey, $privateKey->secret . $pubKey, self::$comment);
-        /*
-           from http://tools.ietf.org/html/rfc4253#section-6 :
-
-           Note that the length of the concatenation of 'packet_length',
-           'padding_length', 'payload', and 'random padding' MUST be a multiple
-           of the cipher block size or 8, whichever is larger.
-         */
-        $paddingLength = (7 * strlen($paddedKey)) % 8;
-        for ($i = 1; $i <= $paddingLength; $i++) {
-            $paddedKey.= chr($i);
-        }
-        $key = Strings::packSSH2('sssNss', 'none', 'none', '', 1, $publicKey, $paddedKey);
-        $key = "openssh-key-v1\0$key";
-
-        return "-----BEGIN OPENSSH PRIVATE KEY-----\r\n" .
-               chunk_split(Base64::encode($key), 70) . 
-               "-----END OPENSSH PRIVATE KEY-----";
+        return self::wrapPrivateKey($publicKey, $privateKey->toBytes(), $options);
     }
 }

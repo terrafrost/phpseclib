@@ -98,8 +98,29 @@ abstract class OpenSSH extends Progenitor
         }
 
         $comment = isset($options['comment']) ? $options['comment'] : self::$comment;
-        $DSAPublicKey = 'ssh-dss ' . Base64::encode($DSAPublicKey) . ' ' . $comment;
+        $DSAPublicKey = 'ssh-dss ' . base64_encode($DSAPublicKey) . ' ' . $comment;
 
         return $DSAPublicKey;
+    }
+
+    /**
+     * Convert a private key to the appropriate format.
+     *
+     * @access public
+     * @param \phpseclib\Math\BigInteger $p
+     * @param \phpseclib\Math\BigInteger $q
+     * @param \phpseclib\Math\BigInteger $g
+     * @param \phpseclib\Math\BigInteger $x
+     * @param \phpseclib\Math\BigInteger $y
+     * @param string $password optional
+     * @param array $options optional
+     * @return string
+     */
+    public static function savePrivateKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y, BigInteger $x, $password = '', array $options = [])
+    {
+        $publicKey = self::savePublicKey($p, $q, $g, $y, ['binary' => true]);
+        $privateKey = Strings::packSSH2('i5', $p, $q, $g, $y, $x);
+
+        return self::wrapPrivateKey($publicKey, $privateKey, $options);
     }
 }
