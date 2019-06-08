@@ -32,6 +32,13 @@ use phpseclib\Crypt\Common\Keys\OpenSSH as Progenitor;
 abstract class OpenSSH extends Progenitor
 {
     /**
+     * Supported Key Types
+     *
+     * @var array
+     */
+    protected static $types = ['ssh-dss'];
+
+    /**
      * Break a public or private key down into its constituent components
      *
      * @access public
@@ -41,15 +48,22 @@ abstract class OpenSSH extends Progenitor
      */
     public static function load($key, $password = '')
     {
-        $key = parent::load($key, 'ssh-dss');
+        $parsed = parent::load($key, 'ssh-dss');
 
-        $result = Strings::unpackSSH2('iiii', $key);
-        if ($result === false) {
-            throw new \UnexpectedValueException('Key appears to be malformed');
+        if (isset($parsed['paddedKey'])) {
+            list($type) = Strings::unpackSSH2('s', $parsed['paddedKey']);
+            if ($type != $parsed['type']) {
+                throw new \RuntimeException("The public and private keys are not of the same type ($type vs $parsed[type])");
+            }
+
+            list($p, $q, $g, $y, $x, $comment) = Strings::unpackSSH2('i5s', $parsed['paddedKey']);
+
+            return compact('p', 'q', 'g', 'y', 'x', 'comment');
         }
-        list($p, $q, $g, $y) = $result;
 
-        $comment = parent::getComment($key);
+        list($p, $q, $g, $y) = Strings::unpackSSH2('iiii', $parsed['publicKey']);
+
+        $comment = $parsed['comment'];
 
         return compact('p', 'q', 'g', 'y', 'comment');
     }
