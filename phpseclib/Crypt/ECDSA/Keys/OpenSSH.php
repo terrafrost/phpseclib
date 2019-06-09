@@ -25,7 +25,6 @@ use phpseclib\Crypt\ECDSA\BaseCurves\Base as BaseCurve;
 use phpseclib\Exception\UnsupportedCurveException;
 use phpseclib\Crypt\ECDSA\Curves\Ed25519;
 use phpseclib\Math\Common\FiniteField\Integer;
-use phpseclib\Crypt\Random;
 
 /**
  * OpenSSH Formatted ECDSA Key Handler
@@ -197,7 +196,6 @@ abstract class OpenSSH extends Progenitor
                 throw new \RuntimeException('Private Key secret is not of the correct length');
             }
 
-            list(, $checkint) = unpack('N', Random::string(4));
             $pubKey = $curve->encodePoint($publicKey);
 
             $publicKey = Strings::packSSH2('ss', 'ssh-ed25519', $pubKey);
