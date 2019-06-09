@@ -12,6 +12,7 @@ use phpseclib\Crypt\ECDSA\Keys\PuTTY;
 use phpseclib\Crypt\ECDSA\Keys\OpenSSH;
 use phpseclib\Crypt\ECDSA\Keys\XML;
 use phpseclib\Crypt\PublicKeyLoader;
+use phpseclib\Crypt\ECDSA\PrivateKey;
 
 class Unit_Crypt_ECDSA_LoadKeyTest extends PhpseclibTestCase
 {
@@ -455,6 +456,10 @@ AQIDBA==
 -----END OPENSSH PRIVATE KEY-----';
 
         $key = PublicKeyLoader::load($key);
+
+        $key2 = PublicKeyLoader::load($key->toString('OpenSSH'));
+        $this->assertInstanceOf(PrivateKey::class, $key2);
+
         $sig = $key->sign('zzz');
 
         $key = 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOTa1sOLJA/OWNH4ssiwzMmLCqR8eQZK1S3eQ7TQUoyhi/dEl8/qap0TcTek9xPlwGDjIH4rNixgPHC4FzTehBw= root@vagrant';
