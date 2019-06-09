@@ -133,7 +133,7 @@ abstract class OpenSSH extends Progenitor
     public static function savePrivateKey(BigInteger $n, BigInteger $e, BigInteger $d, array $primes, array $exponents, array $coefficients, $password = '', array $options = [])
     {
         $publicKey = self::savePublicKey($n, $e, ['binary' => true]);
-        $privateKey = Strings::packSSH2('i6', $n, $e, $d, $coefficients[2], $primes[1], $primes[2]);
+        $privateKey = Strings::packSSH2('si6', 'ssh-rsa', $n, $e, $d, $coefficients[2], $primes[1], $primes[2]);
 
         return self::wrapPrivateKey($publicKey, $privateKey, $options);
     }
