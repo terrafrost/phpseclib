@@ -204,8 +204,11 @@ abstract class OpenSSH extends Progenitor
             return self::wrapPrivateKey($publicKey, $privateKey, $options);
         }
 
-        $publicKey = savePublicKey($curve, $publicKey, ['binary' => true]);
+        $alias = self::getAlias($curve);
 
-        return self::wrapPrivateKey($publicKey, $privateKey->toBytes(), $options);
+        $publicKey = self::savePublicKey($curve, $publicKey, ['binary' => true]);
+        $privateKey = Strings::packSSH2('sssi', 'ecdsa-sha2-' . $alias, $alias, $publicKey, $privateKey);
+
+        return self::wrapPrivateKey($publicKey, Strings::$privateKey->toBytes(), $options);
     }
 }
