@@ -47,7 +47,7 @@ class Unit_Crypt_BlowfishTest extends PhpseclibTestCase
             $objects[0]->setKey($key);
             $ref = $objects[0]->encrypt($plaintext);
             for ($i = 1; $i < count($objects); $i++) {
-echo $objcts[$i]->getEngine() . " with keylen of $keylen\n";
+echo $objects[$i]->getEngine() . " with keylen of $keylen\n";
                 $objects[$i]->setKey($key);
                 $this->assertEquals($ref, $objects[$i]->encrypt($plaintext), "Failed asserting that {$engines[$i]} yields the same output as the internal engine with a key size of $keyLen");
             }
