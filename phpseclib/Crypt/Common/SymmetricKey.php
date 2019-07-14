@@ -1087,6 +1087,7 @@ abstract class SymmetricKey
      */
     public function encrypt($plaintext)
     {
+echo "CALLED\n";
         if ($this->paddable) {
             $plaintext = $this->pad($plaintext);
         }
@@ -1270,7 +1271,9 @@ abstract class SymmetricKey
         }
 
         if ($this->engine === self::ENGINE_EVAL) {
+echo "SO FAR\n";
             $inline = $this->inline_crypt;
+var_dump($inline);
             return $inline('encrypt', $plaintext);
         }
 
