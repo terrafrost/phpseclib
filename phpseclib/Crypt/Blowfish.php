@@ -495,6 +495,7 @@ class Blowfish extends BlockCipher
             $in = unpack("N*", $in);
             $l = $in[1];
             $r = $in[2];
+echo "\n\n\nccccccc\n\n\n";
         ';
         for ($i = 0; $i < 16; $i+= 2) {
             $encrypt_block.= '
@@ -502,6 +503,7 @@ class Blowfish extends BlockCipher
                 $r^= ' . sprintf($safeint, '(' . sprintf($safeint, '$sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff]') . ' ^
                       $sb_2[$l >>  8 & 0xff]) +
                       $sb_3[$l       & 0xff]') . ';
+echo "\n\n\ndddddddd\n\n\n";
 
                 $r^= ' . $p[$i + 1] . ';
                 $l^= ' . sprintf($safeint, '(' . sprintf($safeint, '$sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]') . '  ^
