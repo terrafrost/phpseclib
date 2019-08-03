@@ -1338,6 +1338,7 @@ $_text = $plaintext;
 
         //if ($this->engine === self::ENGINE_EVAL) {
             $inline = $this->inline_crypt;
+var_dump($inline); exit;
             return $inline('encrypt', $plaintext);
         //}
     }
