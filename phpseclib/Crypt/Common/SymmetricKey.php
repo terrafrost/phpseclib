@@ -2589,7 +2589,9 @@ $_text = $plaintext;
                     $_plaintext_len = strlen($_text);
                     $_xor = $this->encryptIV;
                     $_buffer = &$this->enbuffer;
+echo "\n\nthis far x2\n\n";
                     if (strlen($_buffer["ciphertext"])) {
+echo "\n\nthis far x1\n\n";
                         for ($_i = 0; $_i < $_plaintext_len; $_i+= '.$block_size.') {
                             $_block = substr($_text, $_i, '.$block_size.');
                             if (strlen($_block) > strlen($_buffer["ciphertext"])) {
@@ -2602,6 +2604,7 @@ $_text = $plaintext;
                             $_ciphertext.= $_block ^ $_key;
                         }
                     } else {
+echo "\n\nthis far x3\n\n";
                         for ($_i = 0; $_i < $_plaintext_len; $_i+= '.$block_size.') {
                             $_block = substr($_text, $_i, '.$block_size.');
                             $in = $_xor;
@@ -2611,6 +2614,7 @@ $_text = $plaintext;
                             $_ciphertext.= $_block ^ $_key;
                         }
                     }
+echo "\n\nthis far x4\n\n";
                     if ($this->continuousBuffer) {
                         $this->encryptIV = $_xor;
                         if ($_start = $_plaintext_len % '.$block_size.') {
@@ -2668,10 +2672,12 @@ echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 exit;
 */
 $zzz = '$func = function ($_action, $_text) { echo "\n\n\nbbbbbb\n\n\n"; ' . $init_crypt . 'if ($_action == "encrypt") { echo "\n\n\nzzzzz\n\n\n";' . $encrypt . ' echo "\n\n\naaaaaaa\n\n\n";} else { ' . $decrypt . ' }};';
+/*
 echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 echo $zzz;
 echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 exit;
+*/
 
         // Before discrediting this, please read the following:
         // @see https://github.com/phpseclib/phpseclib/issues/1293
