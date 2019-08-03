@@ -19,6 +19,7 @@ $plaintext = str_repeat('.', 100);
 $keyLen = 4;
 $key = Random::string($keyLen);
 $temp->setKey($key);
+$temp->setIV(str_repeat('x', $temp->getBlockLength() >> 3));
 $temp->encrypt($plaintext);
 
 $this->assertTrue(true);
