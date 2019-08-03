@@ -2271,6 +2271,7 @@ $_text = $plaintext;
             $this->createPoly1305Key();
         }
 
+echo "SETTING BUFFER UP\n";
         $this->enbuffer = $this->debuffer = ['ciphertext' => '', 'xor' => '', 'pos' => 0, 'enmcrypt_init' => true];
         //$this->newtag = $this->oldtag = false;
 
@@ -2590,6 +2591,7 @@ $_text = $plaintext;
                     $_xor = $this->encryptIV;
                     $_buffer = &$this->enbuffer;
 echo "\n\nthis far x2\n\n";
+var_dump($_buffer);
                     if (strlen($_buffer["ciphertext"])) {
 echo "\n\nthis far x1\n\n";
                         for ($_i = 0; $_i < $_plaintext_len; $_i+= '.$block_size.') {
