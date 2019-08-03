@@ -2670,7 +2670,7 @@ exit;
         // Before discrediting this, please read the following:
         // @see https://github.com/phpseclib/phpseclib/issues/1293
         // @see https://github.com/phpseclib/phpseclib/pull/1143
-        eval('$func = function ($_action, $_text) { ' . $init_crypt . 'if ($_action == "encrypt") { exit("zzz");' . $encrypt . ' } else { ' . $decrypt . ' }};');
+        eval('$func = function ($_action, $_text) { echo "\n\n\nbbbbbb\n\n\n"; ' . $init_crypt . 'if ($_action == "encrypt") { echo "\n\n\nzzzzz\n\n\n";' . $encrypt . ' } else { ' . $decrypt . ' }};');
 
         return \Closure::bind($func, $this, static::class);
     }
