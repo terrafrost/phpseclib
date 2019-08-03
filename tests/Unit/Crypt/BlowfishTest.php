@@ -14,7 +14,8 @@ class Unit_Crypt_BlowfishTest extends PhpseclibTestCase
     {
 
 $temp = new Blowfish('ctr');
-$temp->setPreferredEngine('PHP');
+//$temp->setPreferredEngine('PHP');
+$temp->setPreferredEngine('OpenSSL');
 $plaintext = str_repeat('.', 100);
 $keyLen = 4;
 $key = Random::string($keyLen);
