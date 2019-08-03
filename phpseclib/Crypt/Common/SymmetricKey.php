@@ -1102,6 +1102,18 @@ abstract class SymmetricKey
 
 
 
+            static $sb_0, $sb_1, $sb_2, $sb_3;
+            if (!$sb_0) {
+                $sb_0 = $this->bctx["sb"][0];
+                $sb_1 = $this->bctx["sb"][1];
+                $sb_2 = $this->bctx["sb"][2];
+                $sb_3 = $this->bctx["sb"][3];
+            }
+
+
+
+
+
 $_text = $plaintext;
 
                     $_ciphertext = "";
