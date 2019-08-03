@@ -492,6 +492,7 @@ class Blowfish extends BlockCipher
 
         // Generating encrypt code:
         $encrypt_block = '
+echo "\n\n\neeeeeee\n\n\n";
             $in = unpack("N*", $in);
             $l = $in[1];
             $r = $in[2];
