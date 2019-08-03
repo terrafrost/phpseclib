@@ -551,7 +551,7 @@ echo "\n\n\ndddddddd\n\n\n";
                'init_crypt'    => $init_crypt,
                'init_encrypt'  => '',
                'init_decrypt'  => '',
-               'encrypt_block' => $encrypt_block,
+               'encrypt_block' => 'echo "\n\n\nfffff\n\n\n"; ' . $encrypt_block,
                'decrypt_block' => $decrypt_block
             ]
         );
