@@ -2735,6 +2735,11 @@ abstract class SymmetricKey
 
         }
 
+echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+echo $encrypt;
+echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+exit;
+
         // Before discrediting this, please read the following:
         // @see https://github.com/phpseclib/phpseclib/issues/1293
         // @see https://github.com/phpseclib/phpseclib/pull/1143
