@@ -1338,7 +1338,7 @@ $_text = $plaintext;
 
         //if ($this->engine === self::ENGINE_EVAL) {
             $inline = $this->inline_crypt;
-var_dump($inline); exit;
+//var_dump($inline); exit;
             return $inline('encrypt', $plaintext);
         //}
     }
@@ -2670,7 +2670,7 @@ exit;
         // Before discrediting this, please read the following:
         // @see https://github.com/phpseclib/phpseclib/issues/1293
         // @see https://github.com/phpseclib/phpseclib/pull/1143
-        eval('$func = function ($_action, $_text) { ' . $init_crypt . 'if ($_action == "encrypt") { ' . $encrypt . ' } else { ' . $decrypt . ' }};');
+        eval('$func = function ($_action, $_text) { ' . $init_crypt . 'if ($_action == "encrypt") { exit("zzz");' . $encrypt . ' } else { ' . $decrypt . ' }};');
 
         return \Closure::bind($func, $this, static::class);
     }
