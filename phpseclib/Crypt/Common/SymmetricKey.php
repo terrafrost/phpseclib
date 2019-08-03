@@ -1093,6 +1093,252 @@ abstract class SymmetricKey
 
         $this->setup();
 
+
+
+
+
+
+
+
+
+
+$_text = $plaintext;
+
+                    $_ciphertext = "";
+                    $_plaintext_len = strlen($_text);
+                    $_xor = $this->encryptIV;
+                    $_buffer = &$this->enbuffer;
+                    if (strlen($_buffer["ciphertext"])) {
+                        for ($_i = 0; $_i < $_plaintext_len; $_i+= 8) {
+                            $_block = substr($_text, $_i, 8);
+                            if (strlen($_block) > strlen($_buffer["ciphertext"])) {
+                                $in = $_xor;
+                                
+            $in = unpack("N*", $in);
+            $l = $in[1];
+            $r = $in[2];
+        
+                $l^= 549779041;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 1343762651;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 3920224580;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 2647197573;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 762926544;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 1139411722;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 1885981652;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 1235852190;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 908823431;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 3377844777;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 3493379003;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 2034177831;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 154927566;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 3674330545;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 835161592;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 4139394170;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+            $in = pack("N*",
+                $r ^ 733410383,
+                $l ^ 818193079
+            );
+        
+                                \phpseclib\Common\Functions\Strings::increment_str($_xor);
+                                $_buffer["ciphertext"].= $in;
+                            }
+                            $_key = \phpseclib\Common\Functions\Strings::shift($_buffer["ciphertext"], 8);
+                            $_ciphertext.= $_block ^ $_key;
+                        }
+                    } else {
+                        for ($_i = 0; $_i < $_plaintext_len; $_i+= 8) {
+                            $_block = substr($_text, $_i, 8);
+                            $in = $_xor;
+                            
+            $in = unpack("N*", $in);
+            $l = $in[1];
+            $r = $in[2];
+        
+                $l^= 549779041;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 1343762651;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 3920224580;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 2647197573;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 762926544;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 1139411722;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 1885981652;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 1235852190;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 908823431;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 3377844777;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 3493379003;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 2034177831;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 154927566;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 3674330545;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+                $l^= 835161592;
+                $r^= ($sb_0[$l >> 24 & 0xff] + $sb_1[$l >> 16 & 0xff] ^
+                      $sb_2[$l >>  8 & 0xff]) +
+                      $sb_3[$l       & 0xff];
+
+                $r^= 4139394170;
+                $l^= ($sb_0[$r >> 24 & 0xff] + $sb_1[$r >> 16 & 0xff]  ^
+                      $sb_2[$r >>  8 & 0xff]) +
+                      $sb_3[$r       & 0xff];
+            
+            $in = pack("N*",
+                $r ^ 733410383,
+                $l ^ 818193079
+            );
+        
+                            \phpseclib\Common\Functions\Strings::increment_str($_xor);
+                            $_key = $in;
+                            $_ciphertext.= $_block ^ $_key;
+                        }
+                    }
+                    if ($this->continuousBuffer) {
+                        $this->encryptIV = $_xor;
+                        if ($_start = $_plaintext_len % 8) {
+                            $_buffer["ciphertext"] = substr($_key, $_start) . $_buffer["ciphertext"];
+                        }
+                    }
+
+                    return $_ciphertext;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if ($this->mode == self::MODE_GCM) {
             $oldIV = $this->iv;
             Strings::increment_str($this->iv);
