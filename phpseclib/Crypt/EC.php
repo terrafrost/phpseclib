@@ -162,6 +162,7 @@ abstract class EC extends AsymmetricKey
 
         $curveName = $curve;
         $curve = '\phpseclib\Crypt\EC\Curves\\' . $curve;
+echo "class = $curve\n";
         if (!class_exists($curve)) {
             throw new UnsupportedCurveException('Named Curve of ' . $curveName . ' is not supported');
         }
