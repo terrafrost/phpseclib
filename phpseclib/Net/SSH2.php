@@ -1491,6 +1491,7 @@ class SSH2
             $curve = strpos($this->kex_algorithm, 'curve25519-sha256') === 0 ?
                 'Curve25519' :
                 substr($this->kex_algorithm, 10);
+echo "\nzzzcurve = $curve\n";
             $ourPrivate = EC::createKey($curve);
             $ourPublicBytes = $ourPrivate->getPublicKey()->getEncodedCoordinates();
             $clientKexInitMessage = NET_SSH2_MSG_KEX_ECDH_INIT;
