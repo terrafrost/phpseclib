@@ -145,7 +145,7 @@ abstract class EC extends AsymmetricKey
             self::useBestEngine();
         }
 
-        $curve = strtolower($curve);
+//        $curve = strtolower($curve);
         if (self::$engines['libsodium'] && $curve == 'ed25519' && function_exists('sodium_crypto_sign_keypair')) {
             $kp = sodium_crypto_sign_keypair();
 
