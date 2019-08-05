@@ -379,4 +379,23 @@ abstract class DH extends AsymmetricKey
     {
         throw new UnsupportedOperationException('DH does not use a hash algorithm');
     }
+
+    /**
+     * Returns the parameters
+     *
+     * A public / private key is only returned if the currently loaded "key" contains an x or y
+     * value.
+     *
+     * @see self::getPublicKey()
+     * @access public
+     * @param string $type optional
+     * @return mixed
+     */
+    public function getParameters()
+    {
+        $type = self::validatePlugin('Keys', 'PKCS1', 'saveParameters');
+
+        $key = $type::saveParameters($this->prime, $this->base);
+        return self::load($key, 'PKCS1');
+    }
 }
