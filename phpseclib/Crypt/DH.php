@@ -74,7 +74,7 @@ abstract class DH extends AsymmetricKey
      *
      * This method is a bit polymorphic. It can take any of the following:
      *  - two BigInteger's (prime and base)
-     *  - an integer (at which point base is assumed to be 2)
+     *  - an integer representing the size of the prime in bits (the base is assumed to be 2)
      *  - a string (eg. diffie-hellman-group14-sha1)
      *
      * @access public
