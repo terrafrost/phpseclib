@@ -22,13 +22,13 @@ MIGHAoGBAP//////////yQ/aoiFowjTExmKLgNwc0SkCTgiKZ8x0Agu+pjsTmyJR
 Sgh5jjQE3e+VGbPNOkMbMCsKbfJfFDdP4TVtbVHCReSFtXZiXn7G9ExC6aY37WsL
 /1y29Aa37e44a/taiZ+lrp8kEXxLH+ZJKGZR7OZTgf//////////AgEC
 -----END DH PARAMETERS-----';
-        $this->assertSame($b, $a);
+        $this->assertSame($b, "$a");
     }
 
     public function testParametersWithInteger()
     {
         $a = DH::createParameters(512);
-        $this->assertInternalType('string', $a);
+        $this->assertInternalType('string', "$a");
     }
 
     public function testParametersWithBigIntegers()
@@ -45,7 +45,7 @@ MIGHAoGBAP//////////yQ/aoiFowjTExmKLgNwc0SkCTgiKZ8x0Agu+pjsTmyJR
 Sgh5jjQE3e+VGbPNOkMbMCsKbfJfFDdP4TVtbVHCReSFtXZiXn7G9ExC6aY37WsL
 /1y29Aa37e44a/taiZ+lrp8kEXxLH+ZJKGZR7OZTgf//////////AgEC
 -----END DH PARAMETERS-----';
-        $this->assertSame($b, $a);
+        $this->assertSame($b, "$a");
     }
 
     public function testCreateKey()
