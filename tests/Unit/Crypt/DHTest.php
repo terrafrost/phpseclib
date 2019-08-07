@@ -22,6 +22,7 @@ MIGHAoGBAP//////////yQ/aoiFowjTExmKLgNwc0SkCTgiKZ8x0Agu+pjsTmyJR
 Sgh5jjQE3e+VGbPNOkMbMCsKbfJfFDdP4TVtbVHCReSFtXZiXn7G9ExC6aY37WsL
 /1y29Aa37e44a/taiZ+lrp8kEXxLH+ZJKGZR7OZTgf//////////AgEC
 -----END DH PARAMETERS-----';
+echo "\n\n\n" . urlencode($a) . "\n\n\n" . urlencode($b) . "\n\n\n";
         $this->assertSame($b, "$a");
     }
 
