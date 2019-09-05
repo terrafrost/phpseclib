@@ -352,6 +352,15 @@ abstract class SymmetricKey
     protected $changed = true;
 
     /**
+     * Does Eval engie need to be (re)initialized?
+     *
+     * @see self::setup()
+     * @var bool
+     * @access private
+     */
+    protected $nonIVChanged = true;
+
+    /**
      * Padding status
      *
      * @see self::enablePadding()
