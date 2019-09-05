@@ -859,7 +859,7 @@ abstract class SymmetricKey
 
         $this->key = $key;
         $this->key_length = strlen($key);
-        $this->changed = true;
+        $this->changed = $this->nonIVChanged = true;
         $this->setEngine();
     }
 
@@ -2081,6 +2081,7 @@ abstract class SymmetricKey
         }
 
         $this->continuousBuffer = true;
+        $this->changed = $this->nonIVChanged = true;
 
         $this->setEngine();
     }
@@ -2104,7 +2105,7 @@ abstract class SymmetricKey
         }
 
         $this->continuousBuffer = false;
-        $this->changed = true;
+        $this->changed = $this->nonIVChanged = true;
 
         $this->setEngine();
     }
@@ -2404,9 +2405,13 @@ abstract class SymmetricKey
                 $this->setupKey();
                 break;
             case self::ENGINE_EVAL:
-                $this->setupKey();
-                $this->setupInlineCrypt();
+                if ($this->nonIVChanged) {
+                    $this->setupKey();
+                    $this->setupInlineCrypt();
+                }
         }
+
+        $this->nonIVChanged = false;
     }
 
     /**
