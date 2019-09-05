@@ -181,23 +181,13 @@ class Unit_Crypt_TripleDESTest extends PhpseclibTestCase
         $des->setIV(str_repeat("\0", $des->getBlockLength() >> 3));
 
         foreach ($this->engines as $engine) {
+echo "engine = $engine\n";
             $des->setPreferredEngine($engine);
             if (!$des->isValidEngine($engine)) {
                 self::markTestSkipped("Unable to initialize $engine engine");
             }
             $result = bin2hex($des->encrypt(str_repeat('a', 16)));
             $this->assertEquals($result, $expected, "Failed asserting inner chainin worked correctly in $engine engine");
-        }
-    }
-
-    // test special case lambda function error
-    public function testCorrectSelfUseInLambda()
-    {
-        $td = new TripleDES('ecb');
-        $td->setPreferredEngine('Eval');
-        for ($i = 0; $i < 20; $i++) {
-            $td->setKey(str_repeat('a', 20) . pack('V', mt_rand()));
-            $td->encrypt(str_repeat('a', 32));
         }
     }
 }
