@@ -1280,7 +1280,7 @@ echo "SETTING NON IV CHANGED TO TRUE\n";
         }
 
         if ($this->engine === self::ENGINE_EVAL) {
-var_dump($inline_engine);
+var_dump($this->inline_engine);
             $inline = $this->inline_crypt;
             return $inline('encrypt', $plaintext);
         }
