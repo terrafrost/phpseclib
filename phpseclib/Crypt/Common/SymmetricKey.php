@@ -869,7 +869,7 @@ abstract class SymmetricKey
         $this->key = $key;
         $this->key_length = strlen($key);
         $this->changed = $this->nonIVChanged = true;
-echo "SETTING NON IV CHANGED TO TRUE\";
+echo "SETTING NON IV CHANGED TO TRUE\n";
         $this->setEngine();
     }
 
