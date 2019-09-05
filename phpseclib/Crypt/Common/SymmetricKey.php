@@ -2283,7 +2283,7 @@ var_dump($this->inline_crypt);
             }
         }
 
-        $this->changed = true;
+        $this->changed = $this->nonIVChanged = true;
     }
 
     /**

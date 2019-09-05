@@ -1302,6 +1302,7 @@ class DES extends BlockCipher
      */
     protected function setupInlineCrypt()
     {
+echo "SETUP INLINE CRYPT CALLED\n";
         // Engine configuration for:
         // -  DES ($des_rounds == 1) or
         // - 3DES ($des_rounds == 3)
