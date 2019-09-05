@@ -2415,6 +2415,7 @@ abstract class SymmetricKey
                 break;
             case self::ENGINE_EVAL:
                 if ($this->nonIVChanged) {
+echo "SETUP KEY CALLED\n";
                     $this->setupKey();
                     $this->setupInlineCrypt();
                 }

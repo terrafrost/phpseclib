@@ -296,7 +296,7 @@ class TripleDES extends DES
 
         // if the key is smaller then 8, do what we'd normally do
         if ($this->mode_3cbc && strlen($this->key) > 8) {
-var_dump($this->des[2]);
+//var_dump($this->des[2]);
             return $this->des[2]->encrypt(
                 $this->des[1]->decrypt(
                     $this->des[0]->encrypt(
