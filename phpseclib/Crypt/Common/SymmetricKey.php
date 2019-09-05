@@ -1279,6 +1279,7 @@ abstract class SymmetricKey
         }
 
         if ($this->engine === self::ENGINE_EVAL) {
+var_dump($inline_engine);
             $inline = $this->inline_crypt;
             return $inline('encrypt', $plaintext);
         }
