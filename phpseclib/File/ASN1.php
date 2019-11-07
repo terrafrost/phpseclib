@@ -415,6 +415,8 @@ abstract class ASN1
                     $length = 0;
                     while (substr($content, $content_pos, 2) != "\0\0") {
                         $temp = self::decode_ber($content, $length + $start, $content_pos);
+echo implode(',', array_keys($temp)) . "\n";
+echo strlen($temp['content']) . " vs $temp[length]\n";// exit;
                         if ($temp === false) {
                             return false;
                         }
