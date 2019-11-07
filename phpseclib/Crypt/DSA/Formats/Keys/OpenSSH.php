@@ -18,9 +18,9 @@
 namespace phpseclib\Crypt\DSA\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Common\Formats\Keys\OpenSSH as Progenitor;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Common\Formats\Keys\OpenSSH as Progenitor;
 
 /**
  * OpenSSH Formatted DSA Key Handler

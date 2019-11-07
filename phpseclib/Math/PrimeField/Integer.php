@@ -14,8 +14,8 @@
 
 namespace phpseclib\Math\PrimeField;
 
-use phpseclib\Math\Common\FiniteField\Integer as Base;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\Common\FiniteField\Integer as Base;
+use phpseclib3\Math\BigInteger;
 use ParagonIE\ConstantTime\Hex;
 
 /**

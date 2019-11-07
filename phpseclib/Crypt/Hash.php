@@ -33,12 +33,12 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Exception\UnsupportedAlgorithmException;
-use phpseclib\Exception\InsufficientSetupException;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\AES;
-use phpseclib\Math\PrimeField;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Exception\InsufficientSetupException;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\AES;
+use phpseclib3\Math\PrimeField;
 
 /**
  * @package Hash

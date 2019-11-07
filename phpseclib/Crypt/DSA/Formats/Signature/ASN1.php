@@ -18,9 +18,9 @@
 
 namespace phpseclib\Crypt\DSA\Formats\Signature;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\File\ASN1 as Encoder;
-use phpseclib\File\ASN1\Maps;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\File\ASN1 as Encoder;
+use phpseclib3\File\ASN1\Maps;
 
 /**
  * ASN1 Signature Handler

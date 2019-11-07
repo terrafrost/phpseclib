@@ -35,8 +35,8 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\BlockCipher;
-use phpseclib\Exception\BadModeException;
+use phpseclib3\Crypt\Common\BlockCipher;
+use phpseclib3\Exception\BadModeException;
 
 /**
  * Pure-PHP implementation of RC2.

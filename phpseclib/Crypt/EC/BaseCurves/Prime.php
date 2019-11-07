@@ -23,11 +23,11 @@
 
 namespace phpseclib\Crypt\EC\BaseCurves;
 
-use phpseclib\Math\Common\FiniteField\Integer;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Math\PrimeField;
-use phpseclib\Math\BigInteger;
-use phpseclib\Math\PrimeField\Integer as PrimeInteger;
+use phpseclib3\Math\Common\FiniteField\Integer;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Math\PrimeField;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Math\PrimeField\Integer as PrimeInteger;
 
 /**
  * Curves over y^2 = x^3 + a*x + b

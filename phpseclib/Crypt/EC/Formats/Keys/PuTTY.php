@@ -16,12 +16,12 @@
 namespace phpseclib\Crypt\EC\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Common\Formats\Keys\PuTTY as Progenitor;
-use phpseclib\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib\Math\Common\FiniteField\Integer;
-use phpseclib\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Common\Formats\Keys\PuTTY as Progenitor;
+use phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
+use phpseclib3\Math\Common\FiniteField\Integer;
+use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
 
 /**
  * PuTTY Formatted EC Key Handler

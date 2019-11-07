@@ -15,7 +15,7 @@
 
 namespace phpseclib\Math\BigInteger\Engines\PHP\Reductions;
 
-use phpseclib\Math\BigInteger\Engines\PHP\Montgomery as Progenitor;
+use phpseclib3\Math\BigInteger\Engines\PHP\Montgomery as Progenitor;
 
 /**
  * PHP Montgomery Modular Exponentiation Engine

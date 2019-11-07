@@ -47,13 +47,13 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\AsymmetricKey;
-use phpseclib\Crypt\RSA\PrivateKey;
-use phpseclib\Crypt\RSA\PublicKey;
-use phpseclib\Math\BigInteger;
-use phpseclib\Exception\UnsupportedAlgorithmException;
-use phpseclib\Exception\InconsistentSetupException;
-use phpseclib\Crypt\RSA\Formats\Keys\PSS;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Crypt\RSA\PrivateKey;
+use phpseclib3\Crypt\RSA\PublicKey;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Exception\InconsistentSetupException;
+use phpseclib3\Crypt\RSA\Formats\Keys\PSS;
 
 /**
  * Pure-PHP PKCS#1 compliant implementation of RSA.

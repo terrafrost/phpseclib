@@ -13,7 +13,7 @@
 
 namespace phpseclib\Crypt\DH;
 
-use phpseclib\Crypt\DH;
+use phpseclib3\Crypt\DH;
 
 /**
  * DH Parameters

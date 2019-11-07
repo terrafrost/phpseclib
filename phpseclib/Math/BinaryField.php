@@ -17,9 +17,9 @@
 namespace phpseclib\Math;
 
 use ParagonIE\ConstantTime\Hex;
-use phpseclib\Math\Common\FiniteField;
-use phpseclib\Math\BinaryField\Integer;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Math\Common\FiniteField;
+use phpseclib3\Math\BinaryField\Integer;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Binary Finite Fields

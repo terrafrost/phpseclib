@@ -15,8 +15,8 @@
 
 namespace phpseclib\Common\Functions;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Math\Common\FiniteField;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Math\Common\FiniteField;
 
 /**
  * Common String Functions

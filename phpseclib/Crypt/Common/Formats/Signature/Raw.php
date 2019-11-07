@@ -17,7 +17,7 @@
 
 namespace phpseclib\Crypt\Common\Formats\Signature;
 
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Raw Signature Handler

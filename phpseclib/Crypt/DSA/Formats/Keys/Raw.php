@@ -17,7 +17,7 @@
 
 namespace phpseclib\Crypt\DSA\Formats\Keys;
 
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Raw DSA Key Handler

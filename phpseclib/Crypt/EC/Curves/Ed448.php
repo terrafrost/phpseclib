@@ -14,10 +14,10 @@
 
 namespace phpseclib\Crypt\EC\Curves;
 
-use phpseclib\Crypt\EC\BaseCurves\TwistedEdwards;
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\Hash;
-use phpseclib\Crypt\Random;
+use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Crypt\Random;
 
 class Ed448 extends TwistedEdwards
 {

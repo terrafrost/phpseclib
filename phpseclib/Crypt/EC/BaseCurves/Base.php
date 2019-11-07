@@ -15,8 +15,8 @@
 
 namespace phpseclib\Crypt\EC\BaseCurves;
 
-use phpseclib\Math\Common\FiniteField;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\Common\FiniteField;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Base

@@ -18,13 +18,13 @@
 namespace phpseclib\Crypt\EC\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Common\Formats\Keys\OpenSSH as Progenitor;
-use phpseclib\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib\Exception\UnsupportedCurveException;
-use phpseclib\Crypt\EC\Curves\Ed25519;
-use phpseclib\Math\Common\FiniteField\Integer;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Common\Formats\Keys\OpenSSH as Progenitor;
+use phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
+use phpseclib3\Exception\UnsupportedCurveException;
+use phpseclib3\Crypt\EC\Curves\Ed25519;
+use phpseclib3\Math\Common\FiniteField\Integer;
 
 /**
  * OpenSSH Formatted EC Key Handler

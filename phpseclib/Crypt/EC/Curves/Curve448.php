@@ -15,9 +15,9 @@
 
 namespace phpseclib\Crypt\EC\Curves;
 
-use phpseclib\Math\Common\FiniteField\Integer;
-use phpseclib\Crypt\EC\BaseCurves\Montgomery;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\Common\FiniteField\Integer;
+use phpseclib3\Crypt\EC\BaseCurves\Montgomery;
+use phpseclib3\Math\BigInteger;
 
 class Curve448 extends Montgomery
 {

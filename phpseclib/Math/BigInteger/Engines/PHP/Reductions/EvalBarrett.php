@@ -15,8 +15,8 @@
 
 namespace phpseclib\Math\BigInteger\Engines\PHP\Reductions;
 
-use phpseclib\Math\BigInteger\Engines\PHP\Base;
-use phpseclib\Math\BigInteger\Engines\PHP;
+use phpseclib3\Math\BigInteger\Engines\PHP\Base;
+use phpseclib3\Math\BigInteger\Engines\PHP;
 
 /**
  * PHP Dynamic Barrett Modular Exponentiation Engine

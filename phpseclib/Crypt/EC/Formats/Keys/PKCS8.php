@@ -25,17 +25,17 @@
 
 namespace phpseclib\Crypt\EC\Formats\Keys;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
-use phpseclib\File\ASN1;
-use phpseclib\File\ASN1\Maps;
-use phpseclib\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib\Math\Common\FiniteField\Integer;
-use phpseclib\Crypt\EC\Curves\Ed25519;
-use phpseclib\Crypt\EC\Curves\Ed448;
-use phpseclib\Exception\UnsupportedCurveException;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
+use phpseclib3\File\ASN1;
+use phpseclib3\File\ASN1\Maps;
+use phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
+use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
+use phpseclib3\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
+use phpseclib3\Math\Common\FiniteField\Integer;
+use phpseclib3\Crypt\EC\Curves\Ed25519;
+use phpseclib3\Crypt\EC\Curves\Ed448;
+use phpseclib3\Exception\UnsupportedCurveException;
 
 /**
  * PKCS#8 Formatted EC Key Handler

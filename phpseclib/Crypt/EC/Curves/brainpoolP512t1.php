@@ -15,8 +15,8 @@
 
 namespace phpseclib\Crypt\EC\Curves;
 
-use phpseclib\Crypt\EC\BaseCurves\Prime;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Crypt\EC\BaseCurves\Prime;
+use phpseclib3\Math\BigInteger;
 
 class brainpoolP512t1 extends Prime
 {

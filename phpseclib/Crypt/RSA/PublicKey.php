@@ -13,17 +13,17 @@
 
 namespace phpseclib\Crypt\RSA;
 
-use phpseclib\Crypt\RSA;
-use phpseclib\Math\BigInteger;
-use phpseclib\File\ASN1;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Hash;
-use phpseclib\Exception\NoKeyLoadedException;
-use phpseclib\Exception\UnsupportedFormatException;
-use phpseclib\Crypt\Random;
-use phpseclib\Crypt\Common;
-use phpseclib\File\ASN1\Maps\DigestInfo;
-use phpseclib\Crypt\RSA\Formats\Keys\PSS;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\File\ASN1;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Exception\NoKeyLoadedException;
+use phpseclib3\Exception\UnsupportedFormatException;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Crypt\Common;
+use phpseclib3\File\ASN1\Maps\DigestInfo;
+use phpseclib3\Crypt\RSA\Formats\Keys\PSS;
 
 /**
  * Raw RSA Key Handler

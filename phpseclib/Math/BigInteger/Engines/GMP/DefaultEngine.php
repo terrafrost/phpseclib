@@ -15,7 +15,7 @@
 
 namespace phpseclib\Math\BigInteger\Engines\GMP;
 
-use phpseclib\Math\BigInteger\Engines\GMP;
+use phpseclib3\Math\BigInteger\Engines\GMP;
 
 /**
  * GMP Modular Exponentiation Engine

@@ -17,8 +17,8 @@
 
 namespace phpseclib\Crypt\DSA\Formats\Signature;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * SSH2 Signature Handler

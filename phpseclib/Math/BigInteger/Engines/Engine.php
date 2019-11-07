@@ -16,10 +16,10 @@
 namespace phpseclib\Math\BigInteger\Engines;
 
 use ParagonIE\ConstantTime\Hex;
-use phpseclib\Exception\BadConfigurationException;
-use phpseclib\Crypt\Random;
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Exception\BadConfigurationException;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Base Engine.

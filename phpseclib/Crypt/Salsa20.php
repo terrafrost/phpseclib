@@ -15,10 +15,10 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\StreamCipher;
-use phpseclib\Exception\InsufficientSetupException;
-use phpseclib\Exception\BadDecryptionException;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Crypt\Common\StreamCipher;
+use phpseclib3\Exception\InsufficientSetupException;
+use phpseclib3\Exception\BadDecryptionException;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Pure-PHP implementation of Salsa20.

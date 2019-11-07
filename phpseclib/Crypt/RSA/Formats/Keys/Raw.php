@@ -25,7 +25,7 @@
 
 namespace phpseclib\Crypt\RSA\Formats\Keys;
 
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Raw RSA Key Handler

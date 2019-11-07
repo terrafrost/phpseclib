@@ -5,7 +5,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-use phpseclib\File\ASN1;
+use phpseclib3\File\ASN1;
 
 class Unit_File_ASN1Test extends PhpseclibTestCase
 {

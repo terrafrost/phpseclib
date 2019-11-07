@@ -21,10 +21,10 @@
 
 namespace phpseclib\Crypt\DH\Formats\Keys;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
-use phpseclib\File\ASN1;
-use phpseclib\File\ASN1\Maps;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
+use phpseclib3\File\ASN1;
+use phpseclib3\File\ASN1\Maps;
 
 /**
  * PKCS#8 Formatted DH Key Handler

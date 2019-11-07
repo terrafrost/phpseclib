@@ -13,7 +13,7 @@
 
 namespace phpseclib\Crypt\EC;
 
-use phpseclib\Crypt\EC;
+use phpseclib3\Crypt\EC;
 
 /**
  * EC Parameters

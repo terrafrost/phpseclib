@@ -15,7 +15,7 @@
 
 namespace phpseclib\Crypt\DSA\Formats\Signature;
 
-use phpseclib\Crypt\Common\Formats\Signature\Raw as Progenitor;
+use phpseclib3\Crypt\Common\Formats\Signature\Raw as Progenitor;
 
 /**
  * Raw DSA Signature Handler

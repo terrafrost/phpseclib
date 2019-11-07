@@ -5,14 +5,14 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-use phpseclib\Crypt\PublicKeyLoader;
-use phpseclib\Crypt\DSA\PrivateKey;
-use phpseclib\Crypt\DSA\PublicKey;
-use phpseclib\Crypt\DSA\Parameters;
-use phpseclib\Crypt\DSA\Formats\Keys\PKCS1;
-use phpseclib\Crypt\DSA\Formats\Keys\PKCS8;
-use phpseclib\Crypt\DSA\Formats\Keys\PuTTY;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\DSA\PrivateKey;
+use phpseclib3\Crypt\DSA\PublicKey;
+use phpseclib3\Crypt\DSA\Parameters;
+use phpseclib3\Crypt\DSA\Formats\Keys\PKCS1;
+use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
+use phpseclib3\Crypt\DSA\Formats\Keys\PuTTY;
+use phpseclib3\Math\BigInteger;
 
 class Unit_Crypt_DSA_LoadKeyTest extends PhpseclibTestCase
 {

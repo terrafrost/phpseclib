@@ -20,8 +20,8 @@
 namespace phpseclib\Crypt\RSA\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Microsoft BLOB Formatted RSA Key Handler

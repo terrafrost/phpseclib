@@ -23,7 +23,7 @@
 namespace phpseclib\Crypt\RSA\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 
 /**
  * XML Formatted RSA Key Handler

@@ -54,12 +54,12 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\BlockCipher;
+use phpseclib3\Crypt\Common\BlockCipher;
 
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Exception\BadModeException;
-use phpseclib\Exception\InsufficientSetupException;
-use phpseclib\Exception\BadDecryptionException;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Exception\BadModeException;
+use phpseclib3\Exception\InsufficientSetupException;
+use phpseclib3\Exception\BadDecryptionException;
 
 /**
  * Pure-PHP implementation of Rijndael.

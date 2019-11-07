@@ -18,8 +18,8 @@
 namespace phpseclib\Crypt\Common\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Random;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Random;
 
 /**
  * OpenSSH Formatted RSA Key Handler

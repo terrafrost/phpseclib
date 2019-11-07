@@ -47,29 +47,29 @@
 
 namespace phpseclib\Net;
 
-use phpseclib\Crypt\Blowfish;
-use phpseclib\Crypt\Hash;
-use phpseclib\Crypt\Random;
-use phpseclib\Crypt\RC4;
-use phpseclib\Crypt\Rijndael;
-use phpseclib\Crypt\Common\PrivateKey;
-use phpseclib\Crypt\RSA;
-use phpseclib\Crypt\DSA;
-use phpseclib\Crypt\EC;
-use phpseclib\Crypt\DH;
-use phpseclib\Crypt\TripleDES;
-use phpseclib\Crypt\Twofish;
-use phpseclib\Crypt\ChaCha20;
-use phpseclib\Math\BigInteger; // Used to do Diffie-Hellman key exchange and DSA/RSA signature verification.
-use phpseclib\System\SSH\Agent;
-use phpseclib\System\SSH\Agent\Identity as AgentIdentity;
-use phpseclib\Exception\NoSupportedAlgorithmsException;
-use phpseclib\Exception\UnsupportedAlgorithmException;
-use phpseclib\Exception\UnsupportedCurveException;
-use phpseclib\Exception\ConnectionClosedException;
-use phpseclib\Exception\UnableToConnectException;
-use phpseclib\Exception\InsufficientSetupException;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Crypt\Blowfish;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Crypt\RC4;
+use phpseclib3\Crypt\Rijndael;
+use phpseclib3\Crypt\Common\PrivateKey;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\DH;
+use phpseclib3\Crypt\TripleDES;
+use phpseclib3\Crypt\Twofish;
+use phpseclib3\Crypt\ChaCha20;
+use phpseclib3\Math\BigInteger; // Used to do Diffie-Hellman key exchange and DSA/RSA signature verification.
+use phpseclib3\System\SSH\Agent;
+use phpseclib3\System\SSH\Agent\Identity as AgentIdentity;
+use phpseclib3\Exception\NoSupportedAlgorithmsException;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Exception\UnsupportedCurveException;
+use phpseclib3\Exception\ConnectionClosedException;
+use phpseclib3\Exception\UnableToConnectException;
+use phpseclib3\Exception\InsufficientSetupException;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Pure-PHP implementation of SSHv2.

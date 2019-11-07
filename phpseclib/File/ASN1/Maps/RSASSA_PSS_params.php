@@ -17,7 +17,7 @@
 
 namespace phpseclib\File\ASN1\Maps;
 
-use phpseclib\File\ASN1;
+use phpseclib3\File\ASN1;
 
 /**
  * RSASSA_PSS_params

@@ -23,10 +23,10 @@
 
 namespace phpseclib\Crypt\EC\BaseCurves;
 
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Math\BinaryField;
-use phpseclib\Math\BigInteger;
-use phpseclib\Math\BinaryField\Integer as BinaryInteger;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Math\BinaryField;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Math\BinaryField\Integer as BinaryInteger;
 
 /**
  * Curves over y^2 + x*y = x^3 + a*x^2 + b

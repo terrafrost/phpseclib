@@ -38,8 +38,8 @@
 namespace phpseclib\Net;
 
 use ParagonIE\ConstantTime\Hex;
-use phpseclib\Exception\FileNotFoundException;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\Exception\FileNotFoundException;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Pure-PHP implementations of SFTP.

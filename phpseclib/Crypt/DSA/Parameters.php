@@ -13,7 +13,7 @@
 
 namespace phpseclib\Crypt\DSA;
 
-use phpseclib\Crypt\DSA;
+use phpseclib3\Crypt\DSA;
 
 /**
  * DSA Parameters

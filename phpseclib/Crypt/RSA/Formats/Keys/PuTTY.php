@@ -15,9 +15,9 @@
 
 namespace phpseclib\Crypt\RSA\Formats\Keys;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Common\Formats\Keys\PuTTY as Progenitor;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Common\Formats\Keys\PuTTY as Progenitor;
 
 /**
  * PuTTY Formatted RSA Key Handler

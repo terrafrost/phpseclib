@@ -15,7 +15,7 @@
 
 namespace phpseclib\Math\BigInteger\Engines\BCMath;
 
-use phpseclib\Math\BigInteger\Engines\BCMath;
+use phpseclib3\Math\BigInteger\Engines\BCMath;
 
 /**
  * Sliding Window Exponentiation Engine

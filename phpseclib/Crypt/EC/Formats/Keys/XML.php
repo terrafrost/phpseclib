@@ -21,12 +21,12 @@
 namespace phpseclib\Crypt\EC\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib\Crypt\EC\BaseCurves\Prime as PrimeCurve;
-use phpseclib\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib\Exception\UnsupportedCurveException;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
+use phpseclib3\Crypt\EC\BaseCurves\Prime as PrimeCurve;
+use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
+use phpseclib3\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
+use phpseclib3\Exception\UnsupportedCurveException;
 
 /**
  * XML Formatted EC Key Handler

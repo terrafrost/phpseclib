@@ -37,7 +37,7 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\BlockCipher;
+use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * Pure-PHP implementation of Blowfish.

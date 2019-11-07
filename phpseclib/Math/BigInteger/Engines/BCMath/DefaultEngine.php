@@ -15,7 +15,7 @@
 
 namespace phpseclib\Math\BigInteger\Engines\BCMath;
 
-use phpseclib\Math\BigInteger\Engines\BCMath\Reductions\Barrett;
+use phpseclib3\Math\BigInteger\Engines\BCMath\Reductions\Barrett;
 
 /**
  * PHP Default Modular Exponentiation Engine

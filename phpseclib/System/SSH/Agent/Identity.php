@@ -16,13 +16,13 @@
 
 namespace phpseclib\System\SSH\Agent;
 
-use phpseclib\Crypt\RSA;
-use phpseclib\Crypt\DSA;
-use phpseclib\Crypt\ECDSA;
-use phpseclib\Exception\UnsupportedAlgorithmException;
-use phpseclib\System\SSH\Agent;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\Common\PrivateKey;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\ECDSA;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\System\SSH\Agent;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Common\PrivateKey;
 
 
 /**

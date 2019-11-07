@@ -33,11 +33,11 @@
 
 namespace phpseclib\System\SSH;
 
-use phpseclib\Crypt\RSA;
-use phpseclib\Exception\BadConfigurationException;
-use phpseclib\System\SSH\Agent\Identity;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Exception\BadConfigurationException;
+use phpseclib3\System\SSH\Agent\Identity;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 /**
  * Pure-PHP ssh-agent client identity factory

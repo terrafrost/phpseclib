@@ -28,9 +28,9 @@
 
 namespace phpseclib\Crypt\EC\BaseCurves;
 
-use phpseclib\Math\PrimeField;
-use phpseclib\Math\BigInteger;
-use phpseclib\Math\PrimeField\Integer as PrimeInteger;
+use phpseclib3\Math\PrimeField;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Math\PrimeField\Integer as PrimeInteger;
 
 /**
  * Curves over a*x^2 + y^2 = 1 + d*x^2*y^2

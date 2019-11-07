@@ -36,16 +36,16 @@
 
 namespace phpseclib\Crypt\Common;
 
-use phpseclib\Crypt\Hash;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Math\BigInteger;
-use phpseclib\Math\BinaryField;
-use phpseclib\Math\PrimeField;
-use phpseclib\Exception\BadDecryptionException;
-use phpseclib\Exception\BadModeException;
-use phpseclib\Exception\InconsistentSetupException;
-use phpseclib\Exception\InsufficientSetupException;
-use phpseclib\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Math\BinaryField;
+use phpseclib3\Math\PrimeField;
+use phpseclib3\Exception\BadDecryptionException;
+use phpseclib3\Exception\BadModeException;
+use phpseclib3\Exception\InconsistentSetupException;
+use phpseclib3\Exception\InsufficientSetupException;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
 
 /**
  * Base Class for all \phpseclib\Crypt\* cipher classes

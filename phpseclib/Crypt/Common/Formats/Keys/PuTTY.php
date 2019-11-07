@@ -17,11 +17,11 @@ namespace phpseclib\Crypt\Common\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Hex;
-use phpseclib\Crypt\AES;
-use phpseclib\Crypt\Hash;
-use phpseclib\Crypt\Random;
-use phpseclib\Common\Functions\Strings;
-use phpseclib\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Crypt\AES;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
 
 /**
  * PuTTY Formatted Key Handler

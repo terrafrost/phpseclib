@@ -31,12 +31,12 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\AsymmetricKey;
-use phpseclib\Crypt\DSA\PrivateKey;
-use phpseclib\Crypt\DSA\PublicKey;
-use phpseclib\Crypt\DSA\Parameters;
-use phpseclib\Math\BigInteger;
-use phpseclib\Exception\InsufficientSetupException;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Crypt\DSA\PrivateKey;
+use phpseclib3\Crypt\DSA\PublicKey;
+use phpseclib3\Crypt\DSA\Parameters;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Exception\InsufficientSetupException;
 
 /**
  * Pure-PHP FIPS 186-4 compliant implementation of DSA.

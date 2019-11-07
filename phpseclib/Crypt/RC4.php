@@ -44,7 +44,7 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Crypt\Common\StreamCipher;
+use phpseclib3\Crypt\Common\StreamCipher;
 
 /**
  * Pure-PHP implementation of RC4.

@@ -24,10 +24,10 @@
 
 namespace phpseclib\Crypt\RSA\Formats\Keys;
 
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\Common\Formats\Keys\PKCS1 as Progenitor;
-use phpseclib\File\ASN1;
-use phpseclib\File\ASN1\Maps;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\Common\Formats\Keys\PKCS1 as Progenitor;
+use phpseclib3\File\ASN1;
+use phpseclib3\File\ASN1\Maps;
 
 /**
  * PKCS#1 Formatted RSA Key Handler

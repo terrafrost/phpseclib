@@ -15,13 +15,13 @@
 
 namespace phpseclib\Crypt\Common;
 
-use phpseclib\Exception\UnsupportedFormatException;
-use phpseclib\Exception\NoKeyLoadedException;
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\Hash;
-use phpseclib\Crypt\RSA;
-use phpseclib\Crypt\DSA;
-use phpseclib\Crypt\ECDSA;
+use phpseclib3\Exception\UnsupportedFormatException;
+use phpseclib3\Exception\NoKeyLoadedException;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\ECDSA;
 
 /**
  * Base Class for all stream cipher classes

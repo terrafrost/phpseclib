@@ -24,9 +24,9 @@
 namespace phpseclib\File;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\File\ASN1\Element;
-use phpseclib\Math\BigInteger;
-use phpseclib\Common\Functions\Strings;
+use phpseclib3\File\ASN1\Element;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Common\Functions\Strings;
 use DateTime;
 use DateTimeZone;
 

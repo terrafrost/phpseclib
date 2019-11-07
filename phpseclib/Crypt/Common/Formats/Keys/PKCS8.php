@@ -28,16 +28,16 @@
 namespace phpseclib\Crypt\Common\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
-use phpseclib\Crypt\DES;
-use phpseclib\Crypt\RC2;
-use phpseclib\Crypt\RC4;
-use phpseclib\Crypt\AES;
-use phpseclib\Crypt\TripleDES;
-use phpseclib\Crypt\Random;
-use phpseclib\Math\BigInteger;
-use phpseclib\File\ASN1;
-use phpseclib\File\ASN1\Maps;
-use phpseclib\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Crypt\DES;
+use phpseclib3\Crypt\RC2;
+use phpseclib3\Crypt\RC4;
+use phpseclib3\Crypt\AES;
+use phpseclib3\Crypt\TripleDES;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\File\ASN1;
+use phpseclib3\File\ASN1\Maps;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
 
 /**
  * PKCS#8 Formatted Key Handler

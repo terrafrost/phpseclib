@@ -15,9 +15,9 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Exception\NoKeyLoadedException;
-use phpseclib\Crypt\Common\PrivateKey;
-use phpseclib\File\X509;
+use phpseclib3\Exception\NoKeyLoadedException;
+use phpseclib3\Crypt\Common\PrivateKey;
+use phpseclib3\File\X509;
 
 /**
  * PublicKeyLoader

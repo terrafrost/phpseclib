@@ -15,7 +15,7 @@
 
 namespace phpseclib\Math\BigInteger\Engines\BCMath;
 
-use phpseclib\Math\BigInteger\Engines\OpenSSL as Progenitor;
+use phpseclib3\Math\BigInteger\Engines\OpenSSL as Progenitor;
 
 /**
  * OpenSSL Modular Exponentiation Engine

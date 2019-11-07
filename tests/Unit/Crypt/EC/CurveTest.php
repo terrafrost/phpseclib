@@ -6,15 +6,15 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-use phpseclib\Crypt\EC;
-use phpseclib\File\ASN1;
-use phpseclib\Crypt\EC\Curves\Ed448;
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\EC;
+use phpseclib3\File\ASN1;
+use phpseclib3\Crypt\EC\Curves\Ed448;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class Ed448PublicKey
 {
-    use phpseclib\Crypt\EC\Formats\Keys\Common;
+    use phpseclib3\Crypt\EC\Formats\Keys\Common;
 
     public static function load($key, $password = '')
     {

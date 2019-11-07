@@ -26,13 +26,13 @@
 
 namespace phpseclib\Crypt;
 
-use phpseclib\Exception\NoKeyLoadedException;
-use phpseclib\Exception\UnsupportedOperationException;
-use phpseclib\Crypt\Common\AsymmetricKey;
-use phpseclib\Crypt\DH\PrivateKey;
-use phpseclib\Crypt\DH\PublicKey;
-use phpseclib\Crypt\DH\Parameters;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Exception\NoKeyLoadedException;
+use phpseclib3\Exception\UnsupportedOperationException;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Crypt\DH\PrivateKey;
+use phpseclib3\Crypt\DH\PublicKey;
+use phpseclib3\Crypt\DH\Parameters;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Pure-PHP (EC)DH implementation

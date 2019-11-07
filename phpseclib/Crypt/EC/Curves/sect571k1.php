@@ -15,8 +15,8 @@
 
 namespace phpseclib\Crypt\EC\Curves;
 
-use phpseclib\Crypt\EC\BaseCurves\Binary;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Crypt\EC\BaseCurves\Binary;
+use phpseclib3\Math\BigInteger;
 
 class sect571k1 extends Binary
 {

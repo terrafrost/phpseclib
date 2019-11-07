@@ -13,10 +13,10 @@
 
 namespace phpseclib\Crypt\DSA;
 
-use phpseclib\Crypt\DSA;
-use phpseclib\Crypt\DSA\Formats\Signature\ASN1 as ASN1Signature;
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\Common;
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\DSA\Formats\Signature\ASN1 as ASN1Signature;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\Crypt\Common;
 
 /**
  * DSA Private Key

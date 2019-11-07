@@ -15,7 +15,7 @@
 
 namespace phpseclib\Math\BigInteger\Engines\PHP;
 
-use phpseclib\Math\BigInteger\Engines\PHP;
+use phpseclib3\Math\BigInteger\Engines\PHP;
 
 /**
  * PHP Modular Exponentiation Engine

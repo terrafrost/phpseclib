@@ -19,8 +19,8 @@
 
 namespace phpseclib\Crypt\EC\Formats\Keys;
 
-use phpseclib\Crypt\EC\Curves\Ed25519;
-use phpseclib\Math\Common\FiniteField\Integer;
+use phpseclib3\Crypt\EC\Curves\Ed25519;
+use phpseclib3\Math\Common\FiniteField\Integer;
 
 /**
  * libsodium Key Handler

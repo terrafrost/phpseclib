@@ -28,17 +28,17 @@ namespace phpseclib\File;
 
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Hex;
-use phpseclib\Crypt\Hash;
-use phpseclib\Crypt\Random;
-use phpseclib\Crypt\RSA;
-use phpseclib\Crypt\DSA;
-use phpseclib\Crypt\EC;
-use phpseclib\Crypt\Common\PublicKey;
-use phpseclib\Crypt\Common\PrivateKey;
-use phpseclib\Exception\UnsupportedAlgorithmException;
-use phpseclib\File\ASN1\Element;
-use phpseclib\Math\BigInteger;
-use phpseclib\File\ASN1\Maps;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\Common\PublicKey;
+use phpseclib3\Crypt\Common\PrivateKey;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\File\ASN1\Element;
+use phpseclib3\Math\BigInteger;
+use phpseclib3\File\ASN1\Maps;
 use DateTime;
 use DateTimeZone;
 
