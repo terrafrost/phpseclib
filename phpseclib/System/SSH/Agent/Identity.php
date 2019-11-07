@@ -29,7 +29,7 @@ use phpseclib3\Crypt\Common\PrivateKey;
  * Pure-PHP ssh-agent client identity object
  *
  * Instantiation should only be performed by \phpseclib3\System\SSH\Agent class.
- * This could be thought of as implementing an interface that phpseclib\Crypt\RSA
+ * This could be thought of as implementing an interface that phpseclib3\Crypt\RSA
  * implements. ie. maybe a Net_SSH_Auth_PublicKey interface or something.
  * The methods in this interface would be getPublicKey and sign since those are the
  * methods phpseclib looks for to perform public key authentication.

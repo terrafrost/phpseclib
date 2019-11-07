@@ -2421,7 +2421,7 @@ class SSH2
                     if (is_array($curveName)) {
                         throw new UnsupportedCurveException('Specified Curves are not supported by SSH2');
                     }
-                    throw new UnsupportedCurveException('Named Curve of ' . $curveName . ' is not supported by phpseclib\'s SSH2 implementation');
+                    throw new UnsupportedCurveException('Named Curve of ' . $curveName . ' is not supported by phpseclib3\'s SSH2 implementation');
             }
         } else if ($publickey instanceof DSA) {
             $privatekey = $privatekey->withSignatureFormat('SSH2');

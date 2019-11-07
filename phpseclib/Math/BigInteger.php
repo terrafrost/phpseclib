@@ -81,7 +81,7 @@ class BigInteger implements \Serializable
     {
         self::$engines = [];
 
-        $fqmain = 'phpseclib\\Math\\BigInteger\\Engines\\' . $main;
+        $fqmain = 'phpseclib3\\Math\\BigInteger\\Engines\\' . $main;
         if (!class_exists($fqmain) || !method_exists($fqmain, 'isValidEngine')) {
             throw new \InvalidArgumentException("$main is not a valid engine");
         }

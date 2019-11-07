@@ -367,7 +367,7 @@ trait Common
                     continue;
                 }
                 $testName = $file->getBasename('.php');
-                $class = 'phpseclib\Crypt\EC\Curves\\' . $testName;
+                $class = 'phpseclib3\Crypt\EC\Curves\\' . $testName;
                 $reflect = new \ReflectionClass($class);
                 if ($reflect->isFinal()) {
                     continue;

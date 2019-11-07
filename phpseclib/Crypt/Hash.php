@@ -404,7 +404,7 @@ class Hash
                     'length' => $this->length,
                     'padding' => $this->paddingType
                 ];
-                $hash = ['phpseclib\Crypt\Hash', PHP_INT_SIZE == 8 ? 'sha3_64' : 'sha3_32'];
+                $hash = ['phpseclib3\Crypt\Hash', PHP_INT_SIZE == 8 ? 'sha3_64' : 'sha3_32'];
             }
         }
 
@@ -429,7 +429,7 @@ class Hash
 
                 $this->parameters = compact('initial');
 
-                $hash = ['phpseclib\Crypt\Hash', 'sha512'];
+                $hash = ['phpseclib3\Crypt\Hash', 'sha512'];
             }
         }
 

@@ -40,7 +40,7 @@ abstract class PuTTY extends Progenitor
      * @var string
      * @access private
      */
-    const PUBLIC_HANDLER = 'phpseclib\Crypt\EC\Formats\Keys\OpenSSH';
+    const PUBLIC_HANDLER = 'phpseclib3\Crypt\EC\Formats\Keys\OpenSSH';
 
     /**
      * Supported Key Types
