@@ -73,8 +73,8 @@ class PrivateKey extends RSA implements Common\PrivateKey
      * See {@link http://tools.ietf.org/html/rfc3447#section-5.1.2 RFC3447#section-5.1.2}.
      *
      * @access private
-     * @param \phpseclib\Math\BigInteger $c
-     * @return bool|\phpseclib\Math\BigInteger
+     * @param \phpseclib3\Math\BigInteger $c
+     * @return bool|\phpseclib3\Math\BigInteger
      */
     private function rsadp($c)
     {
@@ -90,8 +90,8 @@ class PrivateKey extends RSA implements Common\PrivateKey
      * See {@link http://tools.ietf.org/html/rfc3447#section-5.2.1 RFC3447#section-5.2.1}.
      *
      * @access private
-     * @param \phpseclib\Math\BigInteger $m
-     * @return bool|\phpseclib\Math\BigInteger
+     * @param \phpseclib3\Math\BigInteger $m
+     * @return bool|\phpseclib3\Math\BigInteger
      */
     private function rsasp1($m)
     {
@@ -104,8 +104,8 @@ class PrivateKey extends RSA implements Common\PrivateKey
     /**
      * Exponentiate
      *
-     * @param \phpseclib\Math\BigInteger $x
-     * @return \phpseclib\Math\BigInteger
+     * @param \phpseclib3\Math\BigInteger $x
+     * @return \phpseclib3\Math\BigInteger
      */
     protected function exponentiate(BigInteger $x)
     {
@@ -186,10 +186,10 @@ class PrivateKey extends RSA implements Common\PrivateKey
      * Returns $x->modPow($this->exponents[$i], $this->primes[$i])
      *
      * @access private
-     * @param \phpseclib\Math\BigInteger $x
-     * @param \phpseclib\Math\BigInteger $r
+     * @param \phpseclib3\Math\BigInteger $x
+     * @param \phpseclib3\Math\BigInteger $r
      * @param int $i
-     * @return \phpseclib\Math\BigInteger
+     * @return \phpseclib3\Math\BigInteger
      */
     private function blind($x, $r, $i)
     {
@@ -331,7 +331,7 @@ class PrivateKey extends RSA implements Common\PrivateKey
      * to be 2 regardless of which key is used.  For compatibility purposes, we'll just check to make sure the
      * second byte is 2 or less.  If it is, we'll accept the decrypted string as valid.
      *
-     * As a consequence of this, a private key encrypted ciphertext produced with \phpseclib\Crypt\RSA may not decrypt
+     * As a consequence of this, a private key encrypted ciphertext produced with \phpseclib3\Crypt\RSA may not decrypt
      * with a strictly PKCS#1 v1.5 compliant RSA implementation.  Public key encrypted ciphertext's should but
      * not private key encrypted ciphertext's.
      *

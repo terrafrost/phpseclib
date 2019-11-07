@@ -30,7 +30,7 @@ class PrivateKey extends DH
     /**
      * Private Key
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $privateKey;
@@ -38,7 +38,7 @@ class PrivateKey extends DH
     /**
      * Public Key
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $publicKey;

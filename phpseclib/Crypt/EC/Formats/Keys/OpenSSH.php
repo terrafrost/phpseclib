@@ -92,7 +92,7 @@ abstract class OpenSSH extends Progenitor
             $qa = self::extractPoint($parsed['publicKey'], $curve);
         } else {
             list($curveName, $publicKey) = Strings::unpackSSH2('ss', $parsed['publicKey']);
-            $curveName = '\phpseclib\Crypt\EC\Curves\\' . $curveName;
+            $curveName = '\phpseclib3\Crypt\EC\Curves\\' . $curveName;
             $curve = new $curveName();
 
             $qa = self::extractPoint("\0" . $publicKey, $curve);
@@ -141,8 +141,8 @@ abstract class OpenSSH extends Progenitor
      * Convert an EC public key to the appropriate format
      *
      * @access public
-     * @param \phpseclib\Crypt\EC\BaseCurves\Base $curve
-     * @param \phpseclib\Math\Common\FiniteField\Integer[] $publicKey
+     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
      * @param array $options optional
      * @return string
      */
@@ -179,9 +179,9 @@ abstract class OpenSSH extends Progenitor
      * Convert a private key to the appropriate format.
      *
      * @access public
-     * @param \phpseclib\Math\Common\FiniteField\Integer $privateKey
-     * @param \phpseclib\Crypt\EC\Curves\Ed25519 $curve
-     * @param \phpseclib\Math\Common\FiniteField\Integer[] $publicKey
+     * @param \phpseclib3\Math\Common\FiniteField\Integer $privateKey
+     * @param \phpseclib3\Crypt\EC\Curves\Ed25519 $curve
+     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
      * @param string $password optional
      * @param array $options optional
      * @return string

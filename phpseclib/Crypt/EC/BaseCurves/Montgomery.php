@@ -45,7 +45,7 @@ class Montgomery extends Base
     /**
      * Prime Field Integer factory
      *
-     * @var \phpseclib\Math\PrimeFields
+     * @var \phpseclib3\Math\PrimeFields
      */
     protected $factory;
 
@@ -252,7 +252,7 @@ class Montgomery extends Base
      *
      *   x=X/Z
      *
-     * @return \phpseclib\Math\PrimeField\Integer[]
+     * @return \phpseclib3\Math\PrimeField\Integer[]
      */
     public function convertToInternal(array $p)
     {
@@ -272,7 +272,7 @@ class Montgomery extends Base
     /**
      * Returns the affine point
      *
-     * @return \phpseclib\Math\PrimeField\Integer[]
+     * @return \phpseclib3\Math\PrimeField\Integer[]
      */
     public function convertToAffine(array $p)
     {

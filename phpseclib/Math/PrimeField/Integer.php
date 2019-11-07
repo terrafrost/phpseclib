@@ -30,7 +30,7 @@ class Integer extends Base
     /**
      * Holds the PrimeField's value
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      */
     protected $value;
 
@@ -44,7 +44,7 @@ class Integer extends Base
     /**
      * Holds the PrimeField's modulo
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      */
     protected static $modulo;
 
@@ -58,7 +58,7 @@ class Integer extends Base
     /**
      * Zero
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      */
     protected static $zero;
 

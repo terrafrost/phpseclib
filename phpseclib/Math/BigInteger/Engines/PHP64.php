@@ -74,21 +74,21 @@ class PHP64 extends PHP
     /**
      * BigInteger(0)
      *
-     * @var \phpseclib\Math\BigInteger\Engines\PHP64
+     * @var \phpseclib3\Math\BigInteger\Engines\PHP64
      */
     protected static $zero;
 
     /**
      * BigInteger(1)
      *
-     * @var \phpseclib\Math\BigInteger\Engines\PHP64
+     * @var \phpseclib3\Math\BigInteger\Engines\PHP64
      */
     protected static $one;
 
     /**
      * BigInteger(2)
      *
-     * @var \phpseclib\Math\BigInteger\Engines\PHP64
+     * @var \phpseclib3\Math\BigInteger\Engines\PHP64
      */
     protected static $two;
 

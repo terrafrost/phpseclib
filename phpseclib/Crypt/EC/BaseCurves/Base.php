@@ -51,7 +51,7 @@ abstract class Base
     /**
      * Finite Field Integer factory
      *
-     * @var \phpseclib\Math\FiniteField\Integer
+     * @var \phpseclib3\Math\FiniteField\Integer
      */
     protected $factory;
 
@@ -149,7 +149,7 @@ abstract class Base
     /**
      * Returns the Order
      *
-     * @return \phpseclib\Math\BigInteger
+     * @return \phpseclib3\Math\BigInteger
      */
     public function getOrder()
     {

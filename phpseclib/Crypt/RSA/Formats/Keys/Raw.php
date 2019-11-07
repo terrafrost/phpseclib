@@ -5,7 +5,7 @@
  *
  * PHP version 5
  *
- * An array containing two \phpseclib\Math\BigInteger objects.
+ * An array containing two \phpseclib3\Math\BigInteger objects.
  *
  * The exponent can be indexed with any of the following:
  *
@@ -97,8 +97,8 @@ abstract class Raw
      * Convert a public key to the appropriate format
      *
      * @access public
-     * @param \phpseclib\Math\BigInteger $n
-     * @param \phpseclib\Math\BigInteger $e
+     * @param \phpseclib3\Math\BigInteger $n
+     * @param \phpseclib3\Math\BigInteger $e
      * @return array
      */
     public static function savePublicKey(BigInteger $n, BigInteger $e)

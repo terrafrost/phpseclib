@@ -32,7 +32,7 @@ class PrivateKey extends DSA implements Common\PrivateKey
     /**
      * DSA secret exponent x
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $x;

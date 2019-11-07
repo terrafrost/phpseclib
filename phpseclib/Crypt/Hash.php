@@ -13,7 +13,7 @@
  * <?php
  *    include 'vendor/autoload.php';
  *
- *    $hash = new \phpseclib\Crypt\Hash('sha512');
+ *    $hash = new \phpseclib3\Crypt\Hash('sha512');
  *
  *    $hash->setKey('abcdefg');
  *
@@ -167,7 +167,7 @@ class Hash
      * umac cipher object
      *
      * @see self::hash()
-     * @var \phpseclib\Crypt\AES
+     * @var \phpseclib3\Crypt\AES
      * @access private
      */
     private $c;
@@ -1455,7 +1455,7 @@ class Hash
         }
 
         // Produce the final hash value (big-endian)
-        // (\phpseclib\Crypt\Hash::hash() trims the output for hashes but not for HMACs.  as such, we trim the output here)
+        // (\phpseclib3\Crypt\Hash::hash() trims the output for hashes but not for HMACs.  as such, we trim the output here)
         $temp = $hash[0]->toBytes() . $hash[1]->toBytes() . $hash[2]->toBytes() . $hash[3]->toBytes() .
                 $hash[4]->toBytes() . $hash[5]->toBytes() . $hash[6]->toBytes() . $hash[7]->toBytes();
 

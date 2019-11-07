@@ -76,11 +76,11 @@ abstract class PuTTY extends Progenitor
      * Convert a private key to the appropriate format.
      *
      * @access public
-     * @param \phpseclib\Math\BigInteger $p
-     * @param \phpseclib\Math\BigInteger $q
-     * @param \phpseclib\Math\BigInteger $g
-     * @param \phpseclib\Math\BigInteger $y
-     * @param \phpseclib\Math\BigInteger $x
+     * @param \phpseclib3\Math\BigInteger $p
+     * @param \phpseclib3\Math\BigInteger $q
+     * @param \phpseclib3\Math\BigInteger $g
+     * @param \phpseclib3\Math\BigInteger $y
+     * @param \phpseclib3\Math\BigInteger $x
      * @param string $password optional
      * @param array $options optional
      * @return string
@@ -101,10 +101,10 @@ abstract class PuTTY extends Progenitor
      * Convert a public key to the appropriate format
      *
      * @access public
-     * @param \phpseclib\Math\BigInteger $p
-     * @param \phpseclib\Math\BigInteger $q
-     * @param \phpseclib\Math\BigInteger $g
-     * @param \phpseclib\Math\BigInteger $y
+     * @param \phpseclib3\Math\BigInteger $p
+     * @param \phpseclib3\Math\BigInteger $q
+     * @param \phpseclib3\Math\BigInteger $g
+     * @param \phpseclib3\Math\BigInteger $y
      * @return string
      */
     public static function savePublicKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y)

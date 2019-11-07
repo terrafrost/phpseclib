@@ -10,7 +10,7 @@
  * <?php
  * include 'vendor/autoload.php';
  *
- * $private = \phpseclib\Crypt\DSA::createKey();
+ * $private = \phpseclib3\Crypt\DSA::createKey();
  * $public = $private->getPublicKey();
  *
  * $plaintext = 'terrafrost';
@@ -58,7 +58,7 @@ abstract class DSA extends AsymmetricKey
     /**
      * DSA Prime P
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $p;
@@ -68,7 +68,7 @@ abstract class DSA extends AsymmetricKey
      *
      * Prime divisor of p-1
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $q;
@@ -76,7 +76,7 @@ abstract class DSA extends AsymmetricKey
     /**
      * DSA Group Generator G
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $g;
@@ -84,7 +84,7 @@ abstract class DSA extends AsymmetricKey
     /**
      * DSA public key value y
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      * @access private
      */
     protected $y;
@@ -111,7 +111,7 @@ abstract class DSA extends AsymmetricKey
      * @access public
      * @param int $L
      * @param int $N
-     * @return \phpseclib\Crypt\DSA|bool
+     * @return \phpseclib3\Crypt\DSA|bool
      */
     public static function createParameters($L = 2048, $N = 224)
     {

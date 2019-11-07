@@ -169,7 +169,7 @@ abstract class XML
      * Extract points from an XML document
      *
      * @param \DOMXPath $xpath
-     * @param \phpseclib\Crypt\EC\BaseCurves\Base $curve
+     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
      * @return object[]
      */
     private static function extractPointRFC4050(\DOMXPath $xpath, BaseCurve $curve)
@@ -193,11 +193,11 @@ abstract class XML
     }
 
     /**
-     * Returns an instance of \phpseclib\Crypt\EC\BaseCurves\Base based
+     * Returns an instance of \phpseclib3\Crypt\EC\BaseCurves\Base based
      * on the curve parameters
      *
      * @param \DomXPath $xpath
-     * @return \phpseclib\Crypt\EC\BaseCurves\Base|false
+     * @return \phpseclib3\Crypt\EC\BaseCurves\Base|false
      */
     private static function loadCurveByParam(\DOMXPath $xpath)
     {
@@ -210,7 +210,7 @@ abstract class XML
                 throw new UnsupportedCurveException('Curve with OID of ' . $oid . ' is not supported');
             }
 
-            $curve = '\phpseclib\Crypt\EC\Curves\\' . $name;
+            $curve = '\phpseclib3\Crypt\EC\Curves\\' . $name;
             if (!class_exists($curve)) {
                 throw new UnsupportedCurveException('Named Curve of ' . $name . ' is not supported');
             }
@@ -273,11 +273,11 @@ abstract class XML
     }
 
     /**
-     * Returns an instance of \phpseclib\Crypt\EC\BaseCurves\Base based
+     * Returns an instance of \phpseclib3\Crypt\EC\BaseCurves\Base based
      * on the curve parameters
      *
      * @param \DomXPath $xpath
-     * @return \phpseclib\Crypt\EC\BaseCurves\Base|false
+     * @return \phpseclib3\Crypt\EC\BaseCurves\Base|false
      */
     private static function loadCurveByParamRFC4050(\DOMXPath $xpath)
     {
@@ -364,8 +364,8 @@ abstract class XML
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib\Crypt\EC\BaseCurves\Base $curve
-     * @param \phpseclib\Math\Common\FiniteField\Integer[] $publicKey
+     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param \phpseclib3\Math\Common\FiniteField\Integer[] $publicKey
      * @param array $options optional
      * @return string
      */
@@ -405,7 +405,7 @@ abstract class XML
     /**
      * Encode Parameters
      *
-     * @param \phpseclib\Crypt\EC\BaseCurves\Base $curve
+     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
      * @param string $pre
      * @param array $options optional
      * @return string|false

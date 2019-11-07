@@ -10,7 +10,7 @@
  * <?php
  * include 'vendor/autoload.php';
  *
- * $private = \phpseclib\Crypt\EC::createKey('secp256k1');
+ * $private = \phpseclib3\Crypt\EC::createKey('secp256k1');
  * $public = $private->getPublicKey();
  *
  * $plaintext = 'terrafrost';
@@ -75,7 +75,7 @@ abstract class EC extends AsymmetricKey
     /**
      * Curve
      *
-     * @var \phpseclib\Crypt\EC\BaseCurves\Base
+     * @var \phpseclib3\Crypt\EC\BaseCurves\Base
      */
     protected $curve;
 
@@ -107,7 +107,7 @@ abstract class EC extends AsymmetricKey
      *
      * Used for deterministic ECDSA
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      */
     protected $q;
 
@@ -119,7 +119,7 @@ abstract class EC extends AsymmetricKey
      * public key. But the x is different depending on which side of the equal sign
      * you're on. It's less ambiguous if you do dA * base point = (x, y)-coordinate.
      *
-     * @var \phpseclib\Math\BigInteger
+     * @var \phpseclib3\Math\BigInteger
      */
     protected $x;
 
@@ -135,7 +135,7 @@ abstract class EC extends AsymmetricKey
      *
      * @access public
      * @param string $curve
-     * @return \phpseclib\Crypt\EC\PrivateKey
+     * @return \phpseclib3\Crypt\EC\PrivateKey
      */
     public static function createKey($curve)
     {
@@ -161,10 +161,10 @@ abstract class EC extends AsymmetricKey
         $privatekey = new PrivateKey;
 
         $curveName = $curve;
-        $curve = '\phpseclib\Crypt\EC\Curves\\' . $curveName;
+        $curve = '\phpseclib3\Crypt\EC\Curves\\' . $curveName;
         if (!class_exists($curve)) {
             $curveName = ucfirst($curveName);
-            $curve = '\phpseclib\Crypt\EC\Curves\\' . $curveName;
+            $curve = '\phpseclib3\Crypt\EC\Curves\\' . $curveName;
             if (!class_exists($curve)) {
                 throw new UnsupportedCurveException('Named Curve of ' . $curveName . ' is not supported');
             }
