@@ -301,7 +301,7 @@ class Unit_File_ASN1Test extends PhpseclibTestCase
                 continue;
             }
 
-            constant('phpseclib\\File\\ASN1\\Maps\\' . basename($file, '.php') . '::MAP');
+            constant('phpseclib3\\File\\ASN1\\Maps\\' . basename($file, '.php') . '::MAP');
         }
     }
 
