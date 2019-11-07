@@ -13,7 +13,7 @@
  * @link      http://pear.php.net/package/Math_BigInteger
  */
 
-namespace phpseclib\Crypt\EC\BaseCurves;
+namespace phpseclib3\Crypt\EC\BaseCurves;
 
 use phpseclib3\Math\Common\FiniteField;
 use phpseclib3\Math\BigInteger;

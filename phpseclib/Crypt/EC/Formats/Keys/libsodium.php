@@ -17,7 +17,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\EC\Formats\Keys;
+namespace phpseclib3\Crypt\EC\Formats\Keys;
 
 use phpseclib3\Crypt\EC\Curves\Ed25519;
 use phpseclib3\Math\Common\FiniteField\Integer;

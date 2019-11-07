@@ -13,7 +13,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\Common\Traits;
+namespace phpseclib3\Crypt\Common\Traits;
 
 use phpseclib3\Crypt\Hash;
 

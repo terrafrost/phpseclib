@@ -11,7 +11,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\DSA;
+namespace phpseclib3\Crypt\DSA;
 
 use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\DSA\Formats\Signature\ASN1 as ASN1Signature;

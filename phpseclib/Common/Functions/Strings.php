@@ -13,7 +13,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Common\Functions;
+namespace phpseclib3\Common\Functions;
 
 use phpseclib3\Math\BigInteger;
 use phpseclib3\Math\Common\FiniteField;

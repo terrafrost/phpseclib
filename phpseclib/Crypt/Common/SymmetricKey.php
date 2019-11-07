@@ -34,7 +34,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\Common;
+namespace phpseclib3\Crypt\Common;
 
 use phpseclib3\Crypt\Hash;
 use phpseclib3\Common\Functions\Strings;

@@ -31,7 +31,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt;
+namespace phpseclib3\Crypt;
 
 use phpseclib3\Math\BigInteger;
 use phpseclib3\Exception\UnsupportedAlgorithmException;

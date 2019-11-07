@@ -35,7 +35,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Net;
+namespace phpseclib3\Net;
 
 use ParagonIE\ConstantTime\Hex;
 use phpseclib3\Exception\FileNotFoundException;

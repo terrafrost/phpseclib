@@ -15,7 +15,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\File\ASN1\Maps;
+namespace phpseclib3\File\ASN1\Maps;
 
 use phpseclib3\File\ASN1;
 

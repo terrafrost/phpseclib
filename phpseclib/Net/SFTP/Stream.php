@@ -15,7 +15,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Net\SFTP;
+namespace phpseclib3\Net\SFTP;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Net\SFTP;

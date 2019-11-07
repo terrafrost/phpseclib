@@ -24,7 +24,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\File;
+namespace phpseclib3\File;
 
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Hex;

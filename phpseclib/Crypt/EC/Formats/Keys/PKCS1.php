@@ -25,7 +25,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\EC\Formats\Keys;
+namespace phpseclib3\Crypt\EC\Formats\Keys;
 
 use phpseclib3\Math\Common\FiniteField\Integer;
 use phpseclib3\Crypt\Common\Formats\Keys\PKCS1 as Progenitor;

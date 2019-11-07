@@ -15,7 +15,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\Common\Formats\Keys;
+namespace phpseclib3\Crypt\Common\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
 use phpseclib3\Common\Functions\Strings;

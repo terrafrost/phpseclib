@@ -31,7 +31,7 @@
  * @internal  See http://api.libssh.org/rfc/PROTOCOL.agent
  */
 
-namespace phpseclib\System\SSH;
+namespace phpseclib3\System\SSH;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Exception\BadConfigurationException;

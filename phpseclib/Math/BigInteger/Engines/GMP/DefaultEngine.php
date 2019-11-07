@@ -13,7 +13,7 @@
  * @link      http://pear.php.net/package/Math_BigInteger
  */
 
-namespace phpseclib\Math\BigInteger\Engines\GMP;
+namespace phpseclib3\Math\BigInteger\Engines\GMP;
 
 use phpseclib3\Math\BigInteger\Engines\GMP;
 

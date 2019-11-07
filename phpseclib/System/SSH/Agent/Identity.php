@@ -14,7 +14,7 @@
  * @internal  See http://api.libssh.org/rfc/PROTOCOL.agent
  */
 
-namespace phpseclib\System\SSH\Agent;
+namespace phpseclib3\System\SSH\Agent;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\DSA;

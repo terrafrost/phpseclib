@@ -13,7 +13,7 @@
  * @link      http://pear.php.net/package/Math_BigInteger
  */
 
-namespace phpseclib\Crypt\EC\Curves;
+namespace phpseclib3\Crypt\EC\Curves;
 
 use phpseclib3\Math\Common\FiniteField\Integer;
 use phpseclib3\Crypt\EC\BaseCurves\Montgomery;

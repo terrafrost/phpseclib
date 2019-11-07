@@ -21,7 +21,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\DH\Formats\Keys;
+namespace phpseclib3\Crypt\DH\Formats\Keys;
 
 use phpseclib3\Math\BigInteger;
 use phpseclib3\Crypt\Common\Formats\Keys\PKCS1 as Progenitor;

@@ -45,7 +45,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Net;
+namespace phpseclib3\Net;
 
 use phpseclib3\Crypt\Blowfish;
 use phpseclib3\Crypt\Hash;

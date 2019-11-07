@@ -15,7 +15,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\DSA\Formats\Keys;
+namespace phpseclib3\Crypt\DSA\Formats\Keys;
 
 use ParagonIE\ConstantTime\Base64;
 use phpseclib3\Math\BigInteger;

@@ -27,7 +27,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-namespace phpseclib\Math;
+namespace phpseclib3\Math;
 
 use phpseclib3\Exception\BadConfigurationException;
 

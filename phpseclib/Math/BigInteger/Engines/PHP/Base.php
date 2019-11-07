@@ -13,7 +13,7 @@
  * @link      http://pear.php.net/package/Math_BigInteger
  */
 
-namespace phpseclib\Math\BigInteger\Engines\PHP;
+namespace phpseclib3\Math\BigInteger\Engines\PHP;
 
 use phpseclib3\Math\BigInteger\Engines\PHP;
 

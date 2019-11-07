@@ -11,7 +11,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\RSA;
+namespace phpseclib3\Crypt\RSA;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Math\BigInteger;

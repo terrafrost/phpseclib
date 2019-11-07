@@ -15,7 +15,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt\DSA\Formats\Signature;
+namespace phpseclib3\Crypt\DSA\Formats\Signature;
 
 use phpseclib3\Math\BigInteger;
 use phpseclib3\Common\Functions\Strings;

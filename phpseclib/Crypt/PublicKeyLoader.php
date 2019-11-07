@@ -13,7 +13,7 @@
  * @link      http://phpseclib.sourceforge.net
  */
 
-namespace phpseclib\Crypt;
+namespace phpseclib3\Crypt;
 
 use phpseclib3\Exception\NoKeyLoadedException;
 use phpseclib3\Crypt\Common\PrivateKey;
