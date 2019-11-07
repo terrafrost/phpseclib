@@ -16,6 +16,6 @@ class Unit_Math_BigInteger_DefaultTest extends Unit_Math_BigInteger_TestCase
 
     public static function getStaticClass()
     {
-        return 'phpseclib\Math\BigInteger';
+        return 'phpseclib3\Math\BigInteger';
     }
 }

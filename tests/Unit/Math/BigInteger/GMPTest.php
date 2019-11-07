@@ -24,6 +24,6 @@ class Unit_Math_BigInteger_GMPTest extends Unit_Math_BigInteger_TestCase
 
     public static function getStaticClass()
     {
-        return 'phpseclib\Math\BigInteger\Engines\GMP';
+        return 'phpseclib3\Math\BigInteger\Engines\GMP';
     }
 }

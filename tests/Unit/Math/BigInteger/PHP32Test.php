@@ -33,6 +33,6 @@ class Unit_Math_BigInteger_PHP32Test extends Unit_Math_BigInteger_TestCase
 
     public static function getStaticClass()
     {
-        return 'phpseclib\Math\BigInteger\Engines\PHP32';
+        return 'phpseclib3\Math\BigInteger\Engines\PHP32';
     }
 }

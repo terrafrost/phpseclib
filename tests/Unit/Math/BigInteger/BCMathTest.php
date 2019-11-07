@@ -24,6 +24,6 @@ class Unit_Math_BigInteger_BCMathTest extends Unit_Math_BigInteger_TestCase
 
     public static function getStaticClass()
     {
-        return 'phpseclib\Math\BigInteger\Engines\BCMath';
+        return 'phpseclib3\Math\BigInteger\Engines\BCMath';
     }
 }
