@@ -10,7 +10,7 @@ use phpseclib3\File\ASN1;
 class Unit_File_ASN1Test extends PhpseclibTestCase
 {
     /**
-     * on older versions of \phpseclib\File\ASN1 this would yield a PHP Warning
+     * on older versions of \phpseclib3\File\ASN1 this would yield a PHP Warning
      * @group github275
      */
     public function testAnyString()
@@ -82,7 +82,7 @@ class Unit_File_ASN1Test extends PhpseclibTestCase
     }
 
     /**
-     * on older versions of \phpseclib\File\ASN1 this would produce a null instead of an array
+     * on older versions of \phpseclib3\File\ASN1 this would produce a null instead of an array
      * @group github275
      */
     public function testIncorrectString()
@@ -121,7 +121,7 @@ class Unit_File_ASN1Test extends PhpseclibTestCase
                     'min' => 0,
                     'max' => -1,
                     'type' => ASN1::TYPE_SEQUENCE,
-                    'children' => ['type' => ASN1::TYPE_IA5_STRING] // should be \phpseclib\File\ASN1::TYPE_GENERAL_STRING
+                    'children' => ['type' => ASN1::TYPE_IA5_STRING] // should be \phpseclib3\File\ASN1::TYPE_GENERAL_STRING
                 ]
             ]
         ];

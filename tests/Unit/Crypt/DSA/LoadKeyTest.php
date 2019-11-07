@@ -17,7 +17,7 @@ use phpseclib3\Math\BigInteger;
 class Unit_Crypt_DSA_LoadKeyTest extends PhpseclibTestCase
 {
     /**
-     * @expectedException \phpseclib\Exception\NoKeyLoadedException
+     * @expectedException \phpseclib3\Exception\NoKeyLoadedException
      */
     public function testBadKey()
     {
@@ -157,7 +157,7 @@ Syea3pSvWdBpVhWzOX4A7qbxs+bhWAQWAhQiF7sFfCtZ7oOgCb2aJ9ySC9sTug==
     }
 
     /**
-     * @expectedException \phpseclib\Exception\NoKeyLoadedException
+     * @expectedException \phpseclib3\Exception\NoKeyLoadedException
      */
     public function testPuTTYBadMAC()
     {

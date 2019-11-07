@@ -48,10 +48,10 @@ class Functional_Net_SFTPStreamTest extends Functional_Net_SFTPTestCase
      */
     public function testConnectionReuse()
     {
-        $originalConnectionsCount = count(\phpseclib\Net\SSH2::getConnections());
+        $originalConnectionsCount = count(\phpseclib3\Net\SSH2::getConnections());
         $session = $this->sftp;
         $dirs = scandir("sftp://$session/");
-        $this->assertCount($originalConnectionsCount, \phpseclib\Net\SSH2::getConnections());
+        $this->assertCount($originalConnectionsCount, \phpseclib3\Net\SSH2::getConnections());
         $this->assertEquals(['.', '..'], array_slice($dirs, 0, 2));
     }
 

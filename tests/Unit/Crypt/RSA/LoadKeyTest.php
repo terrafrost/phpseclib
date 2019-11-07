@@ -25,7 +25,7 @@ class Unit_Crypt_RSA_LoadKeyTest extends PhpseclibTestCase
     }
 
     /**
-     * @expectedException \phpseclib\Exception\NoKeyLoadedException
+     * @expectedException \phpseclib3\Exception\NoKeyLoadedException
      */
     public function testBadKey()
     {

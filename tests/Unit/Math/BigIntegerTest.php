@@ -16,7 +16,7 @@ class Unit_Math_BigIntegerTest extends PhpseclibTestCase
 	private static function mockEngine($className, $isValid) {
 		eval(<<<ENGINE
 namespace phpseclib\Math\BigInteger\Engines;
-class ${className} extends \phpseclib\Math\BigInteger\Engines\Engine {
+class ${className} extends \phpseclib3\Math\BigInteger\Engines\Engine {
 	public function __construct(){} 
 	public static function isValidEngine() { return ${isValid}; }
 	public static function setModExpEngine(\$engine){} 

@@ -374,7 +374,7 @@ class Unit_Crypt_HashTest extends PhpseclibTestCase
     }
 
     /**
-     * @expectedException \phpseclib\Exception\UnsupportedAlgorithmException
+     * @expectedException \phpseclib3\Exception\UnsupportedAlgorithmException
      */
     public function testConstructorArgumentInvalid()
     {
@@ -382,7 +382,7 @@ class Unit_Crypt_HashTest extends PhpseclibTestCase
     }
 
     /**
-     * @expectedException \phpseclib\Exception\UnsupportedAlgorithmException
+     * @expectedException \phpseclib3\Exception\UnsupportedAlgorithmException
      */
     public function testSetHashInvalid()
     {
