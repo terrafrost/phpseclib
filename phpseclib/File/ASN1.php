@@ -413,10 +413,13 @@ abstract class ASN1
                 } else {
                     $current['content'] = '';
                     $length = 0;
-$temp = self::decode_ber($content, 12162, 12108);
-print_r($temp);
-exit;
+//$temp = self::decode_ber($content, 12162, 12108);
+//print_r($temp);
+//exit;
+echo "\n";
                     while (substr($content, $content_pos, 2) != "\0\0") {
+echo ($length + $start) . ", ";
+echo $content_pos . "\n";
                         $temp = self::decode_ber($content, $length + $start, $content_pos);
                         if ($temp === false) {
                             return false;
