@@ -435,6 +435,7 @@ exit('zzzzzzz');
                         //}
                         $current['content'].= $temp['content'];
                         $length+= $temp['length'];
+echo 'substr = ' . bin2hex(substr($content, $content_pos, 2)) . "\n";
                     }
                     if (substr($content, $content_pos, 2) == "\0\0") {
                         $length+= 2; // +2 for the EOC
