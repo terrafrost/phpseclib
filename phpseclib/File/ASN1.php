@@ -422,6 +422,7 @@ echo ($length + $start) . ", ";
 echo $content_pos . "\n";
                         $temp = self::decode_ber($content, $length + $start, $content_pos);
                         if ($temp === false) {
+exit("returning false\n");
                             return false;
                         }
 if (!isset($temp['content'])) {
