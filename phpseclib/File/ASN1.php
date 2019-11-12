@@ -419,7 +419,11 @@ abstract class ASN1
                             return false;
                         }
 if (!isset($temp['content'])) {
-echo 'zzzzzzz';
+echo "zzzz = \n" . ($length + $start) . "\n";
+echo $content_pos . "\n\n\n\n";
+//self::decode_ber($content, $length + $start, $content_pos);
+//exit;
+//echo 'zzzzzzz';
 }
                         $content_pos += $temp['length'];
                         // all subtags should be octet strings
