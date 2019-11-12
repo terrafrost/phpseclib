@@ -421,6 +421,7 @@ echo "\n";
 echo ($length + $start) . ", ";
 echo $content_pos . "\n";
                         $temp = self::decode_ber($content, $length + $start, $content_pos);
+print_r($temp); exit;
                         if ($temp === false) {
 exit("returning false\n");
                             return false;
