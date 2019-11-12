@@ -420,8 +420,13 @@ echo "\n";
                     while (substr($content, $content_pos, 2) != "\0\0") {
 echo ($length + $start) . ", ";
 echo $content_pos . "\n";
+define('START_DEBUG', true);
                         $temp = self::decode_ber($content, $length + $start, $content_pos);
-print_r($temp); exit;
+// good:     [length] => 12034
+// bad:    [length] => 12034
+echo "$content_pos += $temp[length]\n";
+exit;
+//print_r($temp); exit;
                         if ($temp === false) {
 exit("returning false\n");
                             return false;
