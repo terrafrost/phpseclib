@@ -418,6 +418,9 @@ abstract class ASN1
                         if ($temp === false) {
                             return false;
                         }
+if (!isset($temp['content'])) {
+exit('zzzzzzz');
+}
                         $content_pos += $temp['length'];
                         // all subtags should be octet strings
                         //if ($temp['type'] != self::TYPE_OCTET_STRING) {
