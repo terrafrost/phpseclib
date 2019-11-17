@@ -1160,7 +1160,7 @@ class SSH2
             // with stream_select a timeout of 0 means that no timeout takes place;
             // with fsockopen a timeout of 0 means that you instantly timeout
             // to resolve this incompatibility a timeout of 100,000 will be used for fsockopen if timeout is 0
-            $this->fsock = @fsockopen($this->host, $this->port, $errno, $errstr, $this->curTimeout == 0 ? 100000 : $this->curTimeout);
+            $this->fsock = fsockopen($this->host, $this->port, $errno, $errstr, $this->curTimeout == 0 ? 100000 : $this->curTimeout);
             if (!$this->fsock) {
                 $host = $this->host . ':' . $this->port;
                 user_error(rtrim("Cannot connect to $host. Error $errno. $errstr"));
@@ -1171,6 +1171,7 @@ class SSH2
             if ($this->curTimeout) {
                 $this->curTimeout-= $elapsed;
                 if ($this->curTimeout < 0) {
+exit('f1');
                     $this->is_timeout = true;
                     return false;
                 }
@@ -1180,6 +1181,7 @@ class SSH2
         $this->identifier = $this->_generate_identifier();
 
         if ($this->send_id_string_first) {
+echo "sending identification string first\n";
             fputs($this->fsock, $this->identifier . "\r\n");
         }
 
@@ -1192,8 +1194,10 @@ class SSH2
            MUST be able to process such lines." */
         $data = '';
         while (!feof($this->fsock) && !preg_match('#(.*)^(SSH-(\d\.\d+).*)#ms', $data, $matches)) {
+echo '.';
             $line = '';
             while (true) {
+echo '#';
                 if ($this->curTimeout) {
                     if ($this->curTimeout < 0) {
                         $this->is_timeout = true;
@@ -1236,10 +1240,13 @@ class SSH2
 
             $data.= $line;
         }
+echo "data = $data\n";
+echo "data2= " . base64_encode($data) . "\n";
 
         if (feof($this->fsock)) {
             $this->bitmap = 0;
             user_error('Connection closed by server');
+exit('f2');
             return false;
         }
 
