@@ -31,7 +31,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
 	    define('NET_SSH2_LOGGING', 2);
 	    while (true) {
 		    $sftp = new SFTP($this->getEnv('SSH_HOSTNAME'));
-        $username = $this->getEnv('SSH_USERNAME');
+                    $username = $this->getEnv('SSH_USERNAME');
 		    $password = $this->getEnv('SSH_PASSWORD');
 		    try {
 			    $sftp->login($username, $password);
@@ -45,4 +45,4 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
         return $sftp;
     }
 
-}i
+}
