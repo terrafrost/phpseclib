@@ -37,7 +37,8 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
 			    $sftp->login($username, $password);
 		    } catch (\Exception $e) {
 			    echo $e->getMessage() . "\n\n";
-			    echo $sftp->getLog();
+			    echo $sftp->getLog() . "\n\n";
+			    print_r($sftp->getAlgorithmsNegotiated());
 			    exit;
 		    }
 	    }
