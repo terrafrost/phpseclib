@@ -26,7 +26,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     }
 
 
-    public function testPasswordLogin($sftp)
+    public function testPasswordLogin()
     {
 	    define('NET_SSH2_LOGGING', 2);
 	    while (true) {
