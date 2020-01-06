@@ -26,21 +26,23 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     }
 
 
-    /**
-     * @depends testConstructor
-     */
     public function testPasswordLogin($sftp)
     {
+	    define('NET_SSH2_LOGGING', 2);
 	    while (true) {
+		    $sftp = new SFTP($this->getEnv('SSH_HOSTNAME'));
         $username = $this->getEnv('SSH_USERNAME');
-        $password = $this->getEnv('SSH_PASSWORD');
-        $this->assertTrue(
-            $sftp->login($username, $password),
-            'SSH2/SFTP login using password failed.'
-    );
+		    $password = $this->getEnv('SSH_PASSWORD');
+		    try {
+			    $sftp->login($username, $password);
+		    } catch (\Exception $e) {
+			    echo $e->getMessage() . "\n\n";
+			    echo $sftp->getLog();
+			    exit;
+		    }
 	    }
 
         return $sftp;
     }
 
-}
+}i
