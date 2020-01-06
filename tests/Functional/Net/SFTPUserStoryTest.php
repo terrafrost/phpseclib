@@ -39,6 +39,11 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
 			    echo $e->getMessage() . "\n\n";
 			    echo $sftp->getLog() . "\n\n";
 			    print_r($sftp->getAlgorithmsNegotiated());
+echo "ciphertext = " . bin2hex($this->zzz) . "\n";
+echo "nonce = " . bin2hex($this->zzznonce) . "\n";
+echo "aad = " . bin2hex($this->zzzaad) . "\n";
+echo "tag = " . bin2hex($this->zzztag) . "\n";
+echo "key = " . bin2hex($this->zzzkey) . "\n";
 			    exit;
 		    }
 	    }
