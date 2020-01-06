@@ -2075,6 +2075,7 @@ class SSH2
             $this->send_binary_packet($packet);
 
             $response = $this->get_binary_packet();
+echo 'len = ' . strlen($response) . "\n";
             if ($response === false) {
                 if ($this->retry_connect) {
                     $this->retry_connect = false;
