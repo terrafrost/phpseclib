@@ -998,6 +998,12 @@ class SSH2
      */
     protected $auth = [];
 
+public $zzz;
+public $zzznonce;
+public $zzzaad;
+public $zzztag;
+public $zzzkey;
+
     /**
      * Default Constructor.
      *
@@ -1767,6 +1773,7 @@ class SSH2
                     $this->lengthDecrypt = self::encryption_algorithm_to_crypt_instance($decrypt);
                     $this->lengthDecrypt->setKey(substr($key, 32, 32));
             }
+$this->zzzkey = substr($key, 0, $decryptKeyLength);
             $this->decrypt->setKey(substr($key, 0, $decryptKeyLength));
             $this->decrypt->name = $decrypt;
         }
@@ -3151,8 +3158,10 @@ echo 'len = ' . strlen($response) . "\n";
 
         $start = microtime(true);
         $raw = stream_get_contents($this->fsock, $this->decrypt_block_size);
+$this->zzz = $raw;
 
         if (!strlen($raw)) {
+echo "RAW IS EMPTY\n";
             return '';
         }
 
@@ -3160,20 +3169,25 @@ echo 'len = ' . strlen($response) . "\n";
             switch ($this->decrypt->name) {
                 case 'aes128-gcm@openssh.com':
                 case 'aes256-gcm@openssh.com':
+$this->zzznonce =                         $this->decrypt->fixed .
+                        $this->decrypt->invocation_counter;
                     $this->decrypt->setNonce(
                         $this->decrypt->fixed .
                         $this->decrypt->invocation_counter
                     );
                     Strings::increment_str($this->decrypt->invocation_counter);
                     $this->decrypt->setAAD($temp = Strings::shift($raw, 4));
+$this->zzzaad = $temp;
                     extract(unpack('Npacket_length', $temp));
                     /**
                      * @var integer $packet_length
                      */
 
-                    $raw.= $this->read_remaining_bytes($packet_length - $this->decrypt_block_size + 4);
+                    $raw.= $aaa = $this->read_remaining_bytes($packet_length - $this->decrypt_block_size + 4);
+$this->zzz.= $aaa;
                     $stop = microtime(true);
                     $tag = stream_get_contents($this->fsock, $this->decrypt_block_size);
+$this->zzztag = $tag;
                     $this->decrypt->setTag($tag);
                     $raw = $this->decrypt->decrypt($raw);
                     $raw = $temp . $raw;
