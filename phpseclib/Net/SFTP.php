@@ -412,6 +412,7 @@ class SFTP extends SSH2
      */
     function login($username)
     {
+exit('zzz');
         if (!call_user_func_array(array(&$this, 'parent::login'), func_get_args())) {
             return false;
         }
