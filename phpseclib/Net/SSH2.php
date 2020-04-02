@@ -2120,6 +2120,7 @@ class SSH2
      */
     function login($username)
     {
+echo "SSH2::login called\n";
         $args = func_get_args();
         $this->auth[] = $args;
 
