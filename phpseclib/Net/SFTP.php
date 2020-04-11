@@ -2136,6 +2136,97 @@ class Net_SFTP extends Net_SSH2
         return $this->_close_handle($handle);
     }
 
+    function open($remote_file, $mode)
+    {
+        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+            return false;
+        }
+
+        $remote_file = $this->_realpath($remote_file);
+        if ($remote_file === false) {
+            return false;
+        }
+
+        switch ($mode) {
+            case 'r':
+                $flags = NET_SFTP_OPEN_READ;
+                break;
+            case 'r+':
+                $flags = NET_SFTP_OPEN_READ |
+                         NET_SFTP_OPEN_WRITE;
+                break;
+            case 'w':
+                $flags = NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE |
+                         NET_SFTP_OPEN_TRUNCATE;
+                break;
+            case 'w+':
+                $flags = NET_SFTP_OPEN_READ |
+                         NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE |
+                         NET_SFTP_OPEN_TRUNCATE;
+                break;
+            case 'a':
+                $flags = NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE;
+                break;
+            case 'a+':
+                $flags = NET_SFTP_OPEN_READ |
+                         NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE;
+                break;
+            case 'x':
+                $flags = NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE |
+                         NET_SFTP_OPEN_EXCL;
+                break;
+            case 'x+':
+                $flags = NET_SFTP_OPEN_READ |
+                         NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE |
+                         NET_SFTP_OPEN_EXCL;
+                break;
+            case 'c':
+                $flags = NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE;
+                break;
+            case 'c+':
+                $flags = NET_SFTP_OPEN_READ |
+                         NET_SFTP_OPEN_WRITE |
+                         NET_SFTP_OPEN_CREATE;
+                break;
+            //case 'e':
+            default:
+                return false;
+        }
+
+        $this->_remove_from_stat_cache($remote_file);
+
+        $packet = pack('Na*N2', strlen($remote_file), $remote_file, $flags, 0);
+        if (!$this->_send_sftp_packet(NET_SFTP_OPEN, $packet)) {
+            return false;
+        }
+
+        $response = $this->_get_sftp_packet();
+        switch ($this->packet_type) {
+            case NET_SFTP_HANDLE:
+                $handle = substr($response, 4);
+                break;
+            case NET_SFTP_STATUS:
+                $this->_logError($response);
+                return false;
+            default:
+                user_error('Expected SSH_FXP_HANDLE or SSH_FXP_STATUS');
+                return false;
+        }
+
+        if (!class_exists('Net_SFTP_Handle')) {
+            include_once 'SFTP/Handle.php';
+        }
+
+        return new Net_SFTP_Handle($this, $handle);
+    }
+
     /**
      * Reads multiple successive SSH_FXP_WRITE responses
      *
