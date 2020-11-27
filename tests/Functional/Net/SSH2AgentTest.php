@@ -6,9 +6,9 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-class Functional_Net_SSH2AgentTest extends PhpseclibFunctionalTestCase
+class SSH2AgentTest extends PhpseclibFunctionalTestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!isset($_SERVER['SSH_AUTH_SOCK'])) {
             self::markTestSkipped(

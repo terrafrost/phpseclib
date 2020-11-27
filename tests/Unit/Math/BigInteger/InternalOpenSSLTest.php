@@ -5,9 +5,9 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-class Unit_Math_BigInteger_InternalOpenSSLTest extends Unit_Math_BigInteger_TestCase
+class InternalOpenSSLTest extends Unit_Math_BigInteger_TestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!extension_loaded('openssl')) {
             self::markTestSkipped('openssl_public_encrypt() function is not available.');

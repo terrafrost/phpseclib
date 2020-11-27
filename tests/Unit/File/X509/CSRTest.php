@@ -8,7 +8,7 @@
 require_once 'File/X509.php';
 require_once 'Crypt/RSA.php';
 
-class Unit_File_X509_CSRTest extends PhpseclibTestCase
+class CSRTest extends PhpseclibTestCase
 {
     public function testLoadCSR()
     {
@@ -27,7 +27,7 @@ v5RwaQHmQEzHofTzF7I+
 
         $spkac = $x509->loadCSR($test);
 
-        $this->assertInternalType('array', $spkac);
+        $this->assertIsArray($spkac);
     }
 
     public function testCSRWithAttributes()
@@ -67,7 +67,7 @@ draiRBZruwMPwPIP
 
         $csr = $x509->loadCSR($test);
 
-        $this->assertInternalType('array', $csr);
+        $this->assertIsArray($csr);
     }
 
     public function testCSRDER()
@@ -92,7 +92,7 @@ draiRBZruwMPwPIP
 
         $csr = $x509->loadCSR($csr);
 
-        $this->assertInternalType('array', $csr);
+        $this->assertIsArray($csr);
     }
 
     // on PHP 7.1, with older versions of phpseclib, this would produce a "A non-numeric value encountered" warning

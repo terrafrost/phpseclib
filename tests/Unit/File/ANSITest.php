@@ -7,7 +7,7 @@
 
 require_once 'File/ANSI.php';
 
-class Unit_File_ANSITest extends PhpseclibTestCase
+class ANSITest extends PhpseclibTestCase
 {
     public function testCase1()
     {

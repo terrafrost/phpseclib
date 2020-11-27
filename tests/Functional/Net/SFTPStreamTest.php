@@ -9,7 +9,7 @@
 // Registers sftp:// as a side effect.
 require_once 'Net/SFTP/Stream.php';
 
-class Functional_Net_SFTPStreamTest extends Functional_Net_SFTPTestCase
+class SFTPStreamTest extends Functional_Net_SFTPTestCase
 {
     public function testFopenFcloseCreatesFile()
     {

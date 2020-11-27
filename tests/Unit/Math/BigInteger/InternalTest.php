@@ -5,9 +5,9 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-class Unit_Math_BigInteger_InternalTest extends Unit_Math_BigInteger_TestCase
+class InternalTest extends Unit_Math_BigInteger_TestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 

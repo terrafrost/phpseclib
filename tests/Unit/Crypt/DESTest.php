@@ -9,7 +9,7 @@ require_once 'Crypt/DES.php';
 
 // the AES tests establish the correctness of the modes of operation. this test is inteded to establish the consistency of
 // key and iv padding between the multiple engines
-class Unit_Crypt_DESTest extends PhpseclibTestCase
+class DESTest extends PhpseclibTestCase
 {
     public function testEncryptPadding()
     {

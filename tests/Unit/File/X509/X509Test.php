@@ -7,7 +7,7 @@
 
 require_once 'File/X509.php';
 
-class Unit_File_X509_X509Test extends PhpseclibTestCase
+class X509Test extends PhpseclibTestCase
 {
     public function testExtensionMapping()
     {
@@ -55,7 +55,7 @@ k6m17mi63YW/+iPCGOWZ2qXmY5HPEyyF2L4L4IDryFJ+8xLyw3pH9/yp5aHZDtp6
 
         $cert = $x509->loadX509($test);
 
-        $this->assertInternalType('array', $cert['tbsCertificate']['extensions'][3]['extnValue']);
+        $this->assertIsArray($cert['tbsCertificate']['extensions'][3]['extnValue']);
     }
 
     public function testLoadUnsupportedExtension()

@@ -8,9 +8,9 @@
 
 require_once 'Crypt/Base.php';
 
-class Functional_Net_SFTPLargeFileTest extends Functional_Net_SFTPTestCase
+class SFTPLargeFileTest extends Functional_Net_SFTPTestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!extension_loaded('mcrypt') && !extension_loaded('openssl')) {
             self::markTestSkipped('This test depends on mcrypt or openssl for performance.');

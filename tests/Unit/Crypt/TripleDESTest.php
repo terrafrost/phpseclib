@@ -7,7 +7,7 @@
 
 require_once 'Crypt/TripleDES.php';
 
-class Unit_Crypt_TripleDESTest extends PhpseclibTestCase
+class TripleDESTest extends PhpseclibTestCase
 {
     var $engines = array(
         CRYPT_ENGINE_INTERNAL => 'internal',

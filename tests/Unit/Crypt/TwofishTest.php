@@ -7,7 +7,7 @@
 
 require_once 'Crypt/Twofish.php';
 
-class Unit_Crypt_TwofishTest extends PhpseclibTestCase
+class TwofishTest extends PhpseclibTestCase
 {
     public function testVectors()
     {

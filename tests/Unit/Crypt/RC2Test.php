@@ -7,7 +7,7 @@
 
 require_once 'Crypt/RC2.php';
 
-class Unit_Crypt_RC2Test extends PhpseclibTestCase
+class RC2Test extends PhpseclibTestCase
 {
     var $engines = array(
         CRYPT_ENGINE_INTERNAL => 'internal',
