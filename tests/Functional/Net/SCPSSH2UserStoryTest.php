@@ -6,13 +6,13 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-class Functional_Net_SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
+class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
 {
     static protected $remoteFile;
     static protected $exampleData;
     static protected $exampleDataLength;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
         self::$remoteFile = uniqid('phpseclib-scp-ssh2-') . '.txt';

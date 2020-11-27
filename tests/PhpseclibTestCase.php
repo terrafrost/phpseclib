@@ -9,7 +9,7 @@ abstract class PhpseclibTestCase extends PHPUnit\Framework\TestCase
 {
     protected $tempFilesToUnlinkOnTearDown = array();
 
-    public function tearDown()
+    public function tearDown(): void
     {
         foreach ($this->tempFilesToUnlinkOnTearDown as $filename) {
             if (!file_exists($filename) || unlink($filename)) {

@@ -8,7 +8,7 @@
 require_once 'Crypt/Blowfish.php';
 require_once 'Crypt/Random.php';
 
-class Unit_Crypt_BlowfishTest extends PhpseclibTestCase
+class BlowfishTest extends PhpseclibTestCase
 {
     public function engineVectors()
     {

@@ -7,7 +7,7 @@
 
 abstract class PhpseclibFunctionalTestCase extends PhpseclibTestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (extension_loaded('runkit')) {
             if (extension_loaded('gmp')) {

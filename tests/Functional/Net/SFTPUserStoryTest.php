@@ -6,14 +6,14 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
-class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
+class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
 {
     static protected $scratchDir;
     static protected $exampleData;
     static protected $exampleDataLength;
     static protected $buffer;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
@@ -133,7 +133,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
         return $sftp;
     }
 
-    static function callback($length)
+    static function demoCallback($length)
     {
         $r = substr(self::$buffer, 0, $length);
         self::$buffer = substr(self::$buffer, $length);
@@ -150,7 +150,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     {
         self::$buffer =  self::$exampleData;
         $this->assertTrue(
-            $sftp->put('file1.txt', array(__CLASS__, 'callback'), NET_SFTP_CALLBACK),
+            $sftp->put('file1.txt', array(__CLASS__, 'demoCallback'), NET_SFTP_CALLBACK),
             'Failed asserting that example data could be successfully put().'
         );
 
@@ -437,8 +437,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
      */
     public function testReadlink($sftp)
     {
-        $this->assertInternalType(
-            'string',
+        $this->assertIsString(
             $sftp->readlink('symlink'),
             'Failed asserting that a symlink\'s target could be read'
         );
@@ -453,14 +452,12 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
     public function testStatOnCWD($sftp)
     {
         $stat = $sftp->stat('.');
-        $this->assertInternalType(
-            'array',
+        $this->assertIsArray(
             $stat,
             'Failed asserting that stat on . returns an array'
         );
         $lstat = $sftp->lstat('.');
-        $this->assertInternalType(
-            'array',
+        $this->assertIsArray(
             $lstat,
             'Failed asserting that lstat on . returns an array'
         );
@@ -602,8 +599,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
             'Failed asserting that scratch directory could ' .
             'be created.'
         );
-        $this->assertInternalType(
-            'array',
+        $this->assertIsArray(
             $sftp->stat(self::$scratchDir),
             'Failed asserting that stat on an existant empty directory returns an array'
         );

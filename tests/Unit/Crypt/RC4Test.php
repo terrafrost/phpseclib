@@ -7,7 +7,7 @@
 
 require_once 'Crypt/RC4.php';
 
-class Unit_Crypt_RC4Test extends PhpseclibTestCase
+class RC4Test extends PhpseclibTestCase
 {
     public function engineVectors()
     {
