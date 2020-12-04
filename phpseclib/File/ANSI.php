@@ -342,6 +342,7 @@ class File_ANSI
                                 $mods = explode(';', $match[1]);
                                 foreach ($mods as $mod) {
                                     switch ($mod) {
+                                        case '':
                                         case '0': // Turn off character attributes
                                             $attr_cell = clone($this->base_attr_cell);
                                             break;
