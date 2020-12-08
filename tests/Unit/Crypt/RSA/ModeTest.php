@@ -7,7 +7,7 @@
 
 require_once 'Crypt/RSA.php' ;
 
-class Unit_Crypt_RSA_ModeTest extends PhpseclibTestCase
+class ModeTest extends PhpseclibTestCase
 {
     public function testEncryptionModeNone()
     {
