@@ -24,6 +24,7 @@ abstract class Functional_Net_SFTPTestCase extends PhpseclibFunctionalTestCase
             $this->getEnv('SSH_USERNAME'),
             $this->getEnv('SSH_PASSWORD')
         ));
+var_dump($this->sftp->getAlgorithmsNegotiated());
         $this->assertTrue($this->sftp->mkdir($this->scratchDir));
         $this->assertTrue($this->sftp->chdir($this->scratchDir));
     }
