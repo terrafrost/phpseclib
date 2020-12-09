@@ -7,9 +7,6 @@
         <testsuite name="phpseclib Unit Test Suite">
             <directory>./tests/Unit/</directory>
         </testsuite>
-        <testsuite name="phpseclib Functional Test Suite">
-            <directory>./tests/Functional/</directory>
-        </testsuite>
     </testsuites>
 
     <!-- Code Coverage -->
