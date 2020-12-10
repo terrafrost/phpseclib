@@ -18,6 +18,7 @@ class SHA256_96Test extends SHA256Test
      */
     public function testHash($message, $longResult)
     {
+echo "SHA256_96: testHash\n";
         parent::testHash($message, substr($longResult, 0, 24));
     }
 
@@ -26,6 +27,7 @@ class SHA256_96Test extends SHA256Test
      */
     public function testHMAC($key, $message, $longResult)
     {
+echo "SHA256_96: testHMAC\n";
         parent::testHMAC($key, $message, substr($longResult, 0, 24));
     }
 }

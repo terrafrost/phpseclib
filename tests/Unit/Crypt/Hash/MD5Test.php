@@ -17,6 +17,7 @@ class MD5Test extends Unit_Crypt_Hash_TestCase
      */
     public function testHash($message, $result)
     {
+echo "MD5: testHash\n";
         $this->assertHashesTo($this->getInstance(), $message, $result);
     }
 
@@ -34,6 +35,7 @@ class MD5Test extends Unit_Crypt_Hash_TestCase
      */
     public function testHMAC($key, $message, $result)
     {
+echo "MD5: testHMAC\n";
         $this->assertHMACsTo($this->getInstance(), $key, $message, $result);
     }
 

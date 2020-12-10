@@ -17,6 +17,7 @@ class SHA512Test extends Unit_Crypt_Hash_TestCase
      */
     public function testHash($message, $result)
     {
+echo "SHA512: testHash\n";
         $this->assertHashesTo($this->getInstance(), $message, $result);
     }
 
@@ -43,6 +44,7 @@ class SHA512Test extends Unit_Crypt_Hash_TestCase
      */
     public function testHMAC($key, $message, $result)
     {
+echo "SHA512: testHMAC\n";
         $this->assertHMACsTo($this->getInstance(), $key, $message, $result);
     }
 
