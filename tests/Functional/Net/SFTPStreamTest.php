@@ -63,7 +63,7 @@ class Functional_Net_SFTPStreamTest extends Functional_Net_SFTPTestCase
         $context = stream_context_create([
             'sftp' => ['session' => $this->sftp],
         ]);
-        $fp = fopen($this->buildUrl('fooo.txt'), 'r', false, $context);
+        $fp = fopen($this->buildUrl('fooo.txt'), 'wb', false, $context);
         $read = [$fp];
         $write = $except = null;
         stream_select($read, $write, $except);
