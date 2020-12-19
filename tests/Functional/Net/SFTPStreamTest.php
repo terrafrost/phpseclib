@@ -66,7 +66,7 @@ class Functional_Net_SFTPStreamTest extends Functional_Net_SFTPTestCase
         $fp = fopen($this->buildUrl('fooo.txt'), 'wb', false, $context);
         $read = [$fp];
         $write = $except = null;
-        stream_select($read, $write, $except);
+        stream_select($read, $write, $except, 0);
     }
 
     protected function buildUrl($suffix)
