@@ -168,7 +168,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
         );
 
         $this->assertTrue(
-            $sftp->put('file1.txt', 'xxx', SFTP::RESUME)
+            $sftp->put('file1.txt', 'xxx', SFTP::RESUME),
             'Failed asserting that an upload could be successfully resumed'
         );
 
