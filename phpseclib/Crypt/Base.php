@@ -779,7 +779,7 @@ abstract class Base
         }
 
         if ($this->engine === self::ENGINE_MCRYPT) {
-            set_error_handler(array($this, 'do_nothing'));
+            //set_error_handler(array($this, 'do_nothing'));
 
             if ($this->changed) {
                 $this->_setupMcrypt();
@@ -1124,7 +1124,7 @@ abstract class Base
         }
 
         if ($this->engine === self::ENGINE_MCRYPT) {
-            set_error_handler(array($this, 'do_nothing'));
+            //set_error_handler(array($this, 'do_nothing'));
             $block_size = $this->block_size;
             if ($this->changed) {
                 $this->_setupMcrypt();
@@ -1660,7 +1660,7 @@ abstract class Base
                 }
                 return false;
             case self::ENGINE_MCRYPT:
-                set_error_handler(array($this, 'do_nothing'));
+                //set_error_handler(array($this, 'do_nothing'));
                 $result = $this->cipher_name_mcrypt &&
                        extension_loaded('mcrypt') &&
                        in_array($this->cipher_name_mcrypt, mcrypt_list_algorithms());
@@ -1742,7 +1742,7 @@ abstract class Base
         }
 
         if ($this->engine != self::ENGINE_MCRYPT && $this->enmcrypt) {
-            set_error_handler(array($this, 'do_nothing'));
+            //set_error_handler(array($this, 'do_nothing'));
             // Closing the current mcrypt resource(s). _mcryptSetup() will, if needed,
             // (re)open them with the module named in $this->cipher_name_mcrypt
             mcrypt_module_close($this->enmcrypt);
