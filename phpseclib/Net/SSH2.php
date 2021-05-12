@@ -2760,6 +2760,7 @@ class Net_SSH2
      */
     function exec($command, $callback = null)
     {
+echo "EXEC CALLED======================================================\n";
         $this->curTimeout = $this->timeout;
         $this->is_timeout = false;
         $this->stdErrorLog = '';
@@ -2791,17 +2792,21 @@ class Net_SSH2
             $this->window_size_server_to_client[NET_SSH2_CHANNEL_EXEC],
             $packet_size
         );
+echo "EXEC CHANNEL OPEN SENT=============================================\n";
 
         if (!$this->_send_binary_packet($packet)) {
             return false;
         }
 
         $this->channel_status[NET_SSH2_CHANNEL_EXEC] = NET_SSH2_MSG_CHANNEL_OPEN;
-
+echo "EXEC GET CHANNEL PACKET (BEFORE)=================================\n";
         $response = $this->_get_channel_packet(NET_SSH2_CHANNEL_EXEC);
         if ($response === false) {
+echo "RET FALSE========================================================\n";
             return false;
         }
+echo "NOT RET FALSE=====================================================\n";
+var_dump($response);
 
         if ($this->request_pty === true) {
             $terminal_modes = pack('C', NET_SSH2_TTY_OP_END);
@@ -2982,6 +2987,7 @@ class Net_SSH2
         $this->channel_status[NET_SSH2_CHANNEL_SHELL] = NET_SSH2_MSG_IGNORE;
 
         $this->bitmap |= NET_SSH2_MASK_SHELL;
+echo "INITSHELL CALLED===================================================\n";
 
         return true;
     }
@@ -3097,7 +3103,10 @@ class Net_SSH2
             return false;
         }
 
-        return $this->_send_channel_packet($this->_get_interactive_channel(), $cmd);
+echo "ABOUT TO SEND CHANNLE PACKET===================================\n";
+$zzz = $this->_send_channel_packet($this->_get_interactive_channel(), $cmd);
+echo "WRITE CALLED =================================================\n";
+return $zzz;
     }
 
     /**
@@ -3880,6 +3889,7 @@ class Net_SSH2
 
                 switch ($this->channel_status[$channel]) {
                     case NET_SSH2_MSG_CHANNEL_OPEN:
+echo "GET CHANNEL PACKET / CHANNEL OPEN PHASE ================================================\n";
                         switch ($type) {
                             case NET_SSH2_MSG_CHANNEL_OPEN_CONFIRMATION:
                                 if (strlen($response) < 4) {
@@ -3903,6 +3913,7 @@ class Net_SSH2
                                 $this->packet_size_client_to_server[$channel] = $temp['packet_size_client_to_server'];
                                 $result = $client_channel == $channel ? true : $this->_get_channel_packet($client_channel, $skip_extended);
                                 $this->_on_channel_open();
+echo "GET CHANNEL PACKET / CHANNEL OPEN PHASE / ABOUT TO RET======================\n";
                                 return $result;
                             //case NET_SSH2_MSG_CHANNEL_OPEN_FAILURE:
                             default:
@@ -3913,6 +3924,7 @@ class Net_SSH2
                     case NET_SSH2_MSG_IGNORE:
                         switch ($type) {
                             case NET_SSH2_MSG_CHANNEL_SUCCESS:
+echo "CHANNEL SUCCESS IN IGNORE================================\n";
                                 //$this->channel_status[$channel] = NET_SSH2_MSG_CHANNEL_DATA;
                                 continue 3;
                             case NET_SSH2_MSG_CHANNEL_FAILURE:
@@ -3923,6 +3935,7 @@ class Net_SSH2
                     case NET_SSH2_MSG_CHANNEL_REQUEST:
                         switch ($type) {
                             case NET_SSH2_MSG_CHANNEL_SUCCESS:
+echo "CHANNEL SUCCESS IN REQUEST=============================\n";
                                 return true;
                             case NET_SSH2_MSG_CHANNEL_FAILURE:
                                 return false;
@@ -3972,6 +3985,7 @@ class Net_SSH2
                     if (!isset($this->channel_buffers[$channel])) {
                         $this->channel_buffers[$channel] = array();
                     }
+echo "ADDING TO BUFFER================================\n";
                     $this->channel_buffers[$channel][] = $data;
                     break;
                 case NET_SSH2_MSG_CHANNEL_CLOSE:
@@ -4149,10 +4163,12 @@ class Net_SSH2
     {
         while (strlen($data)) {
             if (!$this->window_size_client_to_server[$client_channel]) {
+echo "EXPECTING WINDOW ADJUST PACKET=============================================\n";
                 $this->bitmap^= NET_SSH2_MASK_WINDOW_ADJUST;
                 // using an invalid channel will let the buffers be built up for the valid channels
                 $this->_get_channel_packet(-1);
                 $this->bitmap^= NET_SSH2_MASK_WINDOW_ADJUST;
+echo "GOT WINDOW ADJUST PACKET=============================================\n";
             }
 
             /* The maximum amount of data allowed is determined by the maximum
