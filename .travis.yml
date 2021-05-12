@@ -21,5 +21,4 @@ install:
   - travis/setup-composer.sh
 
 script:
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' ]; then vendor/bin/phing -f build/build.xml sniff; fi"
   - travis/run-phpunit.sh
