@@ -12,7 +12,8 @@ class Functional_Net_SFTPStreamTest extends Functional_Net_SFTPTestCase
 {
     public static function setUpBeforeClass()
     {
-        Stream::register();
+echo "SFTPStreamTest\n";   
+	    Stream::register();
         parent::setUpBeforeClass();
     }
 

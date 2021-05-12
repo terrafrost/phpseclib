@@ -12,6 +12,7 @@ class Functional_Net_SSH2Test extends PhpseclibFunctionalTestCase
 {
     public function testConstructor()
     {
+	    echo "SSH2Test\n";
         $ssh = new SSH2($this->getEnv('SSH_HOSTNAME'));
 
         $this->assertTrue(
@@ -160,7 +161,8 @@ class Functional_Net_SSH2Test extends PhpseclibFunctionalTestCase
      */
     public function testChannelDataAfterOpen($ssh)
     {
-        $ssh->write("ping 127.0.0.1\n");
+
+	    $ssh->write("ping 127.0.0.1\n");
 
         $ssh->enablePTY();
         $ssh->exec('bash');

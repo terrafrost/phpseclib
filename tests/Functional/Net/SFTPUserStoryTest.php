@@ -17,6 +17,7 @@ class Functional_Net_SFTPUserStoryTest extends PhpseclibFunctionalTestCase
 
     public static function setUpBeforeClass()
     {
+	    echo "SFTPUserStoryTest\n";
         parent::setUpBeforeClass();
 
         self::$scratchDir = uniqid('phpseclib-sftp-scratch-');

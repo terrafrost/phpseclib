@@ -13,6 +13,7 @@ class Functional_Net_SSH2AgentTest extends PhpseclibFunctionalTestCase
 {
     public static function setUpBeforeClass()
     {
+	    echo "SSH2AgentTest\n";
         if (!isset($_SERVER['SSH_AUTH_SOCK'])) {
             self::markTestSkipped(
                 'This test requires an SSH Agent (SSH_AUTH_SOCK env variable).'
