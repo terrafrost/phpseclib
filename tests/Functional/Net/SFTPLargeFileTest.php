@@ -13,7 +13,7 @@ class Functional_Net_SFTPLargeFileTest extends Functional_Net_SFTPTestCase
 {
     public static function setUpBeforeClass()
     {
-echo "largefiletest\n";    
+        echo "largefiletest\n";
 	    if (!extension_loaded('mcrypt') && !extension_loaded('openssl')) {
             self::markTestSkipped('This test depends on mcrypt or openssl for performance.');
         }
