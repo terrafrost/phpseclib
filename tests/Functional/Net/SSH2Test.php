@@ -6,6 +6,8 @@
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
  */
 
+require_once 'Math/BigInteger.php';
+
 class Functional_Net_SSH2Test extends PhpseclibFunctionalTestCase
 {
     public function testConstructor()
