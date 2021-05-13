@@ -1473,7 +1473,7 @@ class SSH2
             0 // reserved for future extension
         );
 
-        if ($this->send_kex_first) {
+        if ($kexinit_payload_server === false) {
             $this->send_binary_packet($kexinit_payload_client);
 
             $kexinit_payload_server = $this->get_binary_packet();
