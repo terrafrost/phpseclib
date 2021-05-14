@@ -22,3 +22,4 @@ install:
 
 script:
   - travis/run-phpunit.sh
+  - cat /etc/ssh/sshd_config

@@ -3370,6 +3370,9 @@ return $zzz;
                     }
                 }
             } else {
+echo 'timeout = ';
+var_dump($this->curTimeout);
+echo "\n";
                 if ($this->curTimeout < 0) {
                     $this->is_timeout = true;
                     return true;
