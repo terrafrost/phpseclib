@@ -22,8 +22,6 @@ install:
   - travis/setup-composer.sh
 
 script:
-  - sudo apt-get update
-  - sudo apt-get install systemd
   - travis/run-phpunit.sh
   - cat /etc/ssh/sshd_config
-  - journalctl -u sshd -n 100
+  - cat /var/log/messages
