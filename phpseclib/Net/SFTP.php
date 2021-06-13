@@ -323,6 +323,7 @@ class SFTP extends SSH2
             6  => 'NET_SFTP_WRITE',
             7  => 'NET_SFTP_LSTAT',
             9  => 'NET_SFTP_SETSTAT',
+            10 => 'NET_SFTP_FSETSTAT',
             11 => 'NET_SFTP_OPENDIR',
             12 => 'NET_SFTP_READDIR',
             13 => 'NET_SFTP_REMOVE',
@@ -1354,7 +1355,7 @@ class SFTP extends SSH2
     {
         $attr = pack('N3', NET_SFTP_ATTR_SIZE, $new_size / 4294967296, $new_size); // 4294967296 == 0x100000000 == 1<<32
 
-        return $this->setstat($filename, $attr, false);
+        return $this->setstat(NET_SFTP_SETSTAT, $filename, $attr, false);
     }
 
     /**
@@ -1404,7 +1405,7 @@ class SFTP extends SSH2
                                                   . 'Got packet type: ' . $this->packet_type);
         }
 
-        return $this->setstat($filename, $attr, false);
+        return $this->setstat(NET_SFTP_SETSTAT, $filename, $attr, false);
     }
 
     /**
@@ -1424,7 +1425,7 @@ class SFTP extends SSH2
         // "if the owner or group is specified as -1, then that ID is not changed"
         $attr = pack('N3', NET_SFTP_ATTR_UIDGID, $uid, -1);
 
-        return $this->setstat($filename, $attr, $recursive);
+        return $this->setstat(NET_SFTP_SETSTAT, $filename, $attr, $recursive);
     }
 
     /**
@@ -1442,7 +1443,7 @@ class SFTP extends SSH2
     {
         $attr = pack('N3', NET_SFTP_ATTR_UIDGID, -1, $gid);
 
-        return $this->setstat($filename, $attr, $recursive);
+        return $this->setstat(NET_SFTP_SETSTAT, $filename, $attr, $recursive);
     }
 
     /**
@@ -1467,7 +1468,7 @@ class SFTP extends SSH2
         }
 
         $attr = pack('N2', NET_SFTP_ATTR_PERMISSIONS, $mode & 07777);
-        if (!$this->setstat($filename, $attr, $recursive)) {
+        if (!$this->setstat(NET_SFTP_SETSTAT, $filename, $attr, $recursive)) {
             return false;
         }
         if ($recursive) {
@@ -1505,7 +1506,7 @@ class SFTP extends SSH2
      * @return bool
      * @access private
      */
-    private function setstat($filename, $attr, $recursive)
+    private function setstat($packet, $filename, $attr, $recursive)
     {
         if (!($this->bitmap & SSH2::MASK_LOGIN)) {
             return false;
@@ -1518,6 +1519,7 @@ class SFTP extends SSH2
 
         $this->remove_from_stat_cache($filename);
 
+        // $recursive shouldn't be set if $packet == NET_SFTP_FSETSTAT
         if ($recursive) {
             $i = 0;
             $result = $this->setstat_recursive($filename, $attr, $i);
@@ -1527,7 +1529,7 @@ class SFTP extends SSH2
 
         // SFTPv4+ has an additional byte field - type - that would need to be sent, as well. setting it to
         // SSH_FILEXFER_TYPE_UNKNOWN might work. if not, we'd have to do an SSH_FXP_STAT before doing an SSH_FXP_SETSTAT.
-        $this->send_sftp_packet(NET_SFTP_SETSTAT, Strings::packSSH2('s', $filename) . $attr);
+        $this->send_sftp_packet($packet, Strings::packSSH2('s', $filename) . $attr);
 
         /*
          "Because some systems must use separate system calls to set various attributes, it is possible that a failure
@@ -1571,7 +1573,7 @@ class SFTP extends SSH2
         $entries = $this->readlist($path, true);
 
         if ($entries === false) {
-            return $this->setstat($path, $attr, false);
+            return $this->setstat(NET_SFTP_SETSTAT, $path, $attr, false);
         }
 
         // normally $entries would have at least . and .. but it might not if the directories
@@ -1588,7 +1590,7 @@ class SFTP extends SSH2
 
             $temp = $path . '/' . $filename;
             if ($props['type'] == NET_SFTP_TYPE_DIRECTORY) {
-                if (!$this->setstat_recursive($temp, $attr, $i)) {
+                if (!$this->setstat_recursive(NET_SFTP_SETSTAT, $temp, $attr, $i)) {
                     return false;
                 }
             } else {
@@ -2003,7 +2005,8 @@ class SFTP extends SSH2
         if ($mode & self::SOURCE_LOCAL_FILE) {
             if ($this->preserveTime) {
                 $stat = fstat($fp);
-                $this->touch($remote_file, $stat['mtime'], $stat['atime']);
+                $attr = pack('N3', NET_SFTP_ATTR_ACCESSTIME, $stat['mtime'], $stat['atime']);
+                $this->setstat(NET_SFTP_FSETSTAT, $handle, $attr, false);
             }
 
             if (isset($fp) && is_resource($fp)) {
@@ -2940,7 +2943,7 @@ class SFTP extends SSH2
         while (strlen($this->packet_buffer) < 4) {
             $temp = $this->get_channel_packet(self::CHANNEL, true);
             if ($temp === true) {
-                if ($this->channel_status[NET_SFTP_CHANNEL] === NET_SSH2_MSG_CHANNEL_CLOSE) {
+                if ($this->channel_status[self::CHANNEL] === NET_SSH2_MSG_CHANNEL_CLOSE) {
                     $this->channel_close = true;
                 }
                 $this->packet_type = false;
