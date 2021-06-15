@@ -2002,11 +2002,13 @@ class SFTP extends SSH2
             return false;
         }
 
+        $result = $this->close_handle($handle);
+
         if ($mode & self::SOURCE_LOCAL_FILE) {
             if ($this->preserveTime) {
                 $stat = fstat($fp);
                 $attr = pack('N3', NET_SFTP_ATTR_ACCESSTIME, $stat['mtime'], $stat['atime']);
-                $this->setstat(NET_SFTP_FSETSTAT, $handle, $attr, false);
+                $this->setstat(NET_SFTP_SETSTAT, $remote_file, $attr, false);
             }
 
             if (isset($fp) && is_resource($fp)) {
@@ -2014,7 +2016,8 @@ class SFTP extends SSH2
             }
         }
 
-        return $this->close_handle($handle);
+        return $result;
+
     }
 
     /**
@@ -3104,7 +3107,7 @@ class SFTP extends SSH2
      *
      * @access public
      */
-    function enableDatePreservation()
+    public function enableDatePreservation()
     {
         $this->preserveTime = true;
     }
@@ -3114,7 +3117,7 @@ class SFTP extends SSH2
      *
      * @access public
      */
-    function disableDatePreservation()
+    public function disableDatePreservation()
     {
         $this->preserveTime = false;
     }
