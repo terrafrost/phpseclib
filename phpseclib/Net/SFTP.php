@@ -506,6 +506,19 @@ class Net_SFTP extends Net_SSH2
         $this->__construct($host, $port, $timeout);
     }
 
+    function login($username)
+    {
+        $args = func_get_args();
+        $callback = version_compare(PHP_VERSION, '5.3.0') < 0 ?
+            array(&$this, 'parent::login') :
+            'parent::login';
+        if (!call_user_func_array($callback, $args)) {
+            return false;
+        }
+
+        return $this->_init_sftp_connection();
+    }
+
     /**
      * Check a few things before SFTP functions are called
      *
