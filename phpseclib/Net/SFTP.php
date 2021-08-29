@@ -758,10 +758,6 @@ class Net_SFTP extends Net_SSH2
      */
     function pwd()
     {
-        if (!$this->_precheck()) {
-            return false;
-        }
-
         return $this->pwd;
     }
 
