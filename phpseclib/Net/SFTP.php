@@ -426,6 +426,7 @@ class Net_SFTP extends Net_SSH2
             0x00000800 => 'NET_SFTP_ATTR_TEXT_HINT',
             0x00001000 => 'NET_SFTP_ATTR_MIME_TYPE',
             0x00002000 => 'NET_SFTP_ATTR_LINK_COUNT',
+            0x00004000 => 'NET_SFTP_ATTR_UNTRANSLATED_NAME',
             0x00008000 => 'NET_SFTP_ATTR_CTIME',
             // 0x80000000 will yield a floating point on 32-bit systems and converting floating points to integers
             // yields inconsistent behavior depending on how php is compiled.  so we left shift -1 (which, in
@@ -757,6 +758,10 @@ class Net_SFTP extends Net_SSH2
      */
     function pwd()
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
         return $this->pwd;
     }
 
