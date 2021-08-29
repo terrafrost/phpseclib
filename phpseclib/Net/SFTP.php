@@ -922,7 +922,7 @@ class Net_SFTP extends Net_SSH2
      */
     function chdir($dir)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1079,7 +1079,7 @@ class Net_SFTP extends Net_SSH2
      */
     function _list($dir, $raw = true)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1304,7 +1304,7 @@ class Net_SFTP extends Net_SSH2
      */
     function size($filename)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1424,7 +1424,7 @@ class Net_SFTP extends Net_SSH2
      */
     function stat($filename)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1481,7 +1481,7 @@ class Net_SFTP extends Net_SSH2
      */
     function lstat($filename)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1595,7 +1595,7 @@ class Net_SFTP extends Net_SSH2
      */
     function touch($filename, $time = null, $atime = null)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1739,7 +1739,7 @@ class Net_SFTP extends Net_SSH2
      */
     function _setstat($filename, $attr, $recursive)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1869,7 +1869,7 @@ class Net_SFTP extends Net_SSH2
      */
     function readlink($link)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1926,7 +1926,7 @@ SFTP v6 changes (from v5)
       implementation implemented SYMLINK with the arguments reversed.
       Hopefully the new argument names make it clear which way is which.
 */
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -1967,7 +1967,7 @@ SFTP v6 changes (from v5)
      */
     function mkdir($dir, $mode = -1, $recursive = false)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -2036,7 +2036,7 @@ SFTP v6 changes (from v5)
      */
     function rmdir($dir)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -2143,7 +2143,7 @@ SFTP v6 changes (from v5)
         none of these are currently supported
         */
 
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -2385,7 +2385,7 @@ SFTP v6 changes (from v5)
      */
     function get($remote_file, $local_file = false, $offset = 0, $length = -1, $progressCallback = null)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -2546,7 +2546,7 @@ SFTP v6 changes (from v5)
      */
     function delete($path, $recursive = true)
     {
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
@@ -2987,7 +2987,7 @@ SFTP v6 changes (from v5)
 // so we'll just need to add \0\0\0\0 after
 // by default if the destination file already exists it fails
 // but in v5+ you can pass a SSH_FXF_RENAME_OVERWRITE flag
-        if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
+        if (!$this->_precheck()) {
             return false;
         }
 
