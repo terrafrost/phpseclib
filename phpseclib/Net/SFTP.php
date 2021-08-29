@@ -841,6 +841,10 @@ echo "PRECHECK RETURNING TRUE\n";
      */
     function realpath($path)
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
         return $this->_realpath($path);
     }
 
@@ -1305,10 +1309,6 @@ echo "PRECHECK RETURNING TRUE\n";
      */
     function size($filename)
     {
-        if (!$this->_precheck()) {
-            return false;
-        }
-
         $result = $this->stat($filename);
         if ($result === false) {
             return false;
@@ -2676,6 +2676,10 @@ SFTP v6 changes (from v5)
     function file_exists($path)
     {
         if ($this->use_stat_cache) {
+            if (!$this->_precheck()) {
+                return false;
+            }
+
             $path = $this->_realpath($path);
 
             $result = $this->_query_stat_cache($path);
@@ -2746,6 +2750,10 @@ SFTP v6 changes (from v5)
      */
     function is_readable($path)
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
         $path = $this->_realpath($path);
 
         $packet = pack('Na*N2', strlen($path), $path, NET_SFTP_OPEN_READ, 0);
@@ -2774,6 +2782,10 @@ SFTP v6 changes (from v5)
      */
     function is_writable($path)
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
         $path = $this->_realpath($path);
 
         $packet = pack('Na*N2', strlen($path), $path, NET_SFTP_OPEN_WRITE, 0);
@@ -2954,6 +2966,10 @@ SFTP v6 changes (from v5)
      */
     function _get_xstat_cache_prop($path, $prop, $type)
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
         if ($this->use_stat_cache) {
             $path = $this->_realpath($path);
 
@@ -2983,6 +2999,10 @@ SFTP v6 changes (from v5)
      */
     function rename($oldname, $newname)
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
 // in SFTP v5+
 // Add support for better control of the rename operation.
 // so we'll just need to add \0\0\0\0 after
