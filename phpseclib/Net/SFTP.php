@@ -1154,8 +1154,7 @@ echo "PRECHECK RETURNING TRUE\n";
                         $shortname = $this->_string_shift($response, $length);
                         // SFTPv4 "removed the long filename from the names structure-- it can now be
                         //         built from information available in the attrs structure."
-echo "VERSION = {$this->version}\n";
-                        if ($this->version == 3) {
+                        if (true) {
                             if (strlen($response) < 4) {
                                 return false;
                             }
@@ -1163,7 +1162,7 @@ echo "VERSION = {$this->version}\n";
                             $longname = $this->_string_shift($response, $length);
                         }
                         $attributes = $this->_parseAttributes($response);
-                        if (!isset($attributes['type']) && $this->version == 3) {
+                        if (!isset($attributes['type'])) {
                             $fileType = $this->_parseLongname($longname);
                             if ($fileType) {
                                 $attributes['type'] = $fileType;
