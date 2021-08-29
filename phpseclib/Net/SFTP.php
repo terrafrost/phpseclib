@@ -534,7 +534,6 @@ class Net_SFTP extends Net_SSH2
         if (!$this->full_init) {
             return $this->_init_sftp_connection();
         }
-echo "PRECHECK RETURNING TRUE\n";
 
         return true;
     }
@@ -854,6 +853,10 @@ echo "PRECHECK RETURNING TRUE\n";
      */
     function realpath($path)
     {
+        if (!$this->_precheck()) {
+            return false;
+        }
+
         return $this->_realpath($path);
     }
 
