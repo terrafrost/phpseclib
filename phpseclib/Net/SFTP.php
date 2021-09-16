@@ -1723,7 +1723,7 @@ class SFTP extends SSH2
             return $result;
         }
 
-        $packet = Strings:packSSH2('s', $filename);
+        $packet = Strings::packSSH2('s', $filename);
         $packet.= $this->version >= 4 ?
             pack('a*Ca*', substr($attr, 0, 4), NET_SFTP_TYPE_UNKNOWN, substr($attr, 4)) :
             $attr;
