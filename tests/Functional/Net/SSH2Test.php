@@ -147,7 +147,6 @@ class Functional_Net_SSH2Test extends PhpseclibFunctionalTestCase
      */
     public function testDisablePTY($ssh)
     {
-define('NET_SSH2_LOGGING', 3);
         $ssh->enablePTY();
         $ssh->exec('ls -latr');
         $ssh->disablePTY();
@@ -162,6 +161,7 @@ define('NET_SSH2_LOGGING', 3);
      */
     public function testChannelDataAfterOpen($ssh)
     {
+define('NET_SSH2_LOGGING', 3);
         $ssh->write("ping 127.0.0.1\n");
 
         $ssh->enablePTY();
