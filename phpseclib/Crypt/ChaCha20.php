@@ -17,6 +17,12 @@ namespace phpseclib3\Crypt;
 
 use phpseclib3\Exception\InsufficientSetupException;
 use phpseclib3\Exception\BadDecryptionException;
+use function substr;
+use function strlen;
+use function pack;
+use function unpack;
+use function is_string;
+use function sodium_crypto_aead_chacha20poly1305_ietf_decrypt;
 
 /**
  * Pure-PHP implementation of ChaCha20.

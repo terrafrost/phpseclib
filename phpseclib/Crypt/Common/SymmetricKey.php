@@ -46,6 +46,32 @@ use phpseclib3\Exception\BadModeException;
 use phpseclib3\Exception\InconsistentSetupException;
 use phpseclib3\Exception\InsufficientSetupException;
 use phpseclib3\Exception\UnsupportedAlgorithmException;
+use function strtolower;
+use function strlen;
+use function is_string;
+use function chunk_split;
+use function str_split;
+use function str_repeat;
+use function substr;
+use function substr_replace;
+use function strrev;
+use function in_array;
+use function hash_pbkdf2;
+use function openssl_encrypt;
+use function openssl_decrypt;
+use function openssl_get_cipher_methods;
+use function set_error_handler;
+use function restore_error_handler;
+use function mcrypt_generic_init;
+use function mcrypt_generic;
+use function mdecrypt_generic;
+use function mcrypt_module_close;
+use function extension_loaded;
+use function method_exists;
+use function array_map;
+use function array_flip;
+use function array_merge;
+use function array_diff;
 
 /**
  * Base Class for all \phpseclib3\Crypt\* cipher classes

@@ -19,6 +19,13 @@ use phpseclib3\Crypt\Common\StreamCipher;
 use phpseclib3\Exception\InsufficientSetupException;
 use phpseclib3\Exception\BadDecryptionException;
 use phpseclib3\Common\Functions\Strings;
+use function strlen;
+use function substr;
+use function str_split;
+use function implode;
+use function pack;
+use function unpack;
+use function openssl_encrypt;
 
 /**
  * Pure-PHP implementation of Salsa20.
