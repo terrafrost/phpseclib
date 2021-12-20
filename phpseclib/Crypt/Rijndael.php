@@ -353,15 +353,15 @@ class Rijndael extends Base
 
         switch ($Nb) {
             case 8:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6], $temp[7]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6], $temp[7]);
             case 7:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6]);
             case 6:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5]);
             case 5:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4]);
             default:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3]);
         }
     }
 
@@ -443,15 +443,15 @@ class Rijndael extends Base
 
         switch ($Nb) {
             case 8:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6], $temp[7]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6], $temp[7]);
             case 7:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5], $temp[6]);
             case 6:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4], $temp[5]);
             case 5:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3], $temp[4]);
             default:
-                return pack('N*', $temp[0], $temp[1], $temp[2], $temp[3]);
+                return \pack('N*', $temp[0], $temp[1], $temp[2], $temp[3]);
         }
     }
 
@@ -482,7 +482,7 @@ class Rijndael extends Base
 
         $this->Nk = $this->key_length >> 2;
         // see Rijndael-ammended.pdf#page=44
-        $this->Nr = max($this->Nk, $this->Nb) + 6;
+        $this->Nr = \max($this->Nk, $this->Nb) + 6;
 
         // shift offsets for Nb = 5, 7 are defined in Rijndael-ammended.pdf#page=44,
         //     "Table 8: Shift offsets in Shiftrow for the alternative block lengths"
@@ -501,7 +501,7 @@ class Rijndael extends Base
                 $this->c = array(0, 1, 3, 4);
         }
 
-        $w = array_values(unpack('N*words', $this->key));
+        $w = \array_values(\unpack('N*words', $this->key));
 
         $length = $this->Nb * ($this->Nr + 1);
         for ($i = $this->Nk; $i < $length; $i++) {
@@ -555,9 +555,9 @@ class Rijndael extends Base
         $this->dw[$row] = $this->w[$row];
 
         // Converting to 1-dim key arrays (both ascending)
-        $this->dw = array_reverse($this->dw);
-        $w  = array_pop($this->w);
-        $dw = array_pop($this->dw);
+        $this->dw = \array_reverse($this->dw);
+        $w  = \array_pop($this->w);
+        $dw = \array_pop($this->dw);
         foreach ($this->w as $r => $wr) {
             foreach ($wr as $c => $wc) {
                 $w[]  = $wc;
@@ -603,7 +603,7 @@ class Rijndael extends Base
             // according to <http://csrc.nist.gov/archive/aes/rijndael/Rijndael-ammended.pdf#page=19> (section 5.2.1),
             // precomputed tables can be used in the mixColumns phase. in that example, they're assigned t0...t3, so
             // those are the names we'll use.
-            $t3 = array_map('intval', array(
+            $t3 = \array_map('intval', array(
                 // with array_map('intval', ...) we ensure we have only int's and not
                 // some slower floats converted by php automatically on high values
                 0x6363A5C6, 0x7C7C84F8, 0x777799EE, 0x7B7B8DF6, 0xF2F20DFF, 0x6B6BBDD6, 0x6F6FB1DE, 0xC5C55491,
@@ -689,7 +689,7 @@ class Rijndael extends Base
     {
         static $tables;
         if (empty($tables)) {
-            $dt3 = array_map('intval', array(
+            $dt3 = \array_map('intval', array(
                 0xF4A75051, 0x4165537E, 0x17A4C31A, 0x275E963A, 0xAB6BCB3B, 0x9D45F11F, 0xFA58ABAC, 0xE303934B,
                 0x30FA5520, 0x766DF6AD, 0xCC769188, 0x024C25F5, 0xE5D7FC4F, 0x2ACBD7C5, 0x35448026, 0x62A38FB5,
                 0xB15A49DE, 0xBA1B6725, 0xEA0E9845, 0xFEC0E15D, 0x2F7502C3, 0x4CF01281, 0x4697A38D, 0xD3F9C66B,
@@ -777,12 +777,12 @@ class Rijndael extends Base
         // We create max. 10 hi-optimized code for memory reason. Means: For each $key one ultra fast inline-crypt function.
         // (Currently, for Crypt_Rijndael/AES, one generated $lambda_function cost on php5.5@32bit ~80kb unfreeable mem and ~130kb on php5.5@64bit)
         // After that, we'll still create very fast optimized code but not the hi-ultimative code, for each $mode one.
-        $gen_hi_opt_code = (bool)(count($lambda_functions) < 10);
+        $gen_hi_opt_code = (bool)(\count($lambda_functions) < 10);
 
         // Generation of a uniqe hash for our generated code
         $code_hash = "Crypt_Rijndael, {$this->mode}, {$this->Nr}, {$this->Nb}";
         if ($gen_hi_opt_code) {
-            $code_hash = str_pad($code_hash, 32) . $this->_hashInlineCryptFunction($this->key);
+            $code_hash = \str_pad($code_hash, 32) . $this->_hashInlineCryptFunction($this->key);
         }
 
         if (!isset($lambda_functions[$code_hash])) {
