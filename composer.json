@@ -54,9 +54,7 @@
         "php": ">=5.0.0"
     },
     "require-dev": {
-        "phing/phing": "~2.7",
-        "phpunit/phpunit": "^4.8.35|^5.7|^6.0|^9.4",
-        "squizlabs/php_codesniffer": "~2.0"
+        "phpunit/phpunit": "*"
     },
     "suggest": {
         "ext-mcrypt": "Install the Mcrypt extension in order to speed up a wide variety of cryptographic operations.",
@@ -73,8 +71,24 @@
             "System": "phpseclib/"
         },
         "files": [
+<<<<<<< HEAD
             "phpseclib/bootstrap.php",
             "phpseclib/Crypt/Random.php"
         ]
+=======
+            "phpseclib/bootstrap.php"
+        ],
+        "psr-4": {
+            "phpseclib3\\": "phpseclib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "phpseclib3\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+>>>>>>> e31089cd (GitHub actions)
     }
 }

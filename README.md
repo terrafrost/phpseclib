@@ -87,15 +87,13 @@ Special Thanks to our $50+ sponsors!:
 
 4. Create a Feature Branch
 
-5. (Recommended) Run the Test Suite
-
-    ``` sh
-    vendor/bin/phpunit
-    ```
-6. (Recommended) Check whether your code conforms to our Coding Standards by running
-
-    ``` sh
-    vendor/bin/phing -f build/build.xml sniff
-    ```
-
-7. Send us a Pull Request
+5. Run continuous integration checks:
+   ```sh
+   composer global require php:^8.1 squizlabs/php_codesniffer friendsofphp/php-cs-fixer vimeo/psalm
+   phpcs --standard=build/php_codesniffer.xml
+   php-cs-fixer fix --config=build/php-cs-fixer.php --diff --dry-run --using-cache=no
+   psalm --config=build/psalm.xml --no-cache --long-progress --report-show-info=false --output-format=text
+   vendor/bin/phpunit --verbose --configuration tests/phpunit.xml
+   ```
+   
+6. Send us a Pull Request

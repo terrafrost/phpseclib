@@ -1,0 +1,59 @@
+name: CI
+on: [push, pull_request]
+jobs:
+    lint:
+        name: Lint
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+        timeout-minutes: 5
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php-version }}
+                    tools: php-parallel-lint/php-parallel-lint:1
+            -   run: parallel-lint --show-deprecated build phpseclib tests
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: ['5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
+    quality_tools:
+        name: Quality Tools
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+        timeout-minutes: 5
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.1'
+                    tools: squizlabs/php_codesniffer:3, friendsofphp/php-cs-fixer:3, vimeo/psalm:4
+            -   run: composer install --classmap-authoritative --no-interaction --no-cache
+            -   run: phpcs --standard=build/php_codesniffer.xml
+            -   run: php-cs-fixer fix --config=build/php-cs-fixer.php --diff --dry-run --using-cache=no
+            -   run: psalm --config=build/psalm.xml --no-cache --long-progress --report-show-info=false --output-format=text
+    tests:
+        name: Tests
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+        timeout-minutes: 10
+        continue-on-error: ${{ matrix.experimental }}
+        runs-on: ${{ matrix.os }}
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php-version }}
+            -   run: composer install --classmap-authoritative --no-interaction --no-cache
+            -   if: matrix.php-version != '5.6' && matrix.php-version != '7.0'
+                run: php tests/make_compatible_with_new_phpunit_versions.php
+            -   run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                php-version: ['5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1']
+                experimental: [false]
+                include:
+                    -   {os: ubuntu-latest, php-version: '8.2', experimental: true}
+                    -   {os: windows-latest, php-version: '8.2', experimental: true}
+                    -   {os: macos-latest, php-version: '8.2', experimental: true}
