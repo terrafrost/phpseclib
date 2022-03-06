@@ -71,24 +71,16 @@
             "System": "phpseclib/"
         },
         "files": [
-<<<<<<< HEAD
             "phpseclib/bootstrap.php",
             "phpseclib/Crypt/Random.php"
         ]
-=======
-            "phpseclib/bootstrap.php"
-        ],
-        "psr-4": {
-            "phpseclib3\\": "phpseclib/"
-        }
     },
     "autoload-dev": {
         "psr-4": {
-            "phpseclib3\\Tests\\": "tests/"
+            "phpseclib\\Tests\\": "tests/"
         }
     },
     "config": {
         "sort-packages": true
->>>>>>> e31089cd (GitHub actions)
     }
 }
