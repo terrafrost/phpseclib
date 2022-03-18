@@ -247,4 +247,12 @@ class Unit_Crypt_RC4Test extends PhpseclibTestCase
             }
         }
     }
+
+    public function test1770()
+    {
+        $a = new Crypt_RC4;
+        $a->setKey('aaaaaa');
+
+        $a->encrypt('asdfasdf');
+    }
 }
