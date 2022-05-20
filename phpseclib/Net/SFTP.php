@@ -676,7 +676,15 @@ class SFTP extends SSH2
         }
 
         $this->pwd = true;
-        $this->pwd = $this->realpath('.');
+        try {
+            $this->pwd = $this->realpath('.');
+        } catch (\UnexpectedValueException $e) {
+            if (!$this->canonicalize_paths) {
+                throw $e;
+            }
+            $this->$this->canonicalize_paths = false;
+            $this->reset_connection(NET_SSH2_DISCONNECT_CONNECTION_LOST);
+        }
 
         $this->update_stat_cache($this->pwd, []);
 
