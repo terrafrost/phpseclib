@@ -815,7 +815,7 @@ class SFTP extends SSH2
             $afterPWD = $beforePWD = [];
             foreach ($parts as $part) {
                 switch ($part) {
-                    case '':
+                    //case '': // some SFTP servers /require/ double /'s. see https://github.com/phpseclib/phpseclib/pull/1137
                     case '.':
                         break;
                     case '..':
