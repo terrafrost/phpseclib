@@ -271,6 +271,11 @@ abstract class SymmetricKey
     protected $debuffer;
 
     /**
+     * @var array
+     */
+    protected $buffer;
+
+    /**
      * mcrypt resource for encryption
      *
      * The mcrypt resource can be recreated every time something needs to be created or it can be created just once.
