@@ -176,8 +176,8 @@ abstract class OpenSSH extends Progenitor
         BigInteger $privateKey,
         BaseCurve $curve,
         array $publicKey,
-        ?string $secret = null,
-        ?string $password = null,
+        string $secret,
+        $password,
         array $options = []
     ): string {
         if ($curve instanceof Ed25519) {
