@@ -567,6 +567,8 @@ class Hash
         // For the last chunk: pad to 32-byte boundary, endian-adjust,
         // NH hash and add bit-length.  Concatenate the result to Y.
         //
+echo "ZZZZZ:\n";
+var_dump($m);
         $length = strlen($m[$i]);
         $pad = 32 - ($length % 32);
         $pad = max(32, $length + $pad % 32);
