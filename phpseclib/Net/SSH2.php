@@ -3111,7 +3111,7 @@ class Net_SSH2
         }
 
         $response = $this->_get_channel_packet(NET_SSH2_CHANNEL_SHELL);
-        if ($response === false) {
+        if (is_bool($response)) {
             return false;
         }
 
