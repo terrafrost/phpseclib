@@ -37,7 +37,14 @@ abstract class JWK
 
         $key = preg_replace('#\s#', '', $key); // remove whitespace
 
-        $key = json_decode($key, null, 512, JSON_THROW_ON_ERROR);
+        if (PHP_VERSION_ID >= 73000) {
+            $key = json_decode($key, null, 512, JSON_THROW_ON_ERROR);
+        } else {
+            $key = json_decode($key);
+            if (!$key) {
+                throw new \RuntimeException('Unable to decode JSON');
+            }
+        }
 
         if (isset($key->kty)) {
             return $key;

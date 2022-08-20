@@ -126,9 +126,10 @@ abstract class JWK extends Progenitor
      *
      * @param \phpseclib3\Math\BigInteger $n
      * @param \phpseclib3\Math\BigInteger $e
+     * @param array $options optional
      * @return string
      */
-    public static function savePublicKey(BigInteger $n, BigInteger $e)
+    public static function savePublicKey(BigInteger $n, BigInteger $e, array $options = [])
     {
         $key = [
             'kty' => 'RSA',

@@ -638,10 +638,11 @@ MIIEDwIBADATBgcqhkjOPQIBBggqhkjOPQMBBwSCA/MwggPvAgEBBIID6P//////
         $plaintext = 'zzz';
 
         $key = '   {"kty":"OKP","crv":"Ed25519",
-   "d":"nWGxne_9WmC6hEr0kuwsxERJxWl7MmkZcDusAxyuf2A",
-   "x":"11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"}';
+   "x":"11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+   "d":"nWGxne_9WmC6hEr0kuwsxERJxWl7MmkZcDusAxyuf2A"}';
 
         $keyWithoutWS = preg_replace('#\s#', '', $key);
+        $keyWithoutWS = '{"keys":[' . $keyWithoutWS . ']}';
 
         $key = PublicKeyLoader::load($key);
 
@@ -655,6 +656,7 @@ MIIEDwIBADATBgcqhkjOPQIBBggqhkjOPQMBBwSCA/MwggPvAgEBBIID6P//////
    "x":"11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"}';
 
         $keyWithoutWS = preg_replace('#\s#', '', $key);
+        $keyWithoutWS = '{"keys":[' . $keyWithoutWS . ']}';
 
         $key = PublicKeyLoader::load($key);
 

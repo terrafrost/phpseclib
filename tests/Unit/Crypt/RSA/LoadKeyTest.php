@@ -1346,6 +1346,7 @@ LrIZULwMa4nI4Y+RkFftEponSYw=
           "kid":"2011-04-29"}';
 
         $keyWithoutWS = preg_replace('#\s#', '', $key);
+        $keyWithoutWS = '{"keys":[' . $keyWithoutWS . ']}';
 
         $key = PublicKeyLoader::load($key);
 
@@ -1353,7 +1354,6 @@ LrIZULwMa4nI4Y+RkFftEponSYw=
             'alg' => 'RS256',
             'kid' => '2011-04-29'
         ]));
-        $phpseclibKey = '{"keys":[' . $phpseclibKey . ']}';
 
         $this->assertSame($keyWithoutWS, $phpseclibKey);
 
