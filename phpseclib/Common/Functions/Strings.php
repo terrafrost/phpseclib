@@ -442,6 +442,7 @@ abstract class Strings
      */
     public static function base64url_decode($data)
     {
+echo function_exists('sodium_base642bin') ? "ZZZ DOES EXIST\n" : "ZZZ DOES NOT EXIST\n";
         // return self::base64_decode(str_replace(['-', '_'], ['+', '/'], $data));
 
         return function_exists('sodium_base642bin') ?
