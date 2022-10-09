@@ -1289,6 +1289,7 @@ class SSH2
 
             if ($this->curTimeout) {
                 $this->curTimeout -= $elapsed;
+echo "1. curTimeout - $elapsed = $this->curTimeout\n";
                 if ($this->curTimeout < 0) {
                     throw new \RuntimeException('Connection timed out whilst attempting to open socket connection');
                 }
@@ -1326,6 +1327,7 @@ class SSH2
                     }
                     $elapsed = microtime(true) - $start;
                     $this->curTimeout -= $elapsed;
+echo "2. curTimeout - $elapsed = $this->curTimeout\n";
                 }
 
                 $temp = stream_get_line($this->fsock, 255, "\n");
@@ -3275,10 +3277,12 @@ class SSH2
                         $this->send_binary_packet(pack('CN', NET_SSH2_MSG_IGNORE, 0));
                         $elapsed = microtime(true) - $start;
                         $this->curTimeout -= $elapsed;
+echo "3. curTimeout - $elapsed = $this->curTimeout\n";
                         return $this->get_binary_packet(true);
                     }
                     $elapsed = microtime(true) - $start;
                     $this->curTimeout -= $elapsed;
+echo "4. curTimeout - $elapsed = $this->curTimeout\n";
                 }
 
                 $sec = (int) floor($this->curTimeout);
@@ -3291,6 +3295,7 @@ class SSH2
                 }
                 $elapsed = microtime(true) - $start;
                 $this->curTimeout -= $elapsed;
+echo "5. curTimeout - $elapsed = $this->curTimeout\n";
             }
         }
 
