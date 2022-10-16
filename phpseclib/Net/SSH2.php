@@ -3266,6 +3266,7 @@ echo "2. curTimeout - $elapsed = $this->curTimeout\n";
                 }
             } else {
                 if ($this->curTimeout < 0) {
+echo "IS TIMEOUT 1. ($this->curTimeout)\n";
                     $this->is_timeout = true;
                     return true;
                 }
@@ -3289,7 +3290,8 @@ echo "4. curTimeout - $elapsed = $this->curTimeout\n";
                 $usec = (int) (1000000 * ($this->curTimeout - $sec));
 
                 // this can return a "stream_select(): unable to select [4]: Interrupted system call" error
-                if (!@stream_select($read, $write, $except, $sec, $usec)) {
+                if (!stream_select($read, $write, $except, $sec, $usec)) {
+echo "IS TIMEOUT 2. ($this->curTimeout)\n";
                     $this->is_timeout = true;
                     return true;
                 }
