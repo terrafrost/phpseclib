@@ -19,8 +19,6 @@ class BlowfishTest extends PhpseclibTestCase
         $engines = [
             'PHP',
             'Eval',
-            'mcrypt',
-            'OpenSSL',
         ];
 
         // tests from https://www.schneier.com/code/vectors.txt
