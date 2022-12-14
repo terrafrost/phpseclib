@@ -200,7 +200,7 @@ class RC4Test extends PhpseclibTestCase
     /**
      * @zzdataProvider engineVectors
      */
-    public function testVectors($engine, $key, $offset, $expected)
+    public function testVectors()
     {
 print_r(openssl_get_cipher_methods());
 
