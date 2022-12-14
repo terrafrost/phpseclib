@@ -204,6 +204,13 @@ class RC4Test extends PhpseclibTestCase
     {
 print_r(openssl_get_cipher_methods());
 
+echo "ciphertext:\nversion = " . OPENSSL_VERSION_TEXT . "\n";
+echo bin2hex(openssl_encrypt($plaintext, 'rc4-40', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING));
+
+exit;
+
+print_r(openssl_get_cipher_methods());
+
 $key = '0102030405060708090a';
 $offset = 1008;
 
