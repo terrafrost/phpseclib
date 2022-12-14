@@ -130,7 +130,10 @@ class BlowfishTest extends PhpseclibTestCase
             $ref = $objects[0]->encrypt($plaintext);
             for ($i = 1; $i < count($objects); $i++) {
                 $objects[$i]->setKey($key);
-                $this->assertEquals($ref, $objects[$i]->encrypt($plaintext), "Failed asserting that {$engines[$i]} yields the same output as the internal engine with a key size of $keyLen");
+                $this->assertEquals($ref, 
+$objects[$i]
+->encrypt($plaintext), 
+"Failed asserting that {$engines[$i]} yields the same output as the internal engine with a key size of $keyLen");
             }
         }
     }
