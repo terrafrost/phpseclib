@@ -1995,6 +1995,12 @@ abstract class SymmetricKey
                     $block = substr($plaintext, $i, $block_size);
                     $otp = openssl_encrypt($xor, $this->cipher_name_openssl_ecb, $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
                     Strings::increment_str($xor);
+if (is_numeric($block) && !is_numeric($otp)) {
+echo "AAAA\n";
+}
+if (!is_numeric($block) && is_numeric($otp)) {
+echo "BBBB\n";
+}
                     $ciphertext .= $block ^ $otp;
                 }
             }
