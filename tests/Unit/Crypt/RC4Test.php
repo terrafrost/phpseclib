@@ -213,7 +213,8 @@ $rc4->setPreferredEngine('openssl');
 $rc4->setKey(pack('H*', $key));
 echo $rc4->getEngine() . "\n";
 $ciphertext = $rc4->encrypt(str_repeat("\0", $offset + 16));
-echo bin2hex(substr($ciphertext, -16)); // should be a64f70af88ae56b6f87581c0e23e6b08
+echo 'len = ' . strlen($ciphertext) . "\n";
+echo 'ciphertext = ' . bin2hex(substr($ciphertext, -16)); // should be a64f70af88ae56b6f87581c0e23e6b08
 echo "\n\nerror = ";
 echo openssl_error_string() . "\n\nversion = " . OPENSSL_VERSION_TEXT . "\n\n";
 exit;

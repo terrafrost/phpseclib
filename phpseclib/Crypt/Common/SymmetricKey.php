@@ -1180,7 +1180,11 @@ abstract class SymmetricKey
         if ($this->engine === self::ENGINE_OPENSSL) {
             switch ($this->mode) {
                 case self::MODE_STREAM:
-                    return openssl_encrypt($plaintext, $this->cipher_name_openssl, $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
+echo "using " . $this->cipher_name_openssl . "\n";
+                    $zzz = openssl_encrypt($plaintext, $this->cipher_name_openssl, $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
+echo 'len0 = ' . strlen($zzz) . "\n";
+echo 'error = ' . openssl_error_string() . "\n";
+return $zzz;
                 case self::MODE_ECB:
                     return openssl_encrypt($plaintext, $this->cipher_name_openssl, $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
                 case self::MODE_CBC:
