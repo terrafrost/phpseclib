@@ -133,7 +133,7 @@ class BlowfishTest extends PhpseclibTestCase
                 $this->assertEquals($ref, 
 $objects[$i]
 ->encrypt($plaintext), 
-"Failed asserting that {$engines[$i]} yields the same output as the internal engine with a key size of $keyLen");
+"Failed asserting that {$engines[$i]} yields the same output as the internal engine with a key size of $keyLen (" . bin2hex($key) . ')');
             }
         }
     }
