@@ -17,9 +17,6 @@ class RC4Test extends PhpseclibTestCase
     public function engineVectors()
     {
         $engines = [
-            'PHP',
-            'Eval',
-            'mcrypt',
             'OpenSSL',
         ];
         // tests from https://tools.ietf.org/html/rfc6229
@@ -201,10 +198,26 @@ class RC4Test extends PhpseclibTestCase
     }
 
     /**
-     * @dataProvider engineVectors
+     * @zzdataProvider engineVectors
      */
     public function testVectors($engine, $key, $offset, $expected)
     {
+print_r(openssl_get_cipher_methods());
+
+$key = '0102030405060708090a';
+$offset = 1008;
+
+
+$rc4 = new RC4();
+$rc4->setPreferredEngine('openssl');
+$rc4->setKey(pack('H*', $key));
+echo $rc4->getEngine() . "\n";
+$ciphertext = $rc4->encrypt(str_repeat("\0", $offset + 16));
+echo bin2hex(substr($ciphertext, -16)); // should be a64f70af88ae56b6f87581c0e23e6b08
+echo "\n\nerror = ";
+echo openssl_error_string() . "\n\nversion = " . OPENSSL_VERSION_TEXT . "\n\n";
+exit;
+
         $rc4 = new RC4();
         $rc4->setPreferredEngine($engine);
         $rc4->setKey($key);
