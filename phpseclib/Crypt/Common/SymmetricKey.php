@@ -1987,7 +1987,7 @@ abstract class SymmetricKey
 echo "BEFORE OPENSSL_ENCRYPT A (" . 
 	bin2hex($xor) . 
 	',' . 
-	$this->cipher_name_openssl_eb . 
+	$this->cipher_name_openssl_ecb . 
 	',' . 
 	bin2hex($key) . 
 	',' . 
@@ -2002,7 +2002,7 @@ echo "BEFORE OPENSSL_ENCRYPT A (" .
             } else {
                 for ($i = 0; $i < strlen($plaintext); $i += $block_size) {
                     $block = substr($plaintext, $i, $block_size);
-echo "BEFORE OPENSSL_ENCRYPT B (" . bin2hex($xor) . ',' . $this->cipher_name_openssl_eb . ',' . bin2hex($key) . ',' . (OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING) . ")\n";
+echo "BEFORE OPENSSL_ENCRYPT B (" . bin2hex($xor) . ',' . $this->cipher_name_openssl_ecb . ',' . bin2hex($key) . ',' . (OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING) . ")\n";
                     $otp = openssl_encrypt($xor, $this->cipher_name_openssl_ecb, $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
                     Strings::increment_str($xor);
 if (is_numeric($block) && !is_numeric($otp)) {
