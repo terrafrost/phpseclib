@@ -1226,7 +1226,7 @@ abstract class SymmetricKey
 
                     if ($overflow) {
                         $ciphertext .= openssl_encrypt(substr($plaintext, 0, -$overflow) . str_repeat("\0", $this->block_size), $this->cipher_name_openssl, $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
-                        $iv = Strings::pop(/$ciphertext, $this->block_size);
+                        $iv = Strings::pop($ciphertext, $this->block_size);
 
                         $size = $len - $overflow;
                         $block = $iv ^ substr($plaintext, -$overflow);
