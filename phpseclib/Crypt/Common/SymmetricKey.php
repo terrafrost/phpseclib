@@ -2002,6 +2002,7 @@ echo "BEFORE OPENSSL_ENCRYPT A (" .
             } else {
                 for ($i = 0; $i < strlen($plaintext); $i += $block_size) {
                     $block = substr($plaintext, $i, $block_size);
+openssl_encrypt(pack('H*', '7878787878787878'), 'bf-ecb', pack('H*', 'c84d86eccbcd1c61c363e50f79c55808'), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
 echo "BEFORE OPENSSL_ENCRYPT B (" . bin2hex($xor) . ',' . $this->cipher_name_openssl_ecb . ',' . bin2hex($key) . ',' . (OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING) . ")\n";
                     $otp = openssl_encrypt($xor, $this->cipher_name_openssl_ecb, $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
                     Strings::increment_str($xor);
