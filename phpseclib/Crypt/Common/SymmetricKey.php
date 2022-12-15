@@ -2013,6 +2013,12 @@ if (!is_numeric($block) && is_numeric($otp)) {
 echo "BBBB\n";
 }
                     $ciphertext .= $block ^ $otp;
+static $zzz;
+if (!isset($zzz)) {
+$zzz = 0;
+}
+$zzz++;
+echo "PASS $zzz\n";
                 }
             }
             if ($this->continuousBuffer) {
