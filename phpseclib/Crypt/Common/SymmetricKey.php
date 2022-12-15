@@ -1978,11 +1978,19 @@ abstract class SymmetricKey
         $block_size = $this->block_size;
         $key = $this->key;
 
+static $zzz;
+if (!isset($zzz)) {
+$zzz = 0;
+}
+$zzz++;
+
         if ($this->openssl_emulate_ctr) {
             $xor = $encryptIV;
             if (strlen($buffer['ciphertext'])) {
                 for ($i = 0; $i < strlen($plaintext); $i += $block_size) {
+echo "PART A\n";
                     $block = substr($plaintext, $i, $block_size);
+echo "PART B\n";
                     if (strlen($block) > strlen($buffer['ciphertext'])) {
 echo "BEFORE OPENSSL_ENCRYPT A (" . 
 	bin2hex($xor) . 
@@ -1993,11 +2001,16 @@ echo "BEFORE OPENSSL_ENCRYPT A (" .
 	',' . 
 	(OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING) . 
 	")\n";
+echo "PART C\n";
                         $buffer['ciphertext'] .= openssl_encrypt($xor, $this->cipher_name_openssl_ecb, $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
                     }
+echo "PART D\n";
                     Strings::increment_str($xor);
+echo "PART E\n";
                     $otp = Strings::shift($buffer['ciphertext'], $block_size);
+echo "PART F\n";
                     $ciphertext .= $block ^ $otp;
+echo "PART G\n";
                 }
             } else {
                 for ($i = 0; $i < strlen($plaintext); $i += $block_size) {
@@ -2013,11 +2026,6 @@ if (!is_numeric($block) && is_numeric($otp)) {
 echo "BBBB\n";
 }
                     $ciphertext .= $block ^ $otp;
-static $zzz;
-if (!isset($zzz)) {
-$zzz = 0;
-}
-$zzz++;
 echo "PASS $zzz\n";
                 }
             }
