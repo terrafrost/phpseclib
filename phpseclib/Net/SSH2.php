@@ -4323,6 +4323,11 @@ class SSH2
      */
     private function close_channel($client_channel, $want_reply = false)
     {
+        if (!isset($this->server_channels[$client_channel])) {
+            $this->disconnect_helper(NET_SSH2_DISCONNECT_CONNECTION_LOST);
+            throw new \RuntimeException('Unable to close a channel that was never opened');
+        }
+
         // see http://tools.ietf.org/html/rfc4254#section-5.3
 
         $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_EOF, $this->server_channels[$client_channel]));
