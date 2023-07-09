@@ -130,6 +130,18 @@ class BigInteger implements \JsonSerializable
     }
 
     /**
+     * Use the best Engine
+     *
+     * Useful if you're testing with specific engines and then want to go back to using
+     * the best engine
+     */
+    public static function useBestEngine()
+    {
+        self::$mainEngine = null;
+        self::initialize_static_variables();
+    }
+
+    /**
      * Initialize static variables
      */
     private static function initialize_static_variables()

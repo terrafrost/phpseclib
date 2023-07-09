@@ -16,6 +16,7 @@ abstract class PhpseclibTestCase extends TestCase
 
     public function tearDown()
     {
+        \phpseclib3\Math\BigInteger::useBestEngine();
         foreach ($this->tempFilesToUnlinkOnTearDown as $filename) {
             if (!file_exists($filename) || unlink($filename)) {
                 unset($this->tempFilesToUnlinkOnTearDown[$filename]);
