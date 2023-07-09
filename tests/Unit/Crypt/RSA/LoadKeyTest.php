@@ -1236,6 +1236,7 @@ Private-MAC: d26baf87446604974287b682ed9e0c00ce54e460e1cb719953a81291147b3c59
         if (PHP_INT_SIZE == 4) {
             self::markTestSkipped('32-bit integers slow OpenSSH encrypted keys down too much');
         }
+echo "STARTING LONG TEST x1\n";
 
         $key = '-----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABBN2Ff3Kw
@@ -1278,7 +1279,8 @@ LrIZULwMa4nI4Y+RkFftEponSYw=
 -----END OPENSSH PRIVATE KEY-----
 ';
 
-        $key = PublicKeyLoader::load($key, 'test');
+$key = PublicKeyLoader::load($key, 'test');
+echo "ENDING LONG TEST x1\n";
         $this->assertInstanceOf(PrivateKey::class, $key);
     }
 
