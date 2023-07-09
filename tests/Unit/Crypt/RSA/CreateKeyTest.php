@@ -19,7 +19,7 @@ class CreateKeyTest extends PhpseclibTestCase
 {
     public function testCreateKey()
     {
-        \phpseclib3\Math\BigInteger::setEngine('GMP');
+//        \phpseclib3\Math\BigInteger::setEngine('GMP');
         print_r(\phpseclib3\Math\BigInteger::getEngine());
         $privatekey = RSA::createKey(768);
         $publickey = $privatekey->getPublicKey();
