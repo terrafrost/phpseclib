@@ -798,6 +798,7 @@ class Rijndael extends BlockCipher
 
         // Generating encrypt code:
         $init_encrypt .= '
+            static $tables;
             if (empty($tables)) {
                 $tables = &$this->getTables();
             }
@@ -854,6 +855,7 @@ class Rijndael extends BlockCipher
 
         // Generating decrypt code:
         $init_decrypt .= '
+            static $invtables;
             if (empty($invtables)) {
                 $invtables = &$this->getInvTables();
             }
@@ -910,7 +912,7 @@ class Rijndael extends BlockCipher
 
         $this->inline_crypt = $this->createInlineCryptFunction(
             [
-               'init_crypt'    => 'static $tables; static $invtables;',
+               'init_crypt'    => '',
                'init_encrypt'  => $init_encrypt,
                'init_decrypt'  => $init_decrypt,
                'encrypt_block' => $encrypt_block,
