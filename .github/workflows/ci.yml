@@ -87,7 +87,7 @@ jobs:
                     echo "PHPSECLIB_SSH_HOME=/home/phpseclib" >> $GITHUB_ENV
                     echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
             -   name: PHPUnit
-                run: vendor/bin/paratest --verbose --configuration=tests/phpunit.xml --runner=WrapperRunner
+                run: php test.php
         strategy:
             fail-fast: false
             matrix:
