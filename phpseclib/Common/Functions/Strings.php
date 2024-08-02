@@ -429,8 +429,8 @@ abstract class Strings
      */
     public static function base64_decode($data)
     {
-        return function_exists('sodium_base642bin') ?
-            sodium_base642bin($data, SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING, '=') :
+        return //function_exists('sodium_base642bin') ?
+            //sodium_base642bin($data, SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING, '=') :
             Base64::decode($data);
     }
 
@@ -444,8 +444,8 @@ abstract class Strings
     {
         // return self::base64_decode(str_replace(['-', '_'], ['+', '/'], $data));
 
-        return function_exists('sodium_base642bin') ?
-            sodium_base642bin($data, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING, '=') :
+        return //function_exists('sodium_base642bin') ?
+            //sodium_base642bin($data, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING, '=') :
             Base64UrlSafe::decode($data);
     }
 
@@ -457,8 +457,8 @@ abstract class Strings
      */
     public static function base64_encode($data)
     {
-        return function_exists('sodium_bin2base64') ?
-            sodium_bin2base64($data, SODIUM_BASE64_VARIANT_ORIGINAL) :
+        return //function_exists('sodium_bin2base64') ?
+            //sodium_bin2base64($data, SODIUM_BASE64_VARIANT_ORIGINAL) :
             Base64::encode($data);
     }
 
@@ -472,9 +472,9 @@ abstract class Strings
     {
         // return str_replace(['+', '/'], ['-', '_'], self::base64_encode($data));
 
-        return function_exists('sodium_bin2base64') ?
-            sodium_bin2base64($data, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING) :
-            Base64UrlSafe::encode($data);
+        return //function_exists('sodium_bin2base64') ?
+            //sodium_bin2base64($data, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING) :
+            Base64UrlSafe::encodeUnpadded($data);
     }
 
     /**
