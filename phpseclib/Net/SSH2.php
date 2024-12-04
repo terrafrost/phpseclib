@@ -4441,7 +4441,7 @@ class SSH2
         }
 
         if ($this->bytesTransferredSinceLastKEX > $this->doKeyReexchangeAfterXBytes) {
-            $this->key_exchange();
+            //$this->key_exchange();
         }
     }
 
