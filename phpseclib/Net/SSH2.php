@@ -2045,6 +2045,10 @@ class SSH2
             $this->decrypt->decrypt(str_repeat("\0", 1536));
         }
 
+        //if ($this->hmac_create) {
+        //    return true;
+        //}
+
         if (!$this->encrypt->usesNonce()) {
             list($this->hmac_create, $createKeyLength) = self::mac_algorithm_to_hash_instance($mac_algorithm_out);
         } else {
