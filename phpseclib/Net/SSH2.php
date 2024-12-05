@@ -1934,6 +1934,10 @@ class SSH2
             $this->get_seq_no = $this->send_seq_no = 0;
         }
 
+        //if ($this->encrypt) {
+        //    return true;
+        //}
+
         $keyBytes = pack('Na*', strlen($keyBytes), $keyBytes);
 
         $this->encrypt = self::encryption_algorithm_to_crypt_instance($encrypt);
