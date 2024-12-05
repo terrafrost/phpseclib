@@ -2059,10 +2059,16 @@ class SSH2
         }
 
         if ($this->hmac_create instanceof Hash) {
+            //$key = $kexHash->hash($keyBytes . $this->session_id . 'E' . $this->session_id);
+            //while ($createKeyLength > strlen($key)) {
+            //    $key .= $kexHash->hash($keyBytes . $this->session_id . $key);
+            //}
+            ///*
             $key = $kexHash->hash($keyBytes . $this->exchange_hash . 'E' . $this->session_id);
             while ($createKeyLength > strlen($key)) {
                 $key .= $kexHash->hash($keyBytes . $this->exchange_hash . $key);
             }
+            //*/
             $this->hmac_create->setKey(substr($key, 0, $createKeyLength));
             $this->hmac_create_name = $mac_algorithm_out;
             $this->hmac_create_etm = preg_match('#-etm@openssh\.com$#', $mac_algorithm_out);
