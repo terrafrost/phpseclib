@@ -456,6 +456,10 @@ abstract class RSA extends AsymmetricKey
             $key->coefficients = $components['coefficients'];
         }
 
+        if (isset($components['hash'])) {
+            $key = $key->withHash($components['hash']);
+        }
+
         if ($components['format'] == PSS::class) {
             // in the X509 world RSA keys are assumed to use PKCS1 padding by default. only if the key is
             // explicitly a PSS key is the use of PSS assumed. phpseclib does not work like this. phpseclib
@@ -465,9 +469,6 @@ abstract class RSA extends AsymmetricKey
             // not only does it defaults to the most secure methods - it doesn't even let you choose less
             // secure methods
             //$key = $key->withPadding(self::SIGNATURE_PSS);
-            if (isset($components['hash'])) {
-                $key = $key->withHash($components['hash']);
-            }
             if (isset($components['MGFHash'])) {
                 $key = $key->withMGFHash($components['MGFHash']);
             }

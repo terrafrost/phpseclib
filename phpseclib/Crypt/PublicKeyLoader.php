@@ -51,6 +51,11 @@ abstract class PublicKeyLoader
         }
 
         try {
+            return DH::load($key, $password);
+        } catch (NoKeyLoadedException $e) {
+        }
+
+        try {
             $x509 = new X509();
             $x509->loadX509($key);
             $key = $x509->getPublicKey();

@@ -14,6 +14,7 @@ namespace phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\Common;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\RSA\Formats\Keys\JWK;
 use phpseclib3\Crypt\RSA\Formats\Keys\PSS;
 use phpseclib3\Exception\UnsupportedFormatException;
 use phpseclib3\Math\BigInteger;
@@ -481,10 +482,13 @@ final class PrivateKey extends RSA implements Common\PrivateKey
             empty($this->primes) ? 'savePublicKey' : 'savePrivateKey'
         );
 
+        if ($type != JWK::class) {
+            $options+= ['hash' => $this->hash->getHash()];
+        }
+
         if ($type == PSS::class) {
             if ($this->signaturePadding == self::SIGNATURE_PSS) {
                 $options += [
-                    'hash' => $this->hash->getHash(),
                     'MGFHash' => $this->mgfHash->getHash(),
                     'saltLength' => $this->getSaltLength()
                 ];

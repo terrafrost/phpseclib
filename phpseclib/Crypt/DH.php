@@ -102,17 +102,71 @@ abstract class DH extends AsymmetricKey
             throw new \InvalidArgumentException('Valid parameters are either: two BigInteger\'s (prime and base), a single integer (the length of the prime; base is assumed to be 2) or a string');
         }
         switch ($args[0]) {
-            // see http://tools.ietf.org/html/rfc2409#section-6.2 and
-            // http://tools.ietf.org/html/rfc2412, appendex E
+            // from https://www.rfc-editor.org/rfc/rfc4253#section-8.1:
+            // Note that this method is named using the phrase "group1", even though it specifies the use of Oakley Group 2.
             case 'diffie-hellman-group1-sha1':
+                $prime = self::getPrimeFromGroupNo(2);
+                break;
+            case 'diffie-hellman-group14-sha1':
+            case 'diffie-hellman-group14-sha256':
+                $prime = self::getPrimeFromGroupNo(14);
+                break;
+            case 'diffie-hellman-group15-sha512':
+                $prime = self::getPrimeFromGroupNo(15);
+                break;
+            case 'diffie-hellman-group16-sha512':
+                $prime = self::getPrimeFromGroupNo(16);
+                break;
+            case 'diffie-hellman-group17-sha512':
+                $prime = self::getPrimeFromGroupNo(17);
+                break;
+            case 'diffie-hellman-group18-sha512':
+                $prime = self::getPrimeFromGroupNo(18);
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid named prime provided');
+        }
+
+        $params->prime = $prime;
+        $params->base = new BigInteger(2);
+
+        return $params;
+    }
+
+    /**
+     * Get Prime number from Group number
+     *
+     * See https://datatracker.ietf.org/doc/html/rfc2409 for some of these groups
+     *
+     * @param int $int
+     */
+    public static function getPrimeFromGroupNo($id): BigInteger
+    {
+        switch ($id) {
+            // see http://tools.ietf.org/html/rfc2409#section-6.2
+            case 1: // 768-bit MODP Group
+                $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
+                         '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
+                         '4FE1356D6D51C245E485B576625E7EC6F44C42E9A63A3620FFFFFFFFFFFFFFFF';
+                break;
+            // see http://tools.ietf.org/html/rfc2409#section-6.2
+            case 2: // 1024-bit MODP Group
                 $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
                          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
                          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
                          'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
                 break;
-            // see http://tools.ietf.org/html/rfc3526#section-3
-            case 'diffie-hellman-group14-sha1': // 2048-bit MODP Group
-            case 'diffie-hellman-group14-sha256':
+            // see https://tools.ietf.org/html/rfc3526#section-2
+            case 5: // 1536-bit MODP Group
+                $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
+                         '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
+                         '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
+                         'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF05' .
+                         '98DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB' .
+                         '9ED529077096966D670C354E4ABC9804F1746C08CA237327FFFFFFFFFFFFFFFF';
+                break;
+            // see https://tools.ietf.org/html/rfc3526#section-3
+            case 14: // 2048-bit MODP Group
                 $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
                          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
                          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
@@ -123,7 +177,7 @@ abstract class DH extends AsymmetricKey
                          '3995497CEA956AE515D2261898FA051015728E5A8AACAA68FFFFFFFFFFFFFFFF';
                 break;
             // see https://tools.ietf.org/html/rfc3526#section-4
-            case 'diffie-hellman-group15-sha512': // 3072-bit MODP Group
+            case 15: // 3072-bit MODP Group
                 $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
                          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
                          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
@@ -138,7 +192,7 @@ abstract class DH extends AsymmetricKey
                          '08E24FA074E5AB3143DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF';
                 break;
             // see https://tools.ietf.org/html/rfc3526#section-5
-            case 'diffie-hellman-group16-sha512': // 4096-bit MODP Group
+            case 16: // 4096-bit MODP Group
                 $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
                          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
                          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
@@ -157,7 +211,7 @@ abstract class DH extends AsymmetricKey
                          '93B4EA988D8FDDC186FFB7DC90A6C08F4DF435C934063199FFFFFFFFFFFFFFFF';
                 break;
             // see https://tools.ietf.org/html/rfc3526#section-6
-            case 'diffie-hellman-group17-sha512': // 6144-bit MODP Group
+            case 17: // 6144-bit MODP Group
                 $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
                          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
                          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
@@ -184,7 +238,7 @@ abstract class DH extends AsymmetricKey
                          '043E8F663F4860EE12BF2D5B0B7474D6E694F91E6DCC4024FFFFFFFFFFFFFFFF';
                 break;
             // see https://tools.ietf.org/html/rfc3526#section-7
-            case 'diffie-hellman-group18-sha512': // 8192-bit MODP Group
+            case 18: // 8096-bit MODP Group
                 $prime = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' .
                          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' .
                          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' .
@@ -219,13 +273,9 @@ abstract class DH extends AsymmetricKey
                          '9E3050E2765694DFC81F56E880B96E7160C980DD98EDD3DFFFFFFFFFFFFFFFFF';
                 break;
             default:
-                throw new \InvalidArgumentException('Invalid named prime provided');
+                throw new \InvalidArgumentException('Invalid group number provided');
         }
-
-        $params->prime = new BigInteger($prime, 16);
-        $params->base = new BigInteger(2);
-
-        return $params;
+        return new BigInteger($prime, 16);
     }
 
     /**

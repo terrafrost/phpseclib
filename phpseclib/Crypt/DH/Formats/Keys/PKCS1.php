@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "PKCS1" Formatted EC Key Handler
+ * "PKCS1" Formatted DH Key Handler
  *
  * PHP version 5
  *
