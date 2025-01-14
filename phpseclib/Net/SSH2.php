@@ -4182,7 +4182,7 @@ class SSH2
                                     $this->errors[count($this->errors) - 1] .= "\r\n$error_message";
                                 }
 
-                                if (isset($this->server_channels[$channel])) {
+                                if (isset($this->channel_status[$channel]) && $this->channel_status[$channel] != NET_SSH2_MSG_CHANNEL_CLOSE) {
                                     $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_EOF, $this->server_channels[$channel]));
                                     $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$channel]));
 
@@ -4665,6 +4665,7 @@ class SSH2
 
         if (!$want_reply) {
             $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$client_channel]));
+            unset($this->channel_status[$client_channel]);
         }
 
         $this->channel_status[$client_channel] = NET_SSH2_MSG_CHANNEL_CLOSE;
@@ -4672,11 +4673,8 @@ class SSH2
         $this->channelCount--;
 
         $this->curTimeout = 5;
-
         while (!is_bool($this->get_channel_packet($client_channel))) {
         }
-
-        unset($this->channel_status[$client_channel]);
 
         if ($want_reply) {
             $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$client_channel]));
