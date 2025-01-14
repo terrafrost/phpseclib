@@ -4182,10 +4182,12 @@ class SSH2
                                     $this->errors[count($this->errors) - 1] .= "\r\n$error_message";
                                 }
 
-                                $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_EOF, $this->server_channels[$client_channel]));
-                                $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$channel]));
+                                if (isset($this->server_channels[$channel])) {
+                                    $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_EOF, $this->server_channels[$channel]));
+                                    $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$channel]));
 
-                                $this->channel_status[$channel] = NET_SSH2_MSG_CHANNEL_CLOSE;
+                                    $this->channel_status[$channel] = NET_SSH2_MSG_CHANNEL_CLOSE;
+                                }
 
                                 continue 3;
                             case 'exit-status':
