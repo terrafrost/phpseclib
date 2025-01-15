@@ -2978,7 +2978,7 @@ class SSH2
     protected function open_channel($channel, $skip_extended = false)
     {
         if (isset($this->channel_status[$channel])) {
-            throw new \RuntimeException('Please close the channel (' . $channel . ', currently in ' . $this->channel_status[$channel] . ' status) before trying to open it again');
+            throw new \RuntimeException('Please close the channel (' . $channel . ') before trying to open it again');
         }
 
         $this->channelCount++;
@@ -4096,7 +4096,8 @@ class SSH2
     protected function get_channel_packet($client_channel, $skip_extended = false)
     {
         if (!empty($this->channel_buffers[$client_channel])) {
-            switch ($this->channel_status[$client_channel]) {
+            // in phpseclib 4.0 this should be changed to $this->channel_status[$client_channel] ?? null
+            switch (isset($this->channel_status[$client_channel]) ? $this->channel_status[$client_channel] : null) {
                 case NET_SSH2_MSG_CHANNEL_REQUEST:
                     foreach ($this->channel_buffers[$client_channel] as $i => $packet) {
                         switch (ord($packet[0])) {

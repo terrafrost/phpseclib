@@ -213,7 +213,6 @@ class SSH2Test extends PhpseclibFunctionalTestCase
      */
     public function testDisablePTY(SSH2 $ssh)
     {
-define('NET_SSH2_LOGGING', 3);
         $ssh->enablePTY();
 
         $this->assertTrue(
@@ -268,12 +267,7 @@ define('NET_SSH2_LOGGING', 3);
             'Failed asserting that exec channel identifier is returned after pty exec close.'
         );
 
-        try {
         $ssh->exec('pwd');
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-            exit;
-        }
 
         $this->assertFalse(
             $ssh->isPTYOpen(),
