@@ -4657,16 +4657,12 @@ class SSH2
      * @param bool $want_reply
      * @return void
      */
-    private function close_channel($client_channel, $want_reply = false)
+    private function close_channel($client_channel)
     {
         // see http://tools.ietf.org/html/rfc4254#section-5.3
 
         $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_EOF, $this->server_channels[$client_channel]));
-
-        if (!$want_reply) {
-            $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$client_channel]));
-            unset($this->channel_status[$client_channel]);
-        }
+        $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$client_channel]));
 
         $this->channel_status[$client_channel] = NET_SSH2_MSG_CHANNEL_CLOSE;
 
@@ -4676,9 +4672,7 @@ class SSH2
         while (!is_bool($this->get_channel_packet($client_channel))) {
         }
 
-        if ($want_reply) {
-            $this->send_binary_packet(pack('CN', NET_SSH2_MSG_CHANNEL_CLOSE, $this->server_channels[$client_channel]));
-        }
+        unset($this->channel_status[$client_channel]);
 
         $this->close_channel_bitmap($client_channel);
     }
