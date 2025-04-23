@@ -27,10 +27,8 @@ abstract class TestCase extends PhpseclibTestCase
 
     /**
      * Produces all combinations of test values.
-     *
-     * @return array
      */
-    public static function continuousBufferCombos()
+    public static function continuousBufferCombos(): array
     {
         $modes = [
             'ctr',
@@ -73,7 +71,7 @@ abstract class TestCase extends PhpseclibTestCase
     /**
      * @dataProvider continuousBufferCombos
      */
-    public function testEncryptDecryptWithContinuousBuffer($mode, $plaintext, $iv, $key)
+    public function testEncryptDecryptWithContinuousBuffer($mode, $plaintext, $iv, $key): void
     {
         $aes = new AES($mode);
         $aes->setPreferredEngine($this->engine);
