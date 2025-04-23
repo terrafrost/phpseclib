@@ -71,8 +71,11 @@ abstract class TestCase extends PhpseclibTestCase
     /**
      * @dataProvider continuousBufferCombos
      */
-    public function testEncryptDecryptWithContinuousBuffer($mode, $plaintext, $iv, $key): void
+    public function testEncryptDecryptWithContinuousBuffer($mode = '', $plaintext = '', $iv = '', $key = ''): void
     {
+        if (!strlen($mode)) {
+            $this->assertTrue();
+        }
         $aes = new AES($mode);
         $aes->setPreferredEngine($this->engine);
         $aes->enableContinuousBuffer();
