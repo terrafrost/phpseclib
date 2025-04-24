@@ -79,6 +79,9 @@ abstract class TestCase extends PhpseclibTestCase
         echo 'mode = ';
         var_dump($mode);
         echo 'strlen($mode) = ' . strlen($mode) . "\n";
+        echo '!strlen($mode) = ';
+        var_dump(!strlen($mode));
+        echo 'func_get_args = ';
         var_dump(func_get_args());
         exit;
         $aes = new AES($mode);
