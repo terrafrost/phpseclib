@@ -76,6 +76,8 @@ abstract class TestCase extends PhpseclibTestCase
         if (!strlen($mode)) {
             $this->assertTrue(true);
         }
+        var_dump(func_get_args());
+        exit;
         $aes = new AES($mode);
         $aes->setPreferredEngine($this->engine);
         $aes->enableContinuousBuffer();
