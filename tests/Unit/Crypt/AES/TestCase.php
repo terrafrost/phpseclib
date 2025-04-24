@@ -68,9 +68,7 @@ abstract class TestCase extends PhpseclibTestCase
         return $result;
     }
 
-    /**
-     * @dataProvider continuousBufferCombos
-     */
+    #[DataProvider("continuousBufferCombos")]
     public function testEncryptDecryptWithContinuousBuffer($mode = '', $plaintext = '', $iv = '', $key = ''): void
     {
         if (!strlen($mode)) {
