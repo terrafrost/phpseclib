@@ -1600,7 +1600,13 @@ class SSH2
                 $this->updateLogHistory('UNKNOWN (32)', 'SSH_MSG_KEXDH_GEX_INIT');
         }
 
-        $response = $this->get_binary_packet_or_close($serverKexReplyMessage);
+        while (true) {
+            $response = $this->get_binary_packet_or_close($serverKexReplyMessage, MessageType::IGNORE);
+            list($type) = Strings::unpackSSH2('C', $response);
+            if ($type != MessageType::IGNORE) {
+                break;
+            }
+        }
 
         [
             $type,
