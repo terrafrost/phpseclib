@@ -67,10 +67,11 @@ Need Support?
 
 ## Special Thanks
 
-Special Thanks to our $50+ sponsors!:
+Special Thanks to our $50+/month sponsors!:
 
 - Allan Simon
 - [ChargeOver](https://chargeover.com/)
+- <a href="https://jb.gg/OpenSource"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" height="20px"></a> (for a free annual All Products Pack subscription)
 
 ## Contributing
 
