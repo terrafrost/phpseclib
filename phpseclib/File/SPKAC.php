@@ -236,7 +236,7 @@ class SPKAC implements \ArrayAccess, \Countable, \Iterator, Signable
         return $publicKey;
     }
 
-    public function toArray(bool $convertPrimitives = false): array
+    public function toArray(bool $clearCache = true, bool $convertPrimitives = false): array
     {
         return $this->spkac instanceof Constructed ? $this->spkac->toArray($convertPrimitives) : $this->spkac;
     }

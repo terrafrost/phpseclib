@@ -320,9 +320,9 @@ class CRL implements \ArrayAccess, \Countable, \Iterator, Signable
         return array_values(CRLReason::MAP['mapping']);
     }
 
-    public function toArray(bool $convertPrimitives = false): array
+    public function toArray(bool $clearCache = true, bool $convertPrimitives = false): array
     {
-        return $this->crl instanceof Constructed ? $this->crl->toArray($convertPrimitives) : $this->crl;
+        return $this->crl instanceof Constructed ? $this->crl->toArray($clearCache, $convertPrimitives) : $this->crl;
     }
 
     /**

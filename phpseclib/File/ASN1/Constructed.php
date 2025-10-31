@@ -758,7 +758,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         return $output;
     }
 
-    public function toArray(bool $convertPrimitives = false): array
+    public function toArray(bool $clearCache = true, bool $convertPrimitives = false): array
     {
         if (!isset($this->mapping)) {
             throw new InsufficientSetupException('Cannot convert Constructed object to an array when no mapping has been provided');
@@ -769,7 +769,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         foreach ($this->decoded as $key=>$value) {
             try {
                 if ($value instanceof Constructed || $value instanceof Choice) {
-                    $value = $value->toArray($convertPrimitives);
+                    $value = $value->toArray($clearCache, $convertPrimitives);
                 } elseif ($convertPrimitives) {
                     $value = ASN1::convertToPrimitive($value);
                 }
@@ -785,6 +785,9 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                 }
                 throw $e;
             }
+        }
+        if ($clearCache) {
+            unset($this->decoded);
         }
 
         return $result;
