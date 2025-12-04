@@ -25,7 +25,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
         self::$exampleDataLength = 10000;
     }
 
-    public function testConstructor()
+    public function testConstructor(): SCP
     {
         $scp = new SCP($this->getEnv('SSH_HOSTNAME'));
         $this->assertTrue(
@@ -41,11 +41,8 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
         return $scp;
     }
 
-    /**
-     * @depends testConstructor
-     * @param \phpseclib3\Net\SCP $scp
-     */
-    public function testPutGetString($scp)
+    /** @depends testConstructor */
+    public function testPutGetString($scp): SCP
     {
         $this->assertTrue(
             $scp->put(self::$remoteFile, self::$exampleData),
@@ -65,11 +62,8 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
         return $scp;
     }
 
-    /**
-     * @depends testPutGetString
-     * @param \phpseclib3\Net\SCP $scp
-     */
-    public function testGetFile($scp)
+    /** @depends testPutGetString */
+    public function testGetFile($scp): SCP
     {
         $localFilename = $this->createTempFile();
         $this->assertTrue(
@@ -90,11 +84,10 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     }
 
     /**
-     * @depends testGetFile
      * @group github873
-     * @param \phpseclib3\Net\SCP $scp
      */
-    public function testGetBadFilePutGet($scp)
+    /** @depends testGetFile */
+    public function testGetBadFilePutGet($scp): SCP
     {
         $scp->exec('rm ' . self::$remoteFile);
         $this->assertFalse(
