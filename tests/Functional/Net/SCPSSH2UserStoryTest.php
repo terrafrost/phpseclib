@@ -27,7 +27,6 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
 
     public function testConstructor()
     {
- define('NET_SSH2_LOGGING', 3);
         $scp = new SCP($this->getEnv('SSH_HOSTNAME'));
         $this->assertTrue(
             $scp->login(
