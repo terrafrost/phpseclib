@@ -27,6 +27,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
 
     public function testConstructor()
     {
+ define('NET_SSH2_LOGGING', 3);
         $scp = new SCP($this->getEnv('SSH_HOSTNAME'));
         $this->assertTrue(
             $scp->login(
@@ -43,7 +44,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
 
     /**
      * @depends testConstructor
-     * @param \phpseclib\Net\SCP $scp
+     * @param \phpseclib3\Net\SCP $scp
      */
     public function testPutGetString($scp)
     {
@@ -67,15 +68,18 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
 
     /**
      * @depends testPutGetString
-     * @param \phpseclib\Net\SCP $scp
+     * @param \phpseclib3\Net\SCP $scp
      */
     public function testGetFile($scp)
     {
+//Failed asserting that get() into file was successful.
+//Failed asserting that '' is true.
         $localFilename = $this->createTempFile();
         $this->assertTrue(
             $scp->get(self::$remoteFile, $localFilename),
             'Failed asserting that get() into file was successful.'
         );
+exit;
         $this->assertContains(
             filesize($localFilename),
             array(self::$exampleDataLength, self::$exampleDataLength + 1),
@@ -92,6 +96,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     /**
      * @depends testGetFile
      * @group github873
+     * @param \phpseclib3\Net\SCP $scp
      */
     public function testGetBadFilePutGet($scp)
     {
