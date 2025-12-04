@@ -42,7 +42,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     }
 
     /** @depends testConstructor */
-    public function testPutGetString($scp): SCP
+    public function testPutGetString($scp)
     {
         $this->assertTrue(
             $scp->put(self::$remoteFile, self::$exampleData),
@@ -63,7 +63,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     }
 
     /** @depends testPutGetString */
-    public function testGetFile($scp): SCP
+    public function testGetFile($scp)
     {
         $localFilename = $this->createTempFile();
         $this->assertTrue(
@@ -87,7 +87,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
      * @group github873
      */
     /** @depends testGetFile */
-    public function testGetBadFilePutGet($scp): SCP
+    public function testGetBadFilePutGet($scp)
     {
         $scp->exec('rm ' . self::$remoteFile);
         $this->assertFalse(
