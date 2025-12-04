@@ -9,9 +9,6 @@
     failOnEmptyTestSuite="true"
 >
     <testsuites>
-        <testsuite name="phpseclib Unit Test Suite">
-            <directory>./Unit/</directory>
-        </testsuite>
         <testsuite name="phpseclib Functional Test Suite">
             <directory>./Functional/</directory>
         </testsuite>
