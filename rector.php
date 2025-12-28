@@ -9,8 +9,7 @@ use Rector\Rules\AddReturnTypeBaseClass;
 
 return RectorConfig::configure()
     ->withPaths([
-        // TODO: add project directory path to run rector
-        // __DIR__ . '/tests',
+        __DIR__ . '/tests',
     ])
     ->withRules([
         RemoveClassNamePrefix::class,
