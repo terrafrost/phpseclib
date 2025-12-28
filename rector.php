@@ -11,12 +11,11 @@ use PHPStan\Type\VoidType;
 
 return RectorConfig::configure()
     ->withPaths([
-        // TODO: add project directory path to run rector
-        // __DIR__ . '/tests',
+        __DIR__ . '/tests',
     ])
     ->withRules([
         RemoveClassNamePrefix::class,
-        ShortenShaExtends::class
+        ShortenShaExtends::class,
     ])
     ->withConfiguredRule(AddReturnTypeDeclarationRector::class, [
         // PHPUnit lifecycle methods
