@@ -394,8 +394,7 @@ class CRL implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($this->crl->hasEncoded()) {
             return;
         }
-        $temp = self::load("$this");
-        $this->crl = $temp->crl;
+        "$this";
     }
 
     public function getSignableSection(): string

@@ -551,8 +551,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($this->cert->hasEncoded()) {
             return;
         }
-        $temp = self::load("$this");
-        $this->cert = $temp->cert;
+        "$this";
     }
 
     public function __toString(): string

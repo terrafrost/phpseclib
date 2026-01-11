@@ -393,8 +393,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($this->csr->hasEncoded()) {
             return;
         }
-        $temp = self::load("$this");
-        $this->csr = $temp->csr;
+        "$this";
     }
 
     public function setSubjectDN(array|string|Element $props): void

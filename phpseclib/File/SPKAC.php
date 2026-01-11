@@ -213,8 +213,7 @@ class SPKAC implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($this->spkac->hasEncoded()) {
             return;
         }
-        $temp = self::load("$this");
-        $this->spkac = $temp->spkac;
+        "$this";
     }
 
     public function __debugInfo(): array
