@@ -8,6 +8,7 @@ use PhpParser\Node;
 use Rector\Rector\AbstractRector;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 
 // Replaces:
 // '~^class Unit_Crypt_(AES|Hash|RSA)_~m' => 'class ',
@@ -45,12 +46,24 @@ final class RemoveClassNamePrefix extends AbstractRector
         }
 
         $newClassName = $this->removePrefix($className);
+        $hasChanged = false;
+        // Rename class
         if ($newClassName !== $className) {
             $node->name = new Identifier($newClassName);
-            return $node;
+            $hasChanged = true;
         }
 
-        return null;
+        // Handle extends
+        if ($node->extends !== null) {
+            $extendName = $this->getName($node->extends);
+            if($extendName !== null) {
+                $newExtendName = $this->removePrefix($extendName);
+                $node->extends = new Name($newExtendName);
+                $hasChanged = true;
+            }
+        }
+
+        return $hasChanged ? $node : null;
     }
 
     private function removePrefix(string $className): string

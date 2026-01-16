@@ -30,6 +30,9 @@ class Unit_Net_Client {
 class Functional_Net_Client {
 }
 
+class Unit_Crypt_AES_PurePHPTest extends Unit_Crypt_AES_TestCase {
+}
+
 ?>
 -----
 <?php
@@ -62,6 +65,9 @@ class Client {
 }
 
 class Client {
+}
+
+class PurePHPTest extends TestCase {
 }
 
 ?>
