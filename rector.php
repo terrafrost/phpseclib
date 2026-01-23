@@ -12,7 +12,7 @@ return RectorConfig::configure()
         __DIR__ . '/tests',
     ])
     ->withRules([
-        RemoveClassNamePrefix::class,
-        ShortenShaExtends::class,
+        //RemoveClassNamePrefix::class,
+        //ShortenShaExtends::class,
         AddReturnTypeBaseClass::class
     ]);
