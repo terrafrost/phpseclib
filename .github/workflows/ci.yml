@@ -17,7 +17,11 @@ jobs:
                 with:
                     php-version: ${{ matrix.php-version }}
                     tools: php-parallel-lint/php-parallel-lint:1
-            -   name: Lint
+            -   name: Lint (exclude rector)
+                if: matrix.php-version < '7.4'
+                run: parallel-lint --show-deprecated --exclude tests/Rector build phpseclib tests
+            -   name: Lint (include rector)
+                if: matrix.php-version >= '7.4'
                 run: parallel-lint --show-deprecated build phpseclib tests
         strategy:
             fail-fast: false
@@ -36,9 +40,17 @@ jobs:
                     php-version: ${{ matrix.php-version }}
             -   name: Composer Install
                 run: composer install --no-interaction --no-cache
-            -   name: Make Tests Compatiable With PHPUnit 9+
-                if: contains(fromJSON('["7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]'), matrix.php-version)
+            -   name: Composer Install Rector deps
+                if: matrix.php-version >= '7.4'
+                run: |
+                    composer require rector/rector:^2.3
+                    composer dump-autoload
+            -   name: Make Tests Compatiable With PHPUnit 9+ (PHP 7.3)
+                if: matrix.php-version == '7.3'
                 run: php tests/make_compatible_with_phpunit9.php
+            -   name: Make Tests Compatiable With PHPUnit 9+ (PHP 7.4+)
+                if: matrix.php-version >= '7.4'
+                run: vendor/bin/rector process
             -   name: Setup Secure Shell Functional Tests
                 if: matrix.os == 'ubuntu-latest'
                 run: |
