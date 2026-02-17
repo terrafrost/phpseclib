@@ -235,16 +235,16 @@ ybcPA9iklr0wAwYBAAMBAA==
         $signer = $cms->addSigner($x509);
         $private->sign($signer);
 
-        file_put_contents('cms.pem', "$cms");
-        file_put_contents('ca.pem', (string) $ca->getCertificates()[0]);
+        file_put_contents(__DIR__ . '/cms.pem', "$cms");
+        file_put_contents(__DIR__ . '/ca.pem', (string) $ca->getCertificates()[0]);
 
         $result = openssl_cms_verify(
-            input_filename: 'cms.pem',
-            ca_info: ['ca.pem'],
+            input_filename: __DIR__ . '/cms.pem',
+            ca_info: [__DIR__ . '/ca.pem'],
             encoding: OPENSSL_ENCODING_PEM
         );
 
-        $this->assertTrue($result);
+        $this->assertTrue($result, 'openssl_cms_verify() was unable to verify signature: ' . openssl_error_string());
 
         X509::clearCAStore();
     }
@@ -275,7 +275,7 @@ ybcPA9iklr0wAwYBAAMBAA==
         $this->assertTrue($cms->validateSignature(false));
     }
 
-    public function testTwoNewSigners(): void
+    public function testSignatureCopying(): void
     {
         $private = EC::createKey('nistp256');
         $x509 = new X509($private->getPublicKey());
@@ -329,5 +329,34 @@ ybcPA9iklr0wAwYBAAMBAA==
         $cms = CMS::load("$cms");
         $cms->attach($fp);
         $this->assertTrue($cms->validateSignature(false));
+    }
+
+    public function testTwoNewSigners(): void
+    {
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib test');
+        $x509->makeCA();
+        $private->sign($x509);
+        $pfx = new PFX();
+        $pfx->add($private);
+        $pfx->add($x509);
+
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz, CN=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, OU=xxxxxxxxxxxxxxxxxxxxxxxxxxx');
+        $x509->makeCA();
+        $private->sign($x509);
+        $pfx2 = new PFX();
+        $pfx2->add($private);
+        $pfx2->add($x509);
+
+        $cms = new CMS\SignedData('zzz');
+        $pfx2->sign($cms);
+        $pfx->sign($cms);
+
+        $cms = CMS::load("$cms");
+        $signers = $cms->getSigners();
+        $this->assertNotEquals($signers[0]->getCertificate()->getIssuerDN(), $signers[1]->getCertificate()->getIssuerDN());
     }
 }
