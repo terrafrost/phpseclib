@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-names phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient;
+namespace phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\EC;

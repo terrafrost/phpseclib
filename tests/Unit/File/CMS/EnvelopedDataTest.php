@@ -10,8 +10,10 @@ declare(strict_types=1);
 
 namespace phpseclib4\Tests\Unit\File\CMS;
 
+use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\PublicKeyLoader;
 use phpseclib4\File\CMS;
+use phpseclib4\File\X509;
 use phpseclib4\Tests\PhpseclibTestCase;
 
 class EnvelopedDataTest extends PhpseclibTestCase
@@ -63,7 +65,8 @@ CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
         $identifier = 'zzz';
         $cms = new CMS\EnvelopedData('zzz');
         $recipient = $cms->createNewRecipientFromKeyWithIdentifier($key, $identifier);
-        $this->assertTrue($recipient->withKey(str_repeat('z', 16))->decrypt());
+        $decrypted = $recipient->withKey($key)->decrypt();
+        $this->assertTrue($plaintext, $decrypted);
         $cms = CMS::load("$cms");
         $decrypted = $cms->getRecipients()[0]->withKey($key)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
@@ -160,6 +163,48 @@ FndAlFnyh782RoE6ORRHxKgaO1qomK0ewReUTrO6mEt1SdbQDAHJX8XU2ro43Xl9
 -----END PRIVATE KEY-----';
         $private = PublicKeyLoader::load($private);
         $decrypted = $cms->getRecipients()[0]->withKey($private)->decrypt();
+        $this->assertEquals("hello, world!\n", $decrypted);
+    }
+
+    public function testECEncrypt(): void
+    {
+        $plaintext = 'hello, world!';
+
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib demo');
+        $x509->makeCA();
+        $private->sign($x509);
+
+        $cms = new CMS\EnvelopedData($plaintext);
+        $cms->createNewRecipientFromX509($x509);
+
+        $cms = CMS::load("$cms");
+        $decrypted = $cms->getRecipients()[0]->getEncryptedKeys()[0]->withKey($private)->decrypt();
+        $this->assertEquals($plaintext, $decrypted);
+    }
+
+    public function testDecryptWithKeyID(): void
+    {
+        // decrypting a KeyAgreeRecipient EnvelopedData CMS that's using a key (as opposed to an X509 cert) as the OriginatorIdentifierOrKey
+        $cms = CMS::load('-----BEGIN CMS-----
+MIIBIwYJKoZIhvcNAQcDoIIBFDCCARACAQIxgcyhgckCAQOgUaFPMAkGByqGSM49
+AgEDQgAE6NVhbds7w/2AG2xjrlVZ76NRK8yiwY2Us2u9K+JZyDqtnbTwD6cf1LiY
+okjk6QSx2sDAvHMoxUNFrdXvjdsmQTAVBgYrgQQBDgEwCwYJYIZIAWUDBAEtMFow
+WDAsMBQxEjAQBgNVBAoMCXBocHNlY2xpYgIUKRLDuszEs/BlBV+266/L36A+shAE
+KPzUsswLatZSRaJzWLpp2jMcONZTtC3ErFhzjc8dH6J0iQxj+2fZq/8wPAYJKoZI
+hvcNAQcBMB0GCWCGSAFlAwQBKgQQMzaRYqBVSsbhxPO4e4Y/foAQyXO01TcfsFc0
+WgcC4jswvQ==
+-----END CMS-----');
+        $private = '-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgKOdaai0zSMiTJr84
+U7KyohVWB9EQknra0yo+2iSy/DWhRANCAAQ27Fn4fgxObbYz4NvIL46U62R8/yre
+JXhYfxbdvEUY6P4PO+Y9EqdrGwb8gsZTWDF5Hldhcu1VO5ECp4WkLPN2
+-----END PRIVATE KEY-----';
+
+        $private = PublicKeyLoader::load($private);
+
+        $decrypted = $cms->getRecipients()[0]->getEncryptedKeys()[0]->withKey($private)->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 }
