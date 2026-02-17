@@ -103,7 +103,7 @@ M0OBYZe9ntgapIKsumKkfhOzo65F41fsyi2n6U8gLE0m6QYy+bMI0ElWXfjDA5eT
         }
     }
 
-    public testValidateSignature(): void
+    public function testValidateSignature(): void
     {
         $cms = CMS::load(file_get_contents(__DIR__ . '/FE.pdf.p7m'));
         // if we didn't pass false to validateSignature() it'd test to see if the cert it found was signed
