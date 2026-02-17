@@ -244,6 +244,8 @@ ybcPA9iklr0wAwYBAAMBAA==
             encoding: OPENSSL_ENCODING_PEM
         );
 
+        $this->assertTrue($result);
+
         X509::clearCAStore();
     }
 
