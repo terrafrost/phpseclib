@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Tests\Unit\File\CMS;
 
+use phpseclib4\Crypt\PublicKeyLoader;
 use phpseclib4\File\CMS;
 use phpseclib4\Tests\PhpseclibTestCase;
 
@@ -48,10 +49,117 @@ CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
         $cms = new CMS\EnvelopedData($plaintext);
         //CMS\EnvelopedData::setPRF('id-hmacWithSHA1');
         $recipient = $cms->createNewRecipientFromPassword($password);
-        $recipient->withPassword($password)->decrypt();
+        $decrypted = $recipient->withPassword($password)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
         $cms = CMS::load("$cms");
         $decrypted = $cms->getRecipients()[0]->withPassword($password)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
+    }
+
+    public function testNewKey(): void
+    {
+        $plaintext = 'zzz';
+        $key = str_repeat('z', 16);
+        $identifier = 'zzz';
+        $cms = new CMS\EnvelopedData('zzz');
+        $recipient = $cms->createNewRecipientFromKeyWithIdentifier($key, $identifier);
+        $this->assertTrue($recipient->withKey(str_repeat('z', 16))->decrypt());
+        $cms = CMS::load("$cms");
+        $decrypted = $cms->getRecipients()[0]->withKey($key)->decrypt();
+        $this->assertEquals($plaintext, $decrypted);
+    }
+
+    public function testOAEPNonDefaultDecrypt(): void
+    {
+        $cms = CMS::load('-----BEGIN CMS-----
+MIIB5QYJKoZIhvcNAQcDoIIB1jCCAdICAQAxggGNMIIBiQIBADAxMBkxFzAVBgNV
+BAoMDnBocHNlY2xpYiBkZW1vAhQUmW9WEnSW1a7eA4g8v5VmosxSWjBNBgkqhkiG
+9w0BAQcwQKANMAsGCWCGSAFlAwQCAaEaMBgGCSqGSIb3DQEBCDALBglghkgBZQME
+AgGiEzARBgkqhkiG9w0BAQkEBN6tvu8EggEAsghgvuVW4O2ydVFNTiHSU1yvmy3N
+kwVsm7ky+h8cAP3wdhj5/ma8zZGW7smQiZqB+shbRJxGoMdTYC4suoQtLw5zDYrh
+vgyjzlTeuO83luhPajrxD3zJtsVfTDCXMBrHcrA4Qp3T4iw+6yTpO5aGURx5GOaJ
+JVwT1UtE9zkckcqpdEZ5dE5n2IqaEpNb+vBSUtp3mywpSxbYUwUcu7GdZuNRak7U
+d593XmMUapEDb22xPCAP0y4ascbTCI7ypnRVMCAeBwq1ooyUVpcKmPtumMwW8Dns
+BFFqLF/dLsX5qL/L3yeHHe3uyc3V5MErsIx01yL4fitg00fpJbSprUyGijA8Bgkq
+hkiG9w0BBwEwHQYJYIZIAWUDBAEqBBD7Rx2WY+sd2rOghpJ8JjgkgBB9XGoGYzbk
+HZ5LFXx7/Cul
+-----END CMS-----');
+        $private = '-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNuYD130WlsYxC
+OekHh70j9TML61KIlV+sEunB573QkRkJwuZW36qRXF2Gm/PYU1n1vMXJxL3DxJc+
+i0vMmp3/CYVhQ36WTAHN0otL2KZ8Ppcul2Icjzee0/ulc0+f8G8twbe7HIyAHcrH
+V4af1yV4r4P07GMMiFLFcC3KRysfD+bukSw/AkViomLodeWNpxe1ipk6uyowv3zL
+VWK31NZeYD099yACq2v2l6fbX/+TCnz1gPiNyFb27wx7HeLzwa27G8MMkwgCXUf4
+oUmaq6qSc8tmF2jBx+i/n7rxJwfqVZjsZQ/CsABr7obn8eXJ0pRSwReAu6NsaQXZ
+ntTqKCwZAgMBAAECggEAD2uMggwmm/aEoouABGN6nDu12XqIaNp2yF7GjL/tF2QO
+MhAc1H2BZdHm5L8YdlTmalKoVKkIPFNRBDbMC126OAf4/8MKYFj5eE8EHT7zrl5s
+AJRc80e84zfVJfVQY5b8Y7v1z0hNiRDdRoyF98HYT4UrE+xgDuwXoDBPY65qn1z0
+ODRLGhixNjxMeYuMJ0c4iwRHzNuf0rgsxVqMF4YKCmX52ivnabcamK5I3uVRJ012
+V0WuprDu5PK8DwZ4kAEFkZrAp5j0+2pamRTGAONNrCyJ08QyMr/4QesyrQh4o5oU
+JbSarHkGUc7bdNBIfO7sa6HpUkZcmd3oXpJMac6nfQKBgQD8ZObTQdgXzFlVg8r4
+/8LWrYgMGhacHrwSBYD396oZxhXKQc5DoDFYVaKr4azNLEPHlwg+D6f2p7XC5y0K
++luJYb5+87JYreQyxeqQxKf8LkL2YYysT2JohOzDMZy467gEr+pQ4wngsJ8xUSQT
+wMz2HzGD8Wa5nneU/Z1I4eQWXwKBgQDQqeoZ+wELVbCZmsuZAfbQ2lC/sB/fZuge
+YZk1v08VKljseMa3t2mlBRdMaYa5U4yEGcRiXcSklaqHujMMsEU2BIqKEVL1G7Qg
+gGDryT92EPi0nzJnuumkv9xVG0mZtFnPPX/9RGITAdzYFOXmDZGy2B5jRocoS1ZE
+w3pQCzughwKBgFOjxHKBwXCxgXE7SYoWh6TIwOrxwkheTwjR1hlWc4IzCImMISR7
+855IUq4PDUq4voVn4Y1fdtPgY/WA0oZuzOLMB2req12D0rmYqNDsupZxZjNrxEhd
+zkjAtA1DZaJKSyMSgN3pPx68qSSYtRHutH1jfO8ykk4023/+Q58hbIqVAoGAO4HZ
+k2Mz3wmm/YdZvN8EhndcQ+50iH+OfuuSh/NxGDYlefrPoSEbbcZP6KjHlR6wmhPH
+H85iABX2thJx8JJsioUtBUb/g4tNCV/TRCr2gDNC2i/0bgSuER/uNA8+JCl8209M
+quvPlGAZnT4Iel0wSfK8Z897SBCEH8Qno6Awdw0CgYADee+vbUaR6RdTLYmsBPQ/
+RXpiuPiHQ39YHiujaDk3BGw9igX1G3lHR0gQIG1sbsudt8FXFfdlWfT4MUVWGlBm
+FndAlFnyh782RoE6ORRHxKgaO1qomK0ewReUTrO6mEt1SdbQDAHJX8XU2ro43Xl9
+9zr18xnnbU90RsMHUYLBWg==
+-----END PRIVATE KEY-----';
+        $private = PublicKeyLoader::load($private);
+        $decrypted = $cms->getRecipients()[0]->withKey($private)->decrypt();
+        $this->assertEquals("hello, world!\n", $decrypted);
+    }
+
+    public function testOAEPDefaultDecrypt(): void
+    {
+        $cms = CMS::load('-----BEGIN CMS-----
+MIIBpQYJKoZIhvcNAQcDoIIBljCCAZICAQAxggFNMIIBSQIBADAxMBkxFzAVBgNV
+BAoMDnBocHNlY2xpYiBkZW1vAhQUmW9WEnSW1a7eA4g8v5VmosxSWjANBgkqhkiG
+9w0BAQcwAASCAQBTV83CKlkadLT0VWW6R1zOmE3F0Ktt7jnpmElMSJqLwBrdK3ek
+KJi8O0ZL1aEcgXjpXL/OwDzXL75ul6G7czJzhb8rSlQzAOEwRTmr4mcDbK18DAbi
+pGIyO9GUZALW1PprAUnMr84YFcLMHHZz2AIUF//hkHF0DTMIKMLxXFPFJgqMs1p+
+dmctufj2xnjf4xoMymZOjBeNjPS9wKwVE4i+eQM9ypvb/snNkQjChP2vkV3XnQYs
+IVp6xHhboPdJUYCfl6N9TNBiOfe8plIzF9RHaK6nkpvQTo65sHkONmPlVgVRR2Y+
+FVP+fgAkronEDy0Fvsf+SZowzDmkePUpOLm0MDwGCSqGSIb3DQEHATAdBglghkgB
+ZQMEASoEENT+JKlPzTt9W5WAA3IfobuAEHMqwb2kybltmkkaG2LJi9c=
+-----END CMS-----');
+        $private = '-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNuYD130WlsYxC
+OekHh70j9TML61KIlV+sEunB573QkRkJwuZW36qRXF2Gm/PYU1n1vMXJxL3DxJc+
+i0vMmp3/CYVhQ36WTAHN0otL2KZ8Ppcul2Icjzee0/ulc0+f8G8twbe7HIyAHcrH
+V4af1yV4r4P07GMMiFLFcC3KRysfD+bukSw/AkViomLodeWNpxe1ipk6uyowv3zL
+VWK31NZeYD099yACq2v2l6fbX/+TCnz1gPiNyFb27wx7HeLzwa27G8MMkwgCXUf4
+oUmaq6qSc8tmF2jBx+i/n7rxJwfqVZjsZQ/CsABr7obn8eXJ0pRSwReAu6NsaQXZ
+ntTqKCwZAgMBAAECggEAD2uMggwmm/aEoouABGN6nDu12XqIaNp2yF7GjL/tF2QO
+MhAc1H2BZdHm5L8YdlTmalKoVKkIPFNRBDbMC126OAf4/8MKYFj5eE8EHT7zrl5s
+AJRc80e84zfVJfVQY5b8Y7v1z0hNiRDdRoyF98HYT4UrE+xgDuwXoDBPY65qn1z0
+ODRLGhixNjxMeYuMJ0c4iwRHzNuf0rgsxVqMF4YKCmX52ivnabcamK5I3uVRJ012
+V0WuprDu5PK8DwZ4kAEFkZrAp5j0+2pamRTGAONNrCyJ08QyMr/4QesyrQh4o5oU
+JbSarHkGUc7bdNBIfO7sa6HpUkZcmd3oXpJMac6nfQKBgQD8ZObTQdgXzFlVg8r4
+/8LWrYgMGhacHrwSBYD396oZxhXKQc5DoDFYVaKr4azNLEPHlwg+D6f2p7XC5y0K
++luJYb5+87JYreQyxeqQxKf8LkL2YYysT2JohOzDMZy467gEr+pQ4wngsJ8xUSQT
+wMz2HzGD8Wa5nneU/Z1I4eQWXwKBgQDQqeoZ+wELVbCZmsuZAfbQ2lC/sB/fZuge
+YZk1v08VKljseMa3t2mlBRdMaYa5U4yEGcRiXcSklaqHujMMsEU2BIqKEVL1G7Qg
+gGDryT92EPi0nzJnuumkv9xVG0mZtFnPPX/9RGITAdzYFOXmDZGy2B5jRocoS1ZE
+w3pQCzughwKBgFOjxHKBwXCxgXE7SYoWh6TIwOrxwkheTwjR1hlWc4IzCImMISR7
+855IUq4PDUq4voVn4Y1fdtPgY/WA0oZuzOLMB2req12D0rmYqNDsupZxZjNrxEhd
+zkjAtA1DZaJKSyMSgN3pPx68qSSYtRHutH1jfO8ykk4023/+Q58hbIqVAoGAO4HZ
+k2Mz3wmm/YdZvN8EhndcQ+50iH+OfuuSh/NxGDYlefrPoSEbbcZP6KjHlR6wmhPH
+H85iABX2thJx8JJsioUtBUb/g4tNCV/TRCr2gDNC2i/0bgSuER/uNA8+JCl8209M
+quvPlGAZnT4Iel0wSfK8Z897SBCEH8Qno6Awdw0CgYADee+vbUaR6RdTLYmsBPQ/
+RXpiuPiHQ39YHiujaDk3BGw9igX1G3lHR0gQIG1sbsudt8FXFfdlWfT4MUVWGlBm
+FndAlFnyh782RoE6ORRHxKgaO1qomK0ewReUTrO6mEt1SdbQDAHJX8XU2ro43Xl9
+9zr18xnnbU90RsMHUYLBWg==
+-----END PRIVATE KEY-----';
+        $private = PublicKeyLoader::load($private);
+        $decrypted = $cms->getRecipients()[0]->withKey($private)->decrypt();
+        $this->assertEquals("hello, world!\n", $decrypted);
     }
 }
