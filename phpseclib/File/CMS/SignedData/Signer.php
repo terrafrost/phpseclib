@@ -56,14 +56,14 @@ class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
 
     private static function loadString(string $encoded): Constructed
     {
-        ASN1::disableCacheInvalidation();
+        //ASN1::disableCacheInvalidation();
         $rules = [];
         $rules['signedAttrs']['*'] = [self::class, 'mapInAttrs'];
         $rules['unsignedAttrs']['*'] = [self::class, 'mapInAttrs'];
         $rules['sid']['issuerAndSerialNumber']['issuer']['rdnSequence']['*']['*'] = [self::class, 'mapInDNs'];
         $decoded = ASN1::decodeBER($encoded);
         $signer = ASN1::map($decoded, Maps\SignerInfo::MAP, $rules);
-        ASN1::enableCacheInvalidation();
+        //ASN1::enableCacheInvalidation();
         return $signer;
     }
 
@@ -181,6 +181,8 @@ class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
         for ($i = 0; $i < count($attr['value']); $i++) {
             $attr['value'][$i] = ASN1::map(ASN1::decodeBER($attr['value'][$i]->value), $map, $rules);
             $attr['value'][$i]->parent = $attr['value'];
+            $attr['value'][$i]->key = $i;
+            $attr['value'][$i]->depth = $attr['value']->depth + 1;
         }
         ASN1::enableCacheInvalidation();
     }
@@ -309,7 +311,7 @@ class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
             }
         }
 
-        return $x509->isIssuerOf($this->signer['sid'], ['']);
+        return $x509->isIssuerOf($this->signer['sid'], ['digitalSignature', 'nonRepudiation']);
     }
 
     public function getCertificate(): ?X509

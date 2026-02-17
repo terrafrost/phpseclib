@@ -100,6 +100,9 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
             $signerInfo->parent = $cms['content']['signerInfos'];
             $signerInfo->depth = $cms['content']['signerInfos']->depth + 1;
             $signerInfo->key = $i;
+            $signerInfo->signer->parent = $cms['content']['signerInfos'];
+            $signerInfo->signer->depth = $signerInfo->depth;
+            $signerInfo->signer->key = $i;
             unset($signerInfo);
         }
         return $cms;
