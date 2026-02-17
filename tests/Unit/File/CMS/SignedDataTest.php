@@ -193,7 +193,7 @@ ybcPA9iklr0wAwYBAAMBAA==
     {
         $cms = new SignedData('hello, world!');
         $x509 = new X509();
-        $x509->addDN('O=phpseclib test');
+        $x509->setDN('O=phpseclib test');
         $signer = $cms->addESSSigner($x509);
         $expected = 'blah blah';
         $signer['signedAttrs'][] = [
