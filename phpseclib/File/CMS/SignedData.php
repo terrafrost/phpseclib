@@ -522,7 +522,7 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
 
     public function toArray(bool $convertPrimitives = false): array
     {
-        $this->cms->compile();
+        $this->compile();
         return $this->cms instanceof Constructed ? $this->cms->toArray($convertPrimitives) : $this->cms;
     }
 
