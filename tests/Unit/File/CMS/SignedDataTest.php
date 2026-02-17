@@ -259,17 +259,73 @@ ybcPA9iklr0wAwYBAAMBAA==
         $pfx->add($x509);
         $pfx->add($private);
 
-        $cms = CMS::load(file_get_contents('FE.pdf.p7m'));
+        $cms = CMS::load(file_get_contents(__DIR__ . '/FE.pdf.p7m'));
         $signer = $cms->getSigners()[0];
         $pfx->sign($signer);
 
-        $this->assertTrue($signer->validateSignature());
-        $this->assertTrue($cms->validateSignature());
+        $this->assertTrue($signer->validateSignature(false));
+        $this->assertTrue($cms->validateSignature(false));
 
         $cms = CMS::load("$cms");
         $signer = $cms->getSigners()[0];
 
-        $this->assertTrue($signer->validateSignature());
-        $this->assertTrue($cms->validateSignature());
+        $this->assertTrue($signer->validateSignature(false));
+        $this->assertTrue($cms->validateSignature(false));
+    }
+
+    public function testTwoNewSigners(): void
+    {
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib 1');
+        $x509->makeCA();
+        $private->sign($x509);
+        $pfx = new PFX();
+        $pfx->add($private);
+        $pfx->add($x509);
+
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib 2');
+        $x509->makeCA();
+        $private->sign($x509);
+        $pfx2 = new PFX();
+        $pfx2->add($private);
+        $pfx2->add($x509);
+
+        $cms = new SignedData('zzz');
+        $pfx->sign($cms);
+
+        $cms2 = new SignedData('zzz');
+        $pfx2->sign($cms2);
+
+        $cms->addSignature($cms2->getSigners()[0]);
+
+        $this->assertTrue($cms->validateSignature(false));
+
+        $cms = CMS::load("$cms");
+
+        $this->assertTrue($cms->validateSignature(false));
+    }
+
+    public function testDetachedSigCreation(): void
+    {
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib 1');
+        $x509->makeCA();
+        $private->sign($x509);
+        $pfx = new PFX();
+        $pfx->add($private);
+        $pfx->add($x509);
+
+        $fp = fopen(__DIR__ . '/test.pdf', 'r');
+
+        $cms = new SignedData($fp);
+        $pfx->sign($cms);
+
+        $cms = CMS::load("$cms");
+        $cms->attach($fp);
+        $this->assertTrue($cms->validateSignature(false));
     }
 }
