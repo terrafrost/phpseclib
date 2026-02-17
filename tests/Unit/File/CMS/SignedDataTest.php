@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace phpseclib4\Tests\Unit\File\CMS;
 
+use phpseclib4\Crypt\EC;
 use phpseclib4\File\ASN1;
 use phpseclib4\File\CMS;
 use phpseclib4\File\CMS\SignedData;
+use phpseclib4\File\PFX;
 use phpseclib4\File\X509;
 use phpseclib4\Tests\PhpseclibTestCase;
 
@@ -172,5 +174,102 @@ ybcPA9iklr0wAwYBAAMBAA==
         $signer = $cms->addSigner($x509);
         $cms = CMS::load("$cms");
         $this->assertIsArray($cms->toArray());
+    }
+
+    public function testSubjectKeyID(): void
+    {
+        $expected = 'zzz';
+        $cms = new SignedData('hello, world!');
+        $x509 = new X509();
+        $x509->setSubjectKeyIdentifier($expected);
+        $x509->setDN('O=test');
+        $signer = $cms->addSigner($x509, CMS::KEY_ID);
+
+        $cms = CMS::load("$cms");
+        $this->assertEquals($expected, $cms->getSigners()[0]['sid']['subjectKeyIdentifier']);
+    }
+
+    public function testUnknownSignedAttrAddition(): void
+    {
+        $cms = new SignedData('hello, world!');
+        $x509 = new X509();
+        $x509->addDN('O=phpseclib test');
+        $signer = $cms->addESSSigner($x509);
+        $expected = 'blah blah';
+        $signer['signedAttrs'][] = [
+            'type' => '2.9999',
+            'value' => [$expected]
+        ];
+
+        $actual = (string) $cms['content']['signerInfos'][0]['signedAttrs'][0]['value'][0];
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testOpenSSLEquivalncy(): void
+    {
+        if (!function_exists('openssl_cms_verify')) {
+            self::markTestSkipped('openssl_cms_verify() not available');
+        }
+        $private = EC::createKey('nistp256');
+
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib CA');
+        $x509->makeCA();
+        $private->sign($x509);
+
+        X509::addCA("$x509");
+
+        $ca = new PFX();
+        $ca->add($x509);
+        $ca->add($private);
+
+        $private = EC::createKey('nistp256');
+
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib cert');
+        $x509->setExtension('id-ce-keyUsage', ['digitalSignature']);
+        $ca->sign($x509);
+
+        //$cms = new SignedData(file_get_contents('test.pdf'));
+        $cms = new SignedData('...');
+        $signer = $cms->addSigner($x509);
+        $private->sign($signer);
+
+        file_put_contents('cms.pem', "$cms");
+        file_put_contents('ca.pem', (string) $ca->getCertificates()[0]);
+
+        $result = openssl_cms_verify(
+            input_filename: 'cms.pem',
+            ca_info: ['ca.pem'],
+            encoding: OPENSSL_ENCODING_PEM
+        );
+
+        X509::clearCAStore();
+    }
+
+    public function testNewSecondSigner(): void
+    {
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib demo');
+        $x509->makeCA();
+        $private->sign($x509);
+
+        $pfx = new PFX();
+        $pfx->add($x509);
+        $pfx->add($private);
+
+        $cms = CMS::load(file_get_contents('FE.pdf.p7m'));
+        $signer = $cms->getSigners()[0];
+        $pfx->sign($signer);
+
+        $this->assertTrue($signer->validateSignature());
+        $this->assertTrue($cms->validateSignature());
+
+        $cms = CMS::load("$cms");
+        $signer = $cms->getSigners()[0];
+
+        $this->assertTrue($signer->validateSignature());
+        $this->assertTrue($cms->validateSignature());
     }
 }
