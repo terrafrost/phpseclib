@@ -13,6 +13,7 @@ namespace phpseclib4\Tests\Unit\File\CMS;
 use phpseclib4\File\ASN1;
 use phpseclib4\File\CMS;
 use phpseclib4\File\CMS\SignedData;
+use phpseclib4\File\X509;
 use phpseclib4\Tests\PhpseclibTestCase;
 
 class SignedDataTest extends PhpseclibTestCase
@@ -109,5 +110,67 @@ M0OBYZe9ntgapIKsumKkfhOzo65F41fsyi2n6U8gLE0m6QYy+bMI0ElWXfjDA5eT
         // if we didn't pass false to validateSignature() it'd test to see if the cert it found was signed
         // by a CA cert (or that it *was* a CA cert)
         $this->assertTrue($cms->validateSignature(false));
+    }
+
+    public function testDetachedSigWithTwoDetachedCerts(): void
+    {
+        // openssl cms -sign -in test.txt -out cms-signed.pem -outform PEM -signer small.pub -inkey small.priv -md sha1 -signer small2.pub -inkey small2.priv -md sha1 -nocerts -nosmimecap
+        $cms = CMS::load('-----BEGIN CMS-----
+MIIB+AYJKoZIhvcNAQcCoIIB6TCCAeUCAQExCTAHBgUrDgMCGjALBgkqhkiG9w0B
+BwExggHGMIHgAgEBMC4wFjEUMBIGA1UECgwLcGhwc2VjbGliIEECFGxZKrSPvkiI
+Lahro1u4RUUwOdgxMAcGBSsOAwIaoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEH
+ATAcBgkqhkiG9w0BCQUxDxcNMjUxMjMxMDIxMzQ1WjAjBgkqhkiG9w0BCQQxFgQU
+0hYWktbKp2OWDBMRzMfrQ0gwHv4wCQYHKoZIzj0EAQQ4MDYCGQCGTfe/yNU8/gYz
+G8lYgecLV1tQWa3IISECGQD0qfIIKVqlnR0/hdxuv2mSjO9gAz0YjykwgeACAQEw
+LjAWMRQwEgYDVQQKDAtwaHBzZWNsaWIgQgIUW9t6BBtN4h8QFmRBnufZyOMW5Yow
+BwYFKw4DAhqgXTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yNTEyMzEwMjEzNDVaMCMGCSqGSIb3DQEJBDEWBBTSFhaS1sqnY5YMExHM
+x+tDSDAe/jAJBgcqhkjOPQQBBDgwNgIZAPfgyQHK5WcUjhJmNQIe/nIonN5gtg2C
+YwIZAI+8GOohj7FHDMbR3M537Mlen8hFP9LwfQ==
+-----END CMS-----');
+        $cms->addCertificate(X509::load('-----BEGIN CERTIFICATE-----
+MIIBLDCCASCgAwIBAgIUbFkqtI++SIgtqGujW7hFRTA52DEwAwYBADAWMRQwEgYD
+VQQKDAtwaHBzZWNsaWIgQTAeFw0yNTEyMzEwMjAxMTRaFw0yNjEyMzEwMjAxMTRa
+MBYxFDASBgNVBAoMC3BocHNlY2xpYiBBMEkwEwYHKoZIzj0CAQYIKoZIzj0DAQED
+MgAEyR5pmecqhmsF2kTe9YfHUO0ahwP4qa24b61pZTwMtcnm/Znb92PinY7lHhLZ
+kMqIo2MwYTAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4E
+FgQUWlpOWvb/vvPuZRS8dUa/hTmmdiwwHwYDVR0jBBgwFoAUWlpOWvb/vvPuZRS8
+dUa/hTmmdiwwAwYBAAMBAA==
+-----END CERTIFICATE-----'));
+        $cms->addCertificate(X509::load('-----BEGIN CERTIFICATE-----
+MIIBLDCCASCgAwIBAgIUW9t6BBtN4h8QFmRBnufZyOMW5YowAwYBADAWMRQwEgYD
+VQQKDAtwaHBzZWNsaWIgQjAeFw0yNTEyMzEwMjEyNDdaFw0yNjEyMzEwMjEyNDda
+MBYxFDASBgNVBAoMC3BocHNlY2xpYiBCMEkwEwYHKoZIzj0CAQYIKoZIzj0DAQED
+MgAEzlqE9I12rZWDf0xAhvqsrU8YmAExbdGjM6HB3yrcKsiAXwAYUeYe6g9gzBRn
+39Mto2MwYTAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4E
+FgQUtCvFSvWQQvGqBHJUybcPA9iklr0wHwYDVR0jBBgwFoAUtCvFSvWQQvGqBHJU
+ybcPA9iklr0wAwYBAAMBAA==
+-----END CERTIFICATE-----'));
+        $cms->attach("hello, world!\r\n");
+        $this->assertTrue($cms->validateSignature(false));
+    }
+
+    public function testX509Match(): void
+    {
+        $cms = CMS::load(file_get_contents(__DIR__ . '/FE.pdf.p7m'));
+        $temp = new X509();
+        $cms['content']['certificates'][0]['certificate'] = $temp;
+        $cms = (string) $cms;
+        $cms = CMS::load($cms);
+        $this->assertSame((string) $cms['content']['certificates'][0]['certificate'], "$temp");
+    }
+
+    public function testPostalAddress(): void
+    {
+        $cms = new SignedData('hello, world!');
+        $x509 = new X509();
+        $x509->addDNProp('id-at-postalAddress', [
+            'John Doe',
+            '111 Anywhere St',
+            'Anytown, TX, USA',
+        ]);
+        $signer = $cms->addSigner($x509);
+        $cms = CMS::load("$cms");
+        $this->assertIsArray($cms->toArray());
     }
 }
