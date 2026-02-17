@@ -19,7 +19,6 @@ class SignedDataTest extends PhpseclibTestCase
 {
     public function testSMIMECapabilities(): void
     {
-        // this CMS has the pkcs-9-at-smimeCapabilities attribute, which requires mapOutSignedAttrs
         $cms = CMS::load('-----BEGIN CMS-----
 MIIFmAYJKoZIhvcNAQcCoIIFiTCCBYUCAQExDTALBglghkgBZQMEAgEwCwYJKoZI
 hvcNAQcBoIIDIjCCAx4wggHRoAMCAQICFEqEwHgUhgvn+HxPMOmo094oXmy2MEIG
@@ -102,5 +101,13 @@ M0OBYZe9ntgapIKsumKkfhOzo65F41fsyi2n6U8gLE0m6QYy+bMI0ElWXfjDA5eT
         foreach ($attr as $algo) {
             $this->assertEquals('aes192-CBC-PAD', (string) $algo['algorithm']);
         }
+    }
+
+    public testValidateSignature(): void
+    {
+        $cms = CMS::load(file_get_contents(__DIR__ . '/FE.pdf.p7m'));
+        // if we didn't pass false to validateSignature() it'd test to see if the cert it found was signed
+        // by a CA cert (or that it *was* a CA cert)
+        $this->assertTrue($cms->validateSignature(false));
     }
 }
