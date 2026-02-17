@@ -26,7 +26,7 @@ iq8UL3JxiWPigBC7AYnIQlC/X7rq8bcaeP9y
 -----END
  CMS-----');
         $decrypted = $cms->getRecipients()[0]->withPassword('correct horse battery staple')->decrypt();
-        $this->assertEquals('hello, world!', $decrypted);
+        $this->assertEquals("hello, world!\n", $decrypted);
     }
 
     public function testKeyDecrypt(): void
@@ -38,7 +38,7 @@ CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
 17lonTkG3xsJwzY=
 -----END CMS-----');
         $decrypted = $cms->getRecipients()[0]->withKey(hex2bin('00112233445566778899AABBCCDDEEFF'))->decrypt();
-        $this->assertEquals('hello, world!', $decrypted);
+        $this->assertEquals("hello, world!\n", $decrypted);
     }
 
     public function testNewPassword(): void

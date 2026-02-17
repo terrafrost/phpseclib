@@ -309,7 +309,7 @@ trait ASN1AlgorithmIdentifier
     {
         switch ($keyDerivationFunc['algorithm']) {
             case 'id-PBKDF2':
-                $meta = $cipher->getMetaData('meta');
+                $meta = $cipher->hasMetaData('meta') ? $cipher->getMetaData('meta') : [];
                 $prf = ['algorithm' => 'id-hmacWithSHA1'];
                 try {
                     $temp = ASN1::decodeBER((string) $keyDerivationFunc['parameters']);
