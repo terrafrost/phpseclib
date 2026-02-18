@@ -328,4 +328,31 @@ CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
         $decrypted = $cms->decryptWithKey(hex2bin('00112233445566778899AABBCCDDEEFF'));
         $this->assertEquals("hello, world!\n", $decrypted);
     }
+
+    public function testCertAddition(): void
+    {
+        $cms = CMS::load('-----BEGIN CMS-----
+MIIB5QYJKoZIhvcNAQcDoIIB1jCCAdICAQAxggGNMIIBiQIBADAxMBkxFzAVBgNV
+BAoMDnBocHNlY2xpYiBkZW1vAhQUmW9WEnSW1a7eA4g8v5VmosxSWjBNBgkqhkiG
+9w0BAQcwQKANMAsGCWCGSAFlAwQCAaEaMBgGCSqGSIb3DQEBCDALBglghkgBZQME
+AgGiEzARBgkqhkiG9w0BAQkEBN6tvu8EggEAsghgvuVW4O2ydVFNTiHSU1yvmy3N
+kwVsm7ky+h8cAP3wdhj5/ma8zZGW7smQiZqB+shbRJxGoMdTYC4suoQtLw5zDYrh
+vgyjzlTeuO83luhPajrxD3zJtsVfTDCXMBrHcrA4Qp3T4iw+6yTpO5aGURx5GOaJ
+JVwT1UtE9zkckcqpdEZ5dE5n2IqaEpNb+vBSUtp3mywpSxbYUwUcu7GdZuNRak7U
+d593XmMUapEDb22xPCAP0y4ascbTCI7ypnRVMCAeBwq1ooyUVpcKmPtumMwW8Dns
+BFFqLF/dLsX5qL/L3yeHHe3uyc3V5MErsIx01yL4fitg00fpJbSprUyGijA8Bgkq
+hkiG9w0BBwEwHQYJYIZIAWUDBAEqBBD7Rx2WY+sd2rOghpJ8JjgkgBB9XGoGYzbk
+HZ5LFXx7/Cul
+-----END CMS-----');
+
+        $x509 = new X509();
+        $x509->setDN($cms->getRecipients()[0]['rid']['issuerAndSerialNumber']['issuer']->toArray());
+        $x509->setSerialNumber($cms->getRecipients()[0]['rid']['issuerAndSerialNumber']['serialNumber']);
+        $x509->setExtension('id-ce-keyUsage', ['keyEncipherment']);
+
+        $cms->addCertificate($x509);
+
+        $cms = CMS::load("$cms");
+        $this->assertEquals("$x509", (string) $cms->getCertificates()[0]);
+    }
 }
