@@ -29,6 +29,9 @@ use phpseclib4\Exception\InsufficientSetupException;
 use phpseclib4\Exception\NoValidTagFoundException;
 use phpseclib4\Exception\RuntimeException;
 use phpseclib4\File\ASN1;
+use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient\EncryptedKey;
+use phpseclib4\File\CMS\EnvelopedData\Recipient;
+use phpseclib4\File\CMS\SignedData\Signer;
 use phpseclib4\File\CRL;
 use phpseclib4\File\X509;
 use phpseclib4\File\ASN1\Element;
@@ -825,7 +828,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         $result = [];
         foreach ($this->decoded as $key=>$value) {
             try {
-                if ($value instanceof Constructed || $value instanceof Choice) {
+                if ($value instanceof Constructed || $value instanceof Choice || $value instanceof Signer || $value instanceof Recipient || $value instanceof EncryptedKey) {
                     $value = $value->toArray($convertPrimitives);
                 } elseif ($convertPrimitives) {
                     $value = ASN1::convertToPrimitive($value);

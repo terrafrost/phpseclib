@@ -359,4 +359,11 @@ ybcPA9iklr0wAwYBAAMBAA==
         $signers = $cms->getSigners();
         $this->assertNotEquals($signers[0]->getCertificate()->getIssuerDN(), $signers[1]->getCertificate()->getIssuerDN());
     }
+
+    public function testToArrayWithSigners(): void
+    {
+        $cms = CMS::load(file_get_contents(__DIR__ . '/FE.pdf.p7m'));
+        $digestAlgo = $cms->toArray()['content']['signerInfos'][0]['digestAlgorithm'];
+        $this->testArrayHasKey('algorithm', $digestAlgo);
+    }
 }
