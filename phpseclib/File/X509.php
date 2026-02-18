@@ -218,6 +218,11 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         self::$strictDNComparison = false;
     }
 
+    public static function isStrictDNComparisonEnabled(): bool
+    {
+        return self::$strictDNComparison;
+    }
+
     public static function checkKeyUsage(): void
     {
         self::$checkKeyUsage = true;
@@ -228,6 +233,11 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         self::$checkKeyUsage = false;
     }
 
+    public static function isCheckKeyUsageEnabled(): bool
+    {
+        return self::$checkKeyUsage;
+    }
+
     public static function checkBasicConstraints(): void
     {
         self::$checkBasicConstraints = true;
@@ -236,6 +246,11 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
     public static function ignoreBasicConstraints(): void
     {
         self::$checkBasicConstraints = false;
+    }
+
+    public static function isCheckBasicConstraintsEnabled(): bool
+    {
+        return self::$checkBasicConstraints;
     }
 
     /**

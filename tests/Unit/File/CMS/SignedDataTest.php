@@ -366,4 +366,23 @@ ybcPA9iklr0wAwYBAAMBAA==
         $digestAlgo = $cms->toArray()['content']['signerInfos'][0]['digestAlgorithm'];
         $this->testArrayHasKey('algorithm', $digestAlgo);
     }
+
+    public function testSigningWithCertWithoutKeyUsage(): void
+    {
+        $private = EC::createKey('nistp256');
+        $x509 = new X509($private->getPublicKey());
+        $x509->setDN('O=phpseclib demo');
+        $private->sign($x509);
+
+        $pfx = new PFX();
+        $pfx->add($private);
+        $pfx->add($x509);
+
+        $cms = new CMS\SignedData('hello, world!');
+        $pfx->sign($cms);
+
+        X509::ignoreKeyUsage();
+        $this->assertTrue($cms->validateSignature(false));
+        X509::checkKeyUsage();
+    }
 }

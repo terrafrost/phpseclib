@@ -373,7 +373,14 @@ class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
             for ($i = 0; $i < count($this->signer['signedAttrs']); $i++) {
                 $attr = &$this->signer['signedAttrs'][$i];
                 if (self::extensionMatch('id-aa-signingCertificateV2', $attr['type'])) {
+                    $checkKeyUsage = X509::isCheckKeyUsageEnabled();
+                    if ($checkKeyUsage) {
+                        X509::ignoreKeyUsage();
+                    }
                     $cert = $this->getCertificate();
+                    if ($checkKeyUsage) {
+                        X509::checkKeyUsage();
+                    }
                     if (!isset($cert)) {
                         throw new RuntimeException('Unable to find matching id-aa-signingCertificateV2 certificate');
                     }
