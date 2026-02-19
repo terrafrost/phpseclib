@@ -240,4 +240,10 @@ class EncryptedKey implements \ArrayAccess, \Countable, \Iterator
         $this->compile();
         return $this->encryptedKey->__debugInfo();
     }
+
+    public function toArray(bool $convertPrimitives = false): array
+    {
+        $this->compile();
+        return $this->encryptedKey instanceof Constructed ? $this->encryptedKey->toArray($convertPrimitives) : $this->encryptedKey;
+    }
 }

@@ -187,4 +187,10 @@ class CompressedData implements \ArrayAccess, \Countable, \Iterator
         }
         return $this->decompressed;
     }
+
+    public function toArray(bool $convertPrimitives = false): array
+    {
+        $this->compile();
+        return $this->cms instanceof Constructed ? $this->cms->toArray($convertPrimitives) : $this->cms;
+    }
 }

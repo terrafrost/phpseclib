@@ -185,4 +185,10 @@ class DigestedData implements \ArrayAccess, \Countable, \Iterator
         $expected = (string) $this->cms['content']['digest'];
         return hash_equals($actual, $expected);
     }
+
+    public function toArray(bool $convertPrimitives = false): array
+    {
+        $this->compile();
+        return $this->cms instanceof Constructed ? $this->cms->toArray($convertPrimitives) : $this->cms;
+    }
 }

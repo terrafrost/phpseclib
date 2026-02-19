@@ -745,4 +745,10 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
     {
         self::$binary = false;
     }
+
+    public function toArray(bool $convertPrimitives = false): array
+    {
+        $this->compile();
+        return $this->cms instanceof Constructed ? $this->cms->toArray($convertPrimitives) : $this->cms;
+    }
 }

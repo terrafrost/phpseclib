@@ -222,4 +222,10 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
         $this->compile();
         return $this->cms->__debugInfo();
     }
+
+    public function toArray(bool $convertPrimitives = false): array
+    {
+        $this->compile();
+        return $this->cms instanceof Constructed ? $this->cms->toArray($convertPrimitives) : $this->cms;
+    }
 }

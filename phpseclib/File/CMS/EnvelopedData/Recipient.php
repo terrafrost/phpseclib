@@ -135,4 +135,10 @@ class Recipient implements \ArrayAccess, \Countable, \Iterator
         $this->compile();
         return $this->recipient->__debugInfo();
     }
+
+    public function toArray(bool $convertPrimitives = false): array
+    {
+        $this->compile();
+        return $this->recipient instanceof Constructed ? $this->recipient->toArray($convertPrimitives) : $this->recipient;
+    }
 }
