@@ -21,6 +21,7 @@ class CompressedDataTest extends PhpseclibTestCase
             self::markTestSkipped('zlib_decode() not available');
         }
 
+        // from https://github.com/phpseclib/phpseclib/issues/1211#issuecomment-344652471
         $cms = CMS::load('MIIDLgYLKoZIhvcNAQkQAQmgggMdMIIDGQIBADANBgsqhkiG9w0BCRADCDCCAwMG
 CSqGSIb3DQEHAaCCAvQEggLweJydk1tvqzgUhd+R+A8orxUN4UAurfpgE4eQBFoI
 kMBL5YC5NNwChpD8+kMqjeaiM6Ojsfy019pb39qWdU1HvEvqJi2LF27yLLCMUhaU
