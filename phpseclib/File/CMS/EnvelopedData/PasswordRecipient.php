@@ -25,7 +25,7 @@ use phpseclib4\File\ASN1\Maps;
 use phpseclib4\File\ASN1\Types\Choice;
 use phpseclib4\File\CMS\EnvelopedData;
 
-class PasswordRecipient extends Recipient
+class PasswordRecipient extends Recipient implements DerivableKey
 {
     private ?string $password = null;
 

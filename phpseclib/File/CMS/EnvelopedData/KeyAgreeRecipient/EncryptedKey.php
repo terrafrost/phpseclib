@@ -23,10 +23,11 @@ use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\ASN1\Maps;
 use phpseclib4\File\CMS\EnvelopedData;
+use phpseclib4\File\CMS\EnvelopedData\DerivableKey;
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient;
 use phpseclib4\File\X509;
 
-class EncryptedKey implements \ArrayAccess, \Countable, \Iterator
+class EncryptedKey implements DerivableKey, \ArrayAccess, \Countable, \Iterator
 {
     use \phpseclib4\File\Common\Traits\KeyDerivation;
 

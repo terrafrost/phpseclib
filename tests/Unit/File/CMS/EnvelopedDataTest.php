@@ -209,7 +209,7 @@ JXhYfxbdvEUY6P4PO+Y9EqdrGwb8gsZTWDF5Hldhcu1VO5ECp4WkLPN2
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
-    public function testFindRecipientByID(): void
+    public function testFindDerivableByID(): void
     {
         $cms = CMS::load('-----BEGIN CMS-----
 MIGYBgkqhkiG9w0BBwOggYowgYcCAQIxRKJCAgEEMAYEBN6tvu8wCwYJYIZIAWUD
@@ -217,7 +217,7 @@ BAEFBCjqhj9+hBlqboSO9UybVUyjmeQ4eX8y/0x/s9JsdsWxTrrx1zNiFNzaMDwG
 CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
 17lonTkG3xsJwzY=
 -----END CMS-----');
-        $decrypted = $cms->findRecipients("\xde\xad\xbe\xef")[0]->withKey(hex2bin('00112233445566778899AABBCCDDEEFF'))->decrypt();
+        $decrypted = $cms->findDerivables("\xde\xad\xbe\xef")[0]->withKey(hex2bin('00112233445566778899AABBCCDDEEFF'))->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
@@ -271,7 +271,7 @@ FndAlFnyh782RoE6ORRHxKgaO1qomK0ewReUTrO6mEt1SdbQDAHJX8XU2ro43Xl9
         $x509->setExtension('id-ce-keyUsage', ['keyEncipherment']);
 
         $private = PublicKeyLoader::load($private);
-        $decrypted = $cms->findRecipients($x509)[0]->withKey($private)->decrypt();
+        $decrypted = $cms->findDerivables($x509)[0]->withKey($private)->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
@@ -299,11 +299,11 @@ JXhYfxbdvEUY6P4PO+Y9EqdrGwb8gsZTWDF5Hldhcu1VO5ECp4WkLPN2
         $x509->setSerialNumber($cms->getRecipients()[0]->getEncryptedKeys()[0]['rid']['issuerAndSerialNumber']['serialNumber']);
         $x509->setExtension('id-ce-keyUsage', ['keyAgreement']);
 
-        $decrypted = $cms->findRecipients($x509)[0]->withKey($private)->decrypt();
+        $decrypted = $cms->findDerivables($x509)[0]->withKey($private)->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
-    public function testGetPasswordRecipients(): void
+    public function testGetPasswordDerivables(): void
     {
         $cms = CMS::load('-----BEGIN CMS-----
 MIHYBgkqhkiG9w0BBwOggcowgccCAQMxgYOjgYACAQCgGwYJKoZIhvcNAQUMMA4E
@@ -313,7 +313,7 @@ fE8HfBc01uw9GxuidTA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBD3cN7fUkmZ
 iq8UL3JxiWPigBC7AYnIQlC/X7rq8bcaeP9y
 -----END CMS-----');
         // https://xkcd.com/936/
-        $decrypted = $cms->getPasswordRecipients()[0]->withPassword('correct horse battery staple')->decrypt();
+        $decrypted = $cms->getPasswordDerivables()[0]->withPassword('correct horse battery staple')->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 

@@ -22,7 +22,7 @@ use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\ASN1\Maps;
 
-class KEKRecipient extends Recipient
+class KEKRecipient extends Recipient implements DerivableKey
 {
     private ?string $kek = null;
 

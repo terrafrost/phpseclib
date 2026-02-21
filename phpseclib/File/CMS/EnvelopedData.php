@@ -35,6 +35,7 @@ use phpseclib4\File\ASN1\Maps\RSAPublicKey;
 use phpseclib4\File\ASN1\Types\Choice;
 use phpseclib4\File\ASN1\Types\OctetString;
 use phpseclib4\File\CMS;
+use phpseclib4\File\CMS\EnvelopedData\DerivableKey;
 use phpseclib4\File\CMS\EnvelopedData\KeyTransRecipient;
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient;
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient\EncryptedKey;
@@ -220,9 +221,9 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
         return $result;
     }
 
-    // returns all recipients matching $keyIdentifier
-    /** @return (KEKRecipient|KeyTransRecipient|EncryptedKey)[] */
-    public function findRecipients(string|X509 $keyIdentifier): array
+    // returns all DerivableKeys matching $keyIdentifier
+    /** @return DerivableKey[] */
+    public function findDerivables(string|X509 $keyIdentifier): array
     {
         $this->compile();
         $recipients = [];
@@ -252,15 +253,15 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
         return $recipients;
     }
 
-    // return the first recipient matching $keyIdentifier or null if none are found
-    public function findRecipient(string|X509 $keyIdentifier): KEKRecipient|KeyTransRecipient|EncryptedKey|null
+    // return the first DerivableKey matching $keyIdentifier or null if none are found
+    public function findDerivable(string|X509 $keyIdentifier): ?DerivableKey
     {
         $recipients = $this->findRecipients($keyIdentifier);
         return count($recipients) ? $recipients[0] : null;
     }
 
     /** @return PasswordRecipient[] */
-    public function getPasswordRecipients(): array
+    public function getPasswordDerivables(): array
     {
         $this->compile();
         $result = [];
@@ -272,8 +273,8 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
         return $result;
     }
 
-    /** @return (KEKRecipient|KeyTransRecipient|EncryptedKey)[] */
-    public function getKeyRecipients(): array
+    /** @return DerivableKey[] */
+    public function getKeyDerivables(): array
     {
         $this->compile();
         $result = [];
@@ -414,7 +415,7 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
         return $recipient;
     }
 
-    public function createNewRecipientFromX509(X509 $x509, int $type = CMS::ISSUER_AND_DN): Recipient
+    public function createNewRecipientFromX509(X509 $x509, int $type = CMS::ISSUER_AND_DN): KeyTransRecipient|KeyAgreeRecipient
     {
         $publicKey = $x509->getPublicKey();
         if (!$publicKey instanceof RSA && !$publicKey instanceof EC) {
