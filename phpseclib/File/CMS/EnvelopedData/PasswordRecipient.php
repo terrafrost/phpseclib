@@ -45,7 +45,7 @@ class PasswordRecipient extends Recipient implements DerivableKey
         $temp = ASN1::decodeBER($algorithm['parameters']->getEncoded());
         $temp = match ((string) $algorithm['algorithm']) {
             'id-alg-PWRI-KEK' => ASN1::map($temp, Maps\AlgorithmIdentifier::MAP),
-            'id-PBKDF2' => ASN1::map($temp, Maps\PBKDF2Params::MAP),
+            'id-PBKDF2' => ASN1::map($temp, Maps\PBKDF2params::MAP),
             default => null,
         };
         ASN1::disableCacheInvalidation();
