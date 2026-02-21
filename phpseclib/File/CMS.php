@@ -21,11 +21,6 @@ use phpseclib4\Exception\RuntimeException;
 use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\ASN1\Maps;
 
-/*
- * CMS::load('...') will return an instance of CMS/SignedData, CMS/CompressedData
- * CMS/EnvelopedData, CMS/DigestedData, CMS/EncryptedData or CMS/AuthenticatedData
- */
-
 /**
  * Pure-PHP CMS Parser
  *
