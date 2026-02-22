@@ -25,7 +25,7 @@ use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\ASN1\Maps;
 use phpseclib4\File\X509;
 
-class KeyTransRecipient extends Recipient implements DerivableKey
+class KeyTransRecipient extends Recipient implements DerivableKey, SearchableKey
 {
     private ?RSA\PrivateKey $kek = null;
 

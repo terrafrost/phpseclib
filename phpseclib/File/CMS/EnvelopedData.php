@@ -43,6 +43,7 @@ use phpseclib4\File\CMS\EnvelopedData\KEKRecipient;
 use phpseclib4\File\CMS\EnvelopedData\PasswordRecipient;
 use phpseclib4\File\CMS\EnvelopedData\OtherRecipient;
 use phpseclib4\File\CMS\EnvelopedData\Recipient;
+use phpseclib4\File\CMS\EnvelopedData\SearchableKey;
 use phpseclib4\File\CRL;
 use phpseclib4\File\X509;
 
@@ -221,8 +222,8 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
         return $result;
     }
 
-    // returns all DerivableKeys matching $keyIdentifier
-    /** @return DerivableKey[] */
+    // returns all SearchableKeys matching $keyIdentifier
+    /** @return SearchableKey[] */
     public function findDerivables(string|X509 $keyIdentifier): array
     {
         $this->compile();
@@ -253,8 +254,8 @@ class EnvelopedData implements \ArrayAccess, \Countable, \Iterator
         return $recipients;
     }
 
-    // return the first DerivableKey matching $keyIdentifier or null if none are found
-    public function findDerivable(string|X509 $keyIdentifier): ?DerivableKey
+    // return the first SearchableKey matching $keyIdentifier or null if none are found
+    public function findDerivable(string|X509 $keyIdentifier): ?SearchableKey
     {
         $recipients = $this->findRecipients($keyIdentifier);
         return count($recipients) ? $recipients[0] : null;

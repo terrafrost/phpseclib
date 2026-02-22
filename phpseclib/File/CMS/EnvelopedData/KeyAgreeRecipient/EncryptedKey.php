@@ -25,9 +25,10 @@ use phpseclib4\File\ASN1\Maps;
 use phpseclib4\File\CMS\EnvelopedData;
 use phpseclib4\File\CMS\EnvelopedData\DerivableKey;
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient;
+use phpseclib4\File\CMS\EnvelopedData\SearchableKey;
 use phpseclib4\File\X509;
 
-class EncryptedKey implements DerivableKey, \ArrayAccess, \Countable, \Iterator
+class EncryptedKey implements DerivableKey, SearchableKey, \ArrayAccess, \Countable, \Iterator
 {
     use \phpseclib4\File\Common\Traits\KeyDerivation;
 
