@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace phpseclib4\Tests\Unit\File\CMS;
 
 use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\Random;
+use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\PublicKeyLoader;
 use phpseclib4\File\CMS;
 use phpseclib4\File\X509;
@@ -49,8 +51,8 @@ CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
     {
         $plaintext = 'zzz';
         $password = 'password';
-        $cms = new CMS\EnvelopedData($plaintext);
-        //CMS\EnvelopedData::setPRF('id-hmacWithSHA1');
+        $cms = new CMS\EncryptedData($plaintext);
+        //CMS\EncryptedData::setPRF('id-hmacWithSHA1');
         $recipient = $cms->createNewRecipientFromPassword($password);
         $decrypted = $recipient->withPassword($password)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
@@ -64,7 +66,7 @@ CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
         $plaintext = 'zzz';
         $key = str_repeat('z', 16);
         $identifier = 'zzz';
-        $cms = new CMS\EnvelopedData('zzz');
+        $cms = new CMS\EncryptedData('zzz');
         $recipient = $cms->createNewRecipientFromKeyWithIdentifier($key, $identifier);
         $decrypted = $recipient->withKey($key)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
@@ -177,11 +179,11 @@ FndAlFnyh782RoE6ORRHxKgaO1qomK0ewReUTrO6mEt1SdbQDAHJX8XU2ro43Xl9
         $x509->makeCA();
         $private->sign($x509);
 
-        $cms = new CMS\EnvelopedData($plaintext);
+        $cms = new CMS\EncryptedData($plaintext);
         $cms->createNewRecipientFromX509($x509);
 
         $cms = CMS::load("$cms");
-        $decrypted = $cms->getRecipients()[0]->getEncryptedKeys()[0]->withKey($private)->decrypt();
+        $decrypted = $cms->getRecipients()[0]->withKey($private)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
     }
 
@@ -205,11 +207,11 @@ JXhYfxbdvEUY6P4PO+Y9EqdrGwb8gsZTWDF5Hldhcu1VO5ECp4WkLPN2
 
         $private = PublicKeyLoader::load($private);
 
-        $decrypted = $cms->getRecipients()[0]->getEncryptedKeys()[0]->withKey($private)->decrypt();
+        $decrypted = $cms->getRecipients()[0]->withKey($private)->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
-    public function testFindDerivableByID(): void
+    public function testFindRecipientsByID(): void
     {
         $cms = CMS::load('-----BEGIN CMS-----
 MIGYBgkqhkiG9w0BBwOggYowgYcCAQIxRKJCAgEEMAYEBN6tvu8wCwYJYIZIAWUD
@@ -217,7 +219,7 @@ BAEFBCjqhj9+hBlqboSO9UybVUyjmeQ4eX8y/0x/s9JsdsWxTrrx1zNiFNzaMDwG
 CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
 17lonTkG3xsJwzY=
 -----END CMS-----');
-        $decrypted = $cms->findDerivables("\xde\xad\xbe\xef")[0]->withKey(hex2bin('00112233445566778899AABBCCDDEEFF'))->decrypt();
+        $decrypted = $cms->findRecipients("\xde\xad\xbe\xef")[0]->withKey(hex2bin('00112233445566778899AABBCCDDEEFF'))->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
@@ -271,7 +273,7 @@ FndAlFnyh782RoE6ORRHxKgaO1qomK0ewReUTrO6mEt1SdbQDAHJX8XU2ro43Xl9
         $x509->setExtension('id-ce-keyUsage', ['keyEncipherment']);
 
         $private = PublicKeyLoader::load($private);
-        $decrypted = $cms->findDerivables($x509)[0]->withKey($private)->decrypt();
+        $decrypted = $cms->findRecipients($x509)[0]->withKey($private)->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
@@ -295,25 +297,11 @@ JXhYfxbdvEUY6P4PO+Y9EqdrGwb8gsZTWDF5Hldhcu1VO5ECp4WkLPN2
         $private = PublicKeyLoader::load($private);
 
         $x509 = new X509();
-        $x509->setDN($cms->getRecipients()[0]->getEncryptedKeys()[0]['rid']['issuerAndSerialNumber']['issuer']->toArray());
-        $x509->setSerialNumber($cms->getRecipients()[0]->getEncryptedKeys()[0]['rid']['issuerAndSerialNumber']['serialNumber']);
+        $x509->setDN($cms->getRecipients()[0]['rid']['issuerAndSerialNumber']['issuer']->toArray());
+        $x509->setSerialNumber($cms->getRecipients()[0]['rid']['issuerAndSerialNumber']['serialNumber']);
         $x509->setExtension('id-ce-keyUsage', ['keyAgreement']);
 
-        $decrypted = $cms->findDerivables($x509)[0]->withKey($private)->decrypt();
-        $this->assertEquals("hello, world!\n", $decrypted);
-    }
-
-    public function testGetPasswordDerivables(): void
-    {
-        $cms = CMS::load('-----BEGIN CMS-----
-MIHYBgkqhkiG9w0BBwOggcowgccCAQMxgYOjgYACAQCgGwYJKoZIhvcNAQUMMA4E
-CBuhs+/xdgLeAgIIADAsBgsqhkiG9w0BCRADCTAdBglghkgBZQMEASoEEAYanfX/
-7EvrAQFFnc0+EEgEMEeg4tDzHVLPTXAUjcSGYqLei/zHji3tvJ+hdZew3/K2XTS0
-fE8HfBc01uw9GxuidTA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBD3cN7fUkmZ
-iq8UL3JxiWPigBC7AYnIQlC/X7rq8bcaeP9y
------END CMS-----');
-        // https://xkcd.com/936/
-        $decrypted = $cms->getPasswordDerivables()[0]->withPassword('correct horse battery staple')->decrypt();
+        $decrypted = $cms->findRecipients($x509)[0]->withKey($private)->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
@@ -325,7 +313,7 @@ BAEFBCjqhj9+hBlqboSO9UybVUyjmeQ4eX8y/0x/s9JsdsWxTrrx1zNiFNzaMDwG
 CSqGSIb3DQEHATAdBglghkgBZQMEASoEEA2rq3jrXhfcwE8Doq+lErqAEFqBE6fW
 17lonTkG3xsJwzY=
 -----END CMS-----');
-        $decrypted = $cms->decryptWithKey(hex2bin('00112233445566778899AABBCCDDEEFF'));
+        $decrypted = $cms->deriveFromKey(hex2bin('00112233445566778899AABBCCDDEEFF'))->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
 
@@ -354,5 +342,31 @@ HZ5LFXx7/Cul
 
         $cms = CMS::load("$cms");
         $this->assertEquals("$x509", (string) $cms->getCertificates()[0]);
+    }
+
+    public function testMultiRecipients(): void
+    {
+        $plaintext = 'hello, world!';
+
+        $ec = EC::createKey('nistp256');
+        $x509 = new X509($ec->getPublicKey());
+        $ec->sign($x509);
+
+        $rsa = RSA::createKey(2048);
+        $x509a = new X509($rsa->getPublicKey());
+        $rsa->sign($x509a);
+
+        $key = Random::string(16);
+        $cms = new CMS\EncryptedData($plaintext, key: $key);
+        $cms->createNewRecipientFromPassword('password');
+        $cms->createNewRecipientFromKeyWithIdentifier(str_repeat('x', 16), 'zzz');
+        $cms->createNewRecipientFromX509($x509a);
+        $cms->createNewRecipientFromX509($x509);
+        $cms = CMS::load("$cms");
+        $this->assertEquals($plaintext, $cms->deriveFromKey($ec)->decrypt());
+        $this->assertEquals($plaintext, $cms->deriveFromKey(str_repeat('x', 16))->decrypt());
+        $this->assertEquals($plaintext, $cms->deriveFromKey($rsa)->decrypt());
+        $this->assertEquals($plaintext, $cms->deriveFromPassword('password')->decrypt());
+        $this->assertEquals($plaintext, $cms->withKey($key)->decrypt());
     }
 }

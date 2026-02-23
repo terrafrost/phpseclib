@@ -22,7 +22,7 @@ use phpseclib4\Crypt\PublicKeyLoader;
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\ASN1\Maps;
-use phpseclib4\File\CMS\EnvelopedData;
+use phpseclib4\File\CMS\EncryptedData;
 use phpseclib4\File\CMS\EnvelopedData\DerivableKey;
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient;
 use phpseclib4\File\CMS\EnvelopedData\SearchableKey;
@@ -33,7 +33,7 @@ class EncryptedKey implements DerivableKey, SearchableKey, \ArrayAccess, \Counta
     use \phpseclib4\File\Common\Traits\KeyDerivation;
 
     public Constructed|array $encryptedKey;
-    public EnvelopedData $cms;
+    public EncryptedData $cms;
     public KeyAgreeRecipient $recipient;
     private EC\PrivateKey $kek;
     public ?Constructed $parent;
@@ -64,20 +64,10 @@ class EncryptedKey implements DerivableKey, SearchableKey, \ArrayAccess, \Counta
 
     public function withKey(#[\SensitiveParameter] EC\PrivateKey $key): self
     {
-        $this->kek = $key;
-        return $this;
-    }
-
-    public function decrypt(): string
-    {
-        if (!isset($this->kek)) {
-            throw new InsufficientSetupException('Key not set');
-        }
-
-        $private = &$this->kek;
+        $private = &$key;
 
         $originatorKey = $this->recipient['originator']['originatorKey'];
-        // we do this because https://datatracker.ietf.org/doc/html/rfc5753?utm_source=chatgpt.com#section-3.1.1 says this:
+        // we do this because https://datatracker.ietf.org/doc/html/rfc5753#section-3.1.1 says this:
         /*
           The parameters associated with id-ecPublicKey MUST be absent, ECParameters, or NULL.  The
           parameters associated with id-ecPublicKey SHOULD be absent or ECParameters, and NULL is
@@ -131,7 +121,7 @@ class EncryptedKey implements DerivableKey, SearchableKey, \ArrayAccess, \Counta
             throw new UnsupportedAlgorithmException($this->recipient['keyEncryptionAlgorithm']['algorithm'] . ' is not a supported algorithm');
         }
         $hash = new \phpseclib4\Crypt\Hash($matches[1]);
-        $kek = EnvelopedData::ANSIX963KDF($secret, $length, $sharedInfo, $hash);
+        $kek = EncryptedData::ANSIX963KDF($secret, $length, $sharedInfo, $hash);
 
         $encryptedKey = (string) $this->encryptedKey['encryptedKey'];
         if ($cekAlgo == 'id-alg-CMS3DESwrap') {
@@ -141,7 +131,11 @@ class EncryptedKey implements DerivableKey, SearchableKey, \ArrayAccess, \Counta
             $cek = self::unwrapAES($kek, $iv, $encryptedKey);
         }
 
-        return $this->decryptHelper($cek);
+        //if (!$this->cms instanceof Constructed) {
+        $this->cms->cek = $cek;
+        //}
+
+        return $this;
     }
 
     public function matchesX509(X509 $x509): bool

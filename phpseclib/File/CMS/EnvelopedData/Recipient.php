@@ -18,14 +18,14 @@ namespace phpseclib4\File\CMS\EnvelopedData;
 
 use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\ASN1\Types\Choice;
-use phpseclib4\File\CMS\EnvelopedData;
+use phpseclib4\File\CMS\EncryptedData;
 
 class Recipient implements \ArrayAccess, \Countable, \Iterator
 {
     use \phpseclib4\File\Common\Traits\KeyDerivation;
 
     public Constructed|array|null $recipient;
-    public ?EnvelopedData $cms = null;
+    public ?EncryptedData $cms = null;
     public ?Choice $parent;
     public int $depth = 0;
     public int|string $key;

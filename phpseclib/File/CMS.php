@@ -68,7 +68,6 @@ abstract class CMS
             case 'id-ct-compressedData':
                 return CMS\CompressedData::load($cms);
             case 'id-envelopedData':
-                return CMS\EnvelopedData::load($cms);
             case 'id-encryptedData':
                 return CMS\EncryptedData::load($cms);
             case 'id-digestedData':

@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\CMS\EnvelopedData;
 
-use phpseclib4\Exception\InsufficientSetupException;
 use phpseclib4\Exception\UnexpectedValueException;
 use phpseclib4\Exception\UnsupportedAlgorithmException;
 use phpseclib4\File\ASN1;
@@ -57,16 +56,6 @@ class PasswordRecipient extends Recipient implements DerivableKey, SearchableKey
 
     public function withPassword(#[\SensitiveParameter] string $password): self
     {
-        $this->password = $password;
-        return $this;
-    }
-
-    public function decrypt(): string
-    {
-        if (!isset($this->password)) {
-            throw new InsufficientSetupException('Password not set');
-        }
-
         if ($this->recipient['keyEncryptionAlgorithm']['algorithm'] != 'id-alg-PWRI-KEK') {
             throw new UnsupportedAlgorithmException(
                 'id-alg-PWRI-KEK is the only supported keyEncryptionAlgorithm (' .
@@ -77,7 +66,7 @@ class PasswordRecipient extends Recipient implements DerivableKey, SearchableKey
         // see https://datatracker.ietf.org/doc/html/rfc3211
         $keyCipher = self::getPBES2EncryptionObject((string) $this->recipient['keyEncryptionAlgorithm']['parameters']['algorithm']);
         $keyCipher->disablePadding();
-        self::setupPBKDF2($this->recipient['keyDerivationAlgorithm'], $this->password, $keyCipher);
+        self::setupPBKDF2($this->recipient['keyDerivationAlgorithm'], $password, $keyCipher);
 
         $blockSize = $keyCipher->getBlockLengthInBytes();
 
@@ -96,7 +85,11 @@ class PasswordRecipient extends Recipient implements DerivableKey, SearchableKey
             throw new UnexpectedValueException('keyCheck failed');
         }
 
-        return $this->decryptHelper($cek);
+        //if (!$this->cms instanceof Constructed) {
+        $this->cms->cek = $cek;
+        //}
+
+        return $this;
     }
 
     public function toString(): string

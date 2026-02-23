@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\CMS\EnvelopedData;
 
-use phpseclib4\Exception\InsufficientSetupException;
 use phpseclib4\Exception\UnsupportedAlgorithmException;
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Constructed;
@@ -37,16 +36,7 @@ class KEKRecipient extends Recipient implements DerivableKey
 
     public function withKey(#[\SensitiveParameter] string $key): self
     {
-        $this->kek = $key;
-        return $this;
-    }
-
-    public function decrypt(): string
-    {
-        if (!isset($this->kek)) {
-            throw new InsufficientSetupException('Key not set');
-        }
-
+        $kek = $key;
         $encryptedKey = (string) $this->recipient['encryptedKey'];
         switch ($this->recipient['keyEncryptionAlgorithm']['algorithm']) {
             case 'id-aes128-wrap':
@@ -54,16 +44,20 @@ class KEKRecipient extends Recipient implements DerivableKey
             case 'id-aes256-wrap':
                 // from https://datatracker.ietf.org/doc/html/rfc3394.html#section-2.2.3.1
                 $iv = "\xa6\xa6\xa6\xa6\xa6\xa6\xa6\xa6";
-                $cek = self::unwrapAES($this->kek, $iv, $encryptedKey);
+                $cek = self::unwrapAES($kek, $iv, $encryptedKey);
                 break;
             case 'id-alg-CMS3DESwrap':
-                $cek = self::unwrap3DES($this->kek, $encryptedKey);
+                $cek = self::unwrap3DES($kek, $encryptedKey);
                 break;
             default:
                 throw new UnsupportedAlgorithmException($this->recipient['keyEncryptionAlgorithm']['algorithm'] . ' is not a supported algorithm');
         }
 
-        return $this->decryptHelper($cek);
+        //if (!$this->cms instanceof Constructed) {
+        $this->cms->cek = $cek;
+        //}
+
+        return $this;
     }
 
     public function toString(): string

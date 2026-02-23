@@ -31,7 +31,7 @@ lHt+YbD7A18NJVeJgx0R9IAQKnjC5UnRa0hP1rdkZs+Y5Q==
     {
         $plaintext = 'asdfasdfsadf';
         $key = str_repeat('x', 16);
-        $cms = new CMS\EncryptedData($plaintext, $key);
+        $cms = new CMS\EncryptedData($plaintext, key: $key);
         $decrypted = CMS::load("$cms")->withKey($key)->decrypt();
         $this->assertEquals($plaintext, $decrypted);
     }
