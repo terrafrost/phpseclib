@@ -101,6 +101,10 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
         $cms = $r->newInstanceWithoutConstructor();
         $cms->cms = is_string($encoded) ? self::loadString($encoded) : $encoded;
 
+        if (!isset($cms->cms['content']['recipientInfos'])) {
+            return $cms;
+        }
+
         ASN1::disableCacheInvalidation();
         foreach ($cms->cms['content']['recipientInfos'] as $i => $recipient) {
             $recipient = &$cms->cms['content']['recipientInfos'][$i];

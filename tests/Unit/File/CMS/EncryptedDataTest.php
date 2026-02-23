@@ -23,6 +23,8 @@ class EncryptedDataTest extends PhpseclibTestCase
 MFAGCSqGSIb3DQEHBqBDMEECAQAwPAYJKoZIhvcNAQcBMB0GCWCGSAFlAwQBKgQQ
 lHt+YbD7A18NJVeJgx0R9IAQKnjC5UnRa0hP1rdkZs+Y5Q==
 -----END CMS-----');
+        $this->assertInstanceOf(OID::class, $cms['contentType']);
+        $this->assertNotContains('recipientInfos', $cms['content']);
         $decrypted = $cms->withKey(hex2bin('00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF'))->decrypt();
         $this->assertEquals("hello, world!\n", $decrypted);
     }
