@@ -18,7 +18,6 @@ namespace phpseclib4\File\CMS\EnvelopedData;
 
 use phpseclib4\Common\Functions\Arrays;
 use phpseclib4\Crypt\RSA;
-use phpseclib4\Exception\InsufficientSetupException;
 use phpseclib4\Exception\UnsupportedAlgorithmException;
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Constructed;
@@ -62,37 +61,32 @@ class KeyTransRecipient extends Recipient implements DerivableKey, SearchableKey
 
     public function withKey(#[\SensitiveParameter] RSA\PrivateKey $key): self
     {
-        $this->kek = $key;
-        return $this;
-    }
-
-    public function decrypt(): string
-    {
-        if (!isset($this->kek)) {
-            throw new InsufficientSetupException('Key not set');
-        }
+        $kek = &$key;
 
         $encryptedKey = (string) $this->recipient['encryptedKey'];
         if ($this->recipient['keyEncryptionAlgorithm']['algorithm'] == 'id-RSAES-OAEP') {
-            $this->kek = $this->kek->withPadding(RSA::ENCRYPTION_OAEP);
+            $kek = $kek->withPadding(RSA::ENCRYPTION_OAEP);
             $algorithm = Arrays::subArray($this->recipient, 'keyEncryptionAlgorithm/parameters/hashAlgorithm')['algorithm'] ?? 'sha1';
-            $this->kek = $this->kek->withHash(preg_replace('#^id-#', '', "$algorithm"));
+            $kek = $kek->withHash(preg_replace('#^id-#', '', "$algorithm"));
             $algorithm = Arrays::subArray($this->recipient, 'keyEncryptionAlgorithm/parameters/maskGenAlgorithm')['algorithm'] ?? 'id-mgf1';
             if ($algorithm != 'id-mgf1') {
                 throw new UnsupportedAlgorithmException("Unsupported maskGenAlgorithm ($algorithm) found - only id-mgf1 is supported");
             }
             $algorithm = Arrays::subArray($this->recipient, 'keyEncryptionAlgorithm/parameters/maskGenAlgorithm/parameters')['algorithm'] ?? 'sha1';
-            $this->kek = $this->kek->withMGFHash(preg_replace('#^id-#', '', "$algorithm"));
+            $kek = $kek->withMGFHash(preg_replace('#^id-#', '', "$algorithm"));
             $algorithm = Arrays::subArray($this->recipient, 'keyEncryptionAlgorithm/parameters/pSourceAlgorithm')['algorithm'] ?? 'id-pSpecified';
             if ($algorithm != 'id-pSpecified') {
                 throw new UnsupportedAlgorithmException("Unsupported maskGenAlgorithm ($algorithm) found - only id-mgf1 is supported");
             }
             $label = Arrays::subArray($this->recipient, 'keyEncryptionAlgorithm/parameters/pSourceAlgorithm')['parameters'] ?? '';
-            $this->kek = $this->kek->withLabel("$label");
+            $kek = $kek->withLabel("$label");
         }
-        $cek = $this->kek->decrypt($encryptedKey);
 
-        return $this->decryptHelper($cek);
+        //if (!$this->cms instanceof Constructed) {
+        $this->cms->cek = $kek->decrypt($encryptedKey);
+        //}
+
+        return $this;
     }
 
     public function matchesX509(X509 $x509): bool

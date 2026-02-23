@@ -16,10 +16,12 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\Common\Traits;
 
+use phpseclib4\Exception\InsufficientSetupException;
 use phpseclib4\Exception\LengthException;
 use phpseclib4\Exception\RuntimeException;
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Constructed;
+use phpseclib4\File\CMS\EncryptedData;
 use phpseclib4\Crypt\AES;
 use phpseclib4\Crypt\TripleDES;
 
@@ -83,18 +85,25 @@ trait KeyDerivation
         return $cek;
     }
 
-    protected function decryptHelper(#[\SensitiveParameter] string $cek): string
+    public function decrypt(): string
     {
-        if (!$this->cms instanceof Constructed && !isset($this->cms->cek)) {
-            $this->cms->cek = $cek;
+        if ($this instanceof EncryptedData) {
+            $cek = &$this->cek;
+            $cms = &$this;
+        } else {
+            $cek = &$this->cms->cek;
+            $cms = &$this->cms;
+        }
+        if (!isset($cek)) {
+            throw new InsufficientSetupException('Content encryption key not set');
         }
 
-        $cea = ASN1::decodeBER((string) $this->cms['content']['encryptedContentInfo']['contentEncryptionAlgorithm']);
+        $cea = ASN1::decodeBER((string) $cms['content']['encryptedContentInfo']['contentEncryptionAlgorithm']);
         $cea = ASN1::map($cea, ASN1\Maps\AlgorithmIdentifier::MAP);
         $contentCipher = self::getPBES2EncryptionObject((string) $cea['algorithm']);
         $contentCipher->setKey($cek);
         $contentCipher->setIV((string) $cea['parameters']);
 
-        return $contentCipher->decrypt((string) $this->cms['content']['encryptedContentInfo']['encryptedContent']);
+        return $contentCipher->decrypt((string) $cms['content']['encryptedContentInfo']['encryptedContent']);
     }
 }
