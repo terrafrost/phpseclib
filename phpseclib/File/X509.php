@@ -366,7 +366,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         return $this->cert instanceof Constructed ? $this->cert->toArray($convertPrimitives) : $this->cert;
     }
 
-    public function withPadding(int $padding): X509
+    public function setPadding(int $padding): void
     {
         $publicKey = &$this->cert['tbsCertificate']['subjectPublicKeyInfo'];
         if (!$publicKey instanceof RSA) {
@@ -374,10 +374,9 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         }
 
         $publicKey = $publicKey->withPadding($padding);
-        return $this;
     }
 
-    public function withHash(string $hash): X509
+    public function setHash(string $hash): void
     {
         $publicKey = &$this->cert['tbsCertificate']['subjectPublicKeyInfo'];
         if (!$publicKey instanceof RSA && !$publicKey instanceof EC) {
@@ -385,10 +384,9 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         }
 
         $publicKey = $publicKey->withHash($hash);
-        return $this;
     }
 
-    public function withMFGHash(string $hash): X509
+    public function setMFGHash(string $hash): void
     {
         $publicKey = &$this->cert['tbsCertificate']['subjectPublicKeyInfo'];
         if (!$publicKey instanceof RSA) {
@@ -396,7 +394,16 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         }
 
         $publicKey = $publicKey->withMFGHash($hash);
-        return $this;
+    }
+
+    public function setLabel(string $label): void
+    {
+        $publicKey = &$this->cert['tbsCertificate']['subjectPublicKeyInfo'];
+        if (!$publicKey instanceof RSA) {
+            throw new BadMethodCallException('MGF Hash can only be set for RSA X509 certificates');
+        }
+
+        $publicKey = $publicKey->withLabel($label);
     }
 
     public function getPublicKey(): PublicKey
