@@ -34,6 +34,7 @@ use phpseclib4\File\ASN1\Maps;
 use phpseclib4\File\ASN1\Maps\RSAPublicKey;
 use phpseclib4\File\ASN1\Types\Choice;
 use phpseclib4\File\ASN1\Types\OctetString;
+use phpseclib4\File\ASN1\Types\OID;
 use phpseclib4\File\CMS;
 use phpseclib4\File\CMS\EnvelopedData\DerivableKey;
 use phpseclib4\File\CMS\EnvelopedData\KeyTransRecipient;
@@ -257,10 +258,10 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
     {
         if (isset($this->cms['content']['recipientInfos']) && count($this->cms['content']['recipientInfos'])) {
             $map = Maps\EnvelopedData::MAP;
-            $this->cms['contentType'] = 'id-envelopedData';
+            $this->cms['contentType'] = new OID('id-envelopedData');
         } else {
             $map = Maps\EncryptedDataCMS::MAP;
-            $this->cms['contentType'] = 'id-encryptedData';
+            $this->cms['contentType'] = new OID('id-encryptedData');
         }
         if ($this->cms instanceof Constructed) {
             ASN1::encodeDER($this->cms['content'], $map);
