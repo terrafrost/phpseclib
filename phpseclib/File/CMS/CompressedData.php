@@ -25,6 +25,7 @@ use phpseclib4\File\ASN1\Element;
 use phpseclib4\File\ASN1\Maps;
 use phpseclib4\File\ASN1\Types\OctetString;
 use phpseclib4\File\ASN1\Types\OID;
+use phpseclib4\File\CMS;
 
 /**
  * Pure-PHP CMS / CompressedData Parser

@@ -426,8 +426,12 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
 
     public function addSignature(Signer $signer)
     {
+        $this->compile();
         $this->addCertificate(($signer->getCertificate()));
         $this->cms['content']['signerInfos'][] = $signer;
+        $signer->parent = $this->cms['content']['signerInfos'];
+        $signer->key = count($this->cms['content']['signerInfos']) - 1;
+        $signer->depth = $this->cms['content']['signerInfos']->depth + 1;
     }
 
     public function __toString(): string

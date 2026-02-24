@@ -713,7 +713,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
 
     public function addCertificate(X509 $cert): void
     {
-        if (!isset($cms->cms['content']['recipientInfos'])) {
+        if (!isset($this->cms['content']['recipientInfos'])) {
             throw new BadMethodCallException('Certificates can only be added if recipients exist');
         }
         $this->cms['content']['originatorInfo']['certs'][] = ['certificate' => $cert];
@@ -721,7 +721,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
 
     public function addCRL(CRL $crl): void
     {
-        if (!isset($cms->cms['content']['recipientInfos'])) {
+        if (!isset($this->cms['content']['recipientInfos'])) {
             throw new BadMethodCallException('CRLs can only be added if recipients exist');
         }
         $this->cms['content']['originatorInfo']['crls'][] = $crl;
@@ -730,7 +730,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
     public function getCertificates(): array
     {
         // EncryptedData does not have anywhere to add certs - just EnvelopedData
-        if (!isset($cms->cms['content']['recipientInfos'])) {
+        if (!isset($this->cms['content']['recipientInfos'])) {
             return [];
         }
         $certs = [];

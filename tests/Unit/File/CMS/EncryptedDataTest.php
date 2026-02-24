@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace phpseclib4\Tests\Unit\File\CMS;
 
 use phpseclib4\File\CMS;
+use phpseclib4\File\ASN1\Types\OID;
 use phpseclib4\Tests\PhpseclibTestCase;
 
 class EncryptedDataTest extends PhpseclibTestCase
@@ -26,7 +27,7 @@ lHt+YbD7A18NJVeJgx0R9IAQKnjC5UnRa0hP1rdkZs+Y5Q==
         $this->assertInstanceOf(OID::class, $cms['contentType']);
         $this->assertNotContains('recipientInfos', $cms['content']);
         $decrypted = $cms->withKey(hex2bin('00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF'))->decrypt();
-        $this->assertEquals("hello, world!\n", $decrypted);
+        $this->assertEquals("hello, world!\r\n", $decrypted);
     }
 
     public function testEncrypt(): void
