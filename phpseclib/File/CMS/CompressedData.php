@@ -35,7 +35,6 @@ class CompressedData implements \ArrayAccess, \Countable, \Iterator
 {
     private Constructed|array $cms;
     private ?string $decompressed;
-    private static bool $binary = false;
 
     /**
      * @param string $data
@@ -151,7 +150,7 @@ class CompressedData implements \ArrayAccess, \Countable, \Iterator
             $this->cms = self::load($cms)->cms;
         }
 
-        if ($options['binary'] ?? self::$binary) {
+        if ($options['binary'] ?? CMS::$binary) {
             return $cms;
         }
 

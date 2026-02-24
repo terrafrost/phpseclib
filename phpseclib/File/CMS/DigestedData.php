@@ -32,7 +32,6 @@ use phpseclib4\File\ASN1\Types\OctetString;
 class DigestedData implements \ArrayAccess, \Countable, \Iterator
 {
     private Constructed|array $cms;
-    private static bool $binary = false;
 
     /**
      * @param string $data
@@ -152,7 +151,7 @@ class DigestedData implements \ArrayAccess, \Countable, \Iterator
             $this->cms = self::load($cms)->cms;
         }
 
-        if ($options['binary'] ?? self::$binary) {
+        if ($options['binary'] ?? CMS::$binary) {
             return $cms;
         }
 

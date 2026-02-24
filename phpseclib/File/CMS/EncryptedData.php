@@ -59,7 +59,6 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
 
     private Constructed|array $cms;
     public string $cek; // content encryption key
-    private static bool $binary = false;
 
     /**
      * @param string $data
@@ -279,7 +278,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
             $this->cms = self::load($cms)->cms;
         }
 
-        if ($options['binary'] ?? self::$binary) {
+        if ($options['binary'] ?? CMS::$binary) {
             return $cms;
         }
 

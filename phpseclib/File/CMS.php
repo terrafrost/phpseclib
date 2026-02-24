@@ -30,8 +30,9 @@ abstract class CMS
 {
     public const ISSUER_AND_DN = 1;
     public const KEY_ID = 2;
+    public static bool $binary = false;
 
-    public static function load(string $cms, int $mode = ASN1::FORMAT_AUTO_DETECT): CMS\SignedData|CMS\CompressedData|CMS\EnvelopedData|CMS\EncryptedData|CMS\DigestedData
+    public static function load(string $cms, int $mode = ASN1::FORMAT_AUTO_DETECT): CMS\SignedData|CMS\CompressedData|CMS\EncryptedData|CMS\DigestedData
     {
         ASN1::loadOIDs('CMS');
 
@@ -121,5 +122,21 @@ abstract class CMS
             $crls[$i] = CRL::load((string) $crls[$i]->getEncoded());
         }
         ASN1::enableCacheInvalidation();
+    }
+
+    /**
+     * Enable binary output (DER)
+     */
+    public static function enableBinaryOutput(): void
+    {
+        self::$binary = true;
+    }
+
+    /**
+     * Disable binary output (ie. enable PEM)
+     */
+    public static function disableBinaryOutput(): void
+    {
+        self::$binary = false;
     }
 }

@@ -48,7 +48,6 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
     use \phpseclib4\File\Common\Traits\Extension; // pretty much just for extensionMatch()
 
     public Constructed|array $cms;
-    private static bool $binary = false;
     private ?Signer $tempSigner = null;
     /*
      * @var resource
@@ -210,7 +209,7 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
             $this->cms = self::load($cms)->cms;
         }
 
-        if ($options['binary'] ?? self::$binary) {
+        if ($options['binary'] ?? CMS::$binary) {
             return $cms;
         }
 
@@ -444,22 +443,6 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
         }
 
         self::mapOutDNsInner($dns);
-    }
-
-    /**
-     * Enable binary output (DER)
-     */
-    public static function enableBinaryOutput(): void
-    {
-        self::$binary = true;
-    }
-
-    /**
-     * Disable binary output (ie. enable PEM)
-     */
-    public static function disableBinaryOutput(): void
-    {
-        self::$binary = false;
     }
 
     public function &offsetGet(mixed $offset): mixed
