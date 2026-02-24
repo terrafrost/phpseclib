@@ -23,6 +23,7 @@ use phpseclib4\Crypt\AES;
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\TripleDES;
 use phpseclib4\Exception\BadDecryptionException;
+use phpseclib4\Exception\BadMethodCallException;
 use phpseclib4\Exception\InsufficientSetupException;
 use phpseclib4\Exception\LengthException;
 use phpseclib4\Exception\RuntimeException;
@@ -712,16 +713,26 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
 
     public function addCertificate(X509 $cert): void
     {
+        if (!isset($cms->cms['content']['recipientInfos'])) {
+            throw new BadMethodCallException('Certificates can only be added if recipients exist');
+        }
         $this->cms['content']['originatorInfo']['certs'][] = ['certificate' => $cert];
     }
 
     public function addCRL(CRL $crl): void
     {
+        if (!isset($cms->cms['content']['recipientInfos'])) {
+            throw new BadMethodCallException('CRLs can only be added if recipients exist');
+        }
         $this->cms['content']['originatorInfo']['crls'][] = $crl;
     }
 
     public function getCertificates(): array
     {
+        // EncryptedData does not have anywhere to add certs - just EnvelopedData
+        if (!isset($cms->cms['content']['recipientInfos'])) {
+            return [];
+        }
         $certs = [];
         foreach ($this->cms['content']['originatorInfo']['certs'] as $cert) {
             switch (true) {
