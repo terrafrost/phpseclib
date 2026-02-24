@@ -13,7 +13,7 @@ namespace phpseclib4\Tests\Unit\File\CMS;
 use phpseclib4\File\CMS;
 use phpseclib4\Tests\PhpseclibTestCase;
 
-class DigestDataTest extends PhpseclibTestCase
+class DigestedDataTest extends PhpseclibTestCase
 {
     public function testCreate(): void
     {
