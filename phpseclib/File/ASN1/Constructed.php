@@ -793,6 +793,11 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
 
         self::decodeCurrent();
 
+        $key = key($this->decoded);
+        if (!isset($key)) {
+            return false;
+        }
+
         return isset($this->decoded[key($this->decoded)]);
     }
 
