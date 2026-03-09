@@ -57,6 +57,7 @@ use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\RSA\Formats\Keys\PSS;
 use phpseclib3\Crypt\RSA\PrivateKey;
 use phpseclib3\Crypt\RSA\PublicKey;
+use phpseclib3\Exception\BadConfigurationException;
 use phpseclib3\Exception\InconsistentSetupException;
 use phpseclib3\Exception\UnsupportedAlgorithmException;
 use phpseclib3\Math\BigInteger;
@@ -228,14 +229,6 @@ abstract class RSA extends AsymmetricKey
     protected static $enableBlinding = true;
 
     /**
-     * OpenSSL configuration file name.
-     *
-     * @see self::createKey()
-     * @var ?string
-     */
-    protected static $configFile;
-
-    /**
      * Smallest Prime
      *
      * Per <http://cseweb.ucsd.edu/~hovav/dist/survey.pdf#page=5>, this number ought not result in primes smaller
@@ -281,18 +274,6 @@ abstract class RSA extends AsymmetricKey
     }
 
     /**
-     * Sets the OpenSSL config file path
-     *
-     * Set to the empty string to use the default config file
-     *
-     * @param string $val
-     */
-    public static function setOpenSSLConfigPath($val)
-    {
-        self::$configFile = $val;
-    }
-
-    /**
      * Create a private key
      *
      * The public key can be extracted from the private key
@@ -309,6 +290,10 @@ abstract class RSA extends AsymmetricKey
             throw new \RuntimeException('createKey() should not be called from final classes (' . static::class . ')');
         }
 
+        if (self::$forcedEngine == 'libsodium' || (self::$forcedEngine == 'OpenSSL' && !function_exists('openssl_pkey_new'))) {
+            throw new BadConfigurationException('Engine ' . self::$forcedEngine . ' is forced but unsupported for RSA');
+        }
+
         $regSize = $bits >> 1; // divide by two to see how many bits P and Q would be
         if ($regSize > self::$smallestPrime) {
             $num_primes = floor($bits / self::$smallestPrime);
@@ -318,17 +303,20 @@ abstract class RSA extends AsymmetricKey
         }
 
         if ($num_primes == 2 && $bits >= 384 && self::$defaultExponent == 65537) {
-            if (!isset(self::$engines['PHP'])) {
-                self::useBestEngine();
-            }
-
-            // OpenSSL uses 65537 as the exponent and requires RSA keys be 384 bits minimum
-            if (self::$engines['OpenSSL']) {
+            // at this point the only two supported values for self::$forcedEngine are OpenSSL, PHP and null
+            // if it's either OpenSSL or null we'll use OpenSSL (if it's available)
+            if (self::$forcedEngine !== 'PHP' && function_exists('openssl_pkey_new')) {
                 $config = [];
                 if (self::$configFile) {
                     $config['config'] = self::$configFile;
                 }
+                // OpenSSL uses 65537 as the exponent and requires RSA keys be 384 bits minimum
                 $rsa = openssl_pkey_new(['private_key_bits' => $bits] + $config);
+                if (!$rsa) {
+                    if (isset(self::$forcedEngine)) {
+                        throw new BadConfigurationException('Engine OpenSSL is forced but unsupported for RSA');
+                    }
+                }
                 openssl_pkey_export($rsa, $privatekeystr, null, $config);
 
                 // clear the buffer of error strings stemming from a minimalistic openssl.cnf
@@ -476,18 +464,6 @@ abstract class RSA extends AsymmetricKey
         }
 
         return $key;
-    }
-
-    /**
-     * Initialize static variables
-     */
-    protected static function initialize_static_variables()
-    {
-        if (!isset(self::$configFile)) {
-            self::$configFile = dirname(__FILE__) . '/../openssl.cnf';
-        }
-
-        parent::initialize_static_variables();
     }
 
     /**
@@ -889,28 +865,6 @@ abstract class RSA extends AsymmetricKey
     public function getPadding()
     {
         return $this->signaturePadding | $this->encryptionPadding;
-    }
-
-    /**
-     * Returns the current engine being used
-     *
-     * OpenSSL is only used in this class (and it's subclasses) for key generation
-     * Even then it depends on the parameters you're using. It's not used for
-     * multi-prime RSA nor is it used if the key length is outside of the range
-     * supported by OpenSSL
-     *
-     * @see self::useInternalEngine()
-     * @see self::useBestEngine()
-     * @return string
-     */
-    public function getEngine()
-    {
-        if (!isset(self::$engines['PHP'])) {
-            self::useBestEngine();
-        }
-        return self::$engines['OpenSSL'] && self::$defaultExponent == 65537 ?
-            'OpenSSL' :
-            'PHP';
     }
 
     /**
