@@ -15,6 +15,7 @@ use phpseclib3\Crypt\Common;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\Formats\Keys\PSS;
+use phpseclib3\Exception\BadConfigurationException;
 use phpseclib3\Exception\UnsupportedFormatException;
 use phpseclib3\Math\BigInteger;
 
@@ -288,6 +289,50 @@ final class PrivateKey extends RSA implements Common\PrivateKey
      */
     public function sign($message)
     {
+        if (self::$forcedEngine === 'libsodium') {
+            throw new BadConfigurationException('Engine libsodium is not supported for RSA');
+        }
+
+        if (self::$forcedEngine !== 'PHP') {
+            if (self::$forcedEngine === 'OpenSSL' && !function_exists('openssl_sign')) {
+                throw new BadConfigurationException('Engine OpenSSL is forced but unavailable for RSA');
+            }
+            if ($this->signaturePadding === self::SIGNATURE_PSS) {
+                switch (true) {
+                    case !defined('OPENSSL_PKCS1_PSS_PADDING'):
+                        $error = 'Engine OpenSSL is forced but PSS encryption requires PHP >= 8.5.0';
+                        break;
+                    case $this->hash->getHash() !== $this->mgfHash->getHash():
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the Hash and MGF Hash do not match';
+                        break;
+                    case $this->getSaltLength() !== $this->hLen:
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the salt length doesn\'t match the hash length';
+                }
+            }
+            if (isset($error)) {
+                if (self::$forcedEngine === 'OpenSSL') {
+                    throw new BadConfigurationException($error);
+                }
+            } else {
+                switch (true) {
+                    case $this->signaturePadding === self::SIGNATURE_PSS && defined('OPENSSL_PKCS1_PSS_PADDING'):
+                    case $this->signaturePadding !== self::SIGNATURE_PSS && function_exists('openssl_sign'):
+                        $signature = '';
+                        $key = $this->withPassword()->toString('PKCS8');
+                        $hash = $this->hash->getHash();
+                        $result = $this->signaturePadding === self::SIGNATURE_PSS ?
+                            openssl_sign($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
+                            openssl_sign($message, $signature, $key, $hash);
+                        if ($result) {
+                            return $signature;
+                        }
+                        if (self::$forcedEngine === 'OpenSSL') {
+                            throw new BadConfigurationException('Engine OpenSSL is forced but was unable to create signature because of ' . openssl_error_string());
+                        }
+                }
+            }
+        }
+
         switch ($this->signaturePadding) {
             case self::SIGNATURE_PKCS1:
             case self::SIGNATURE_RELAXED_PKCS1:

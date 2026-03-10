@@ -307,6 +307,9 @@ abstract class DH extends AsymmetricKey
                     // fall-through
                 case is_string($public):
                     $forcedEngine = EC::getForcedEngine();
+                    if ($forcedEngine === 'libsodium' && $privateCurve !== 'Curve25519') {
+                        throw new BadConfigurationException('Engine libsodium is forced but can only used with Curve25519 for ECDH');
+                    }
                     if ($privateCurve === 'Curve25519' || $privateCurve == 'Curve448') {
                         if ($forcedEngine === 'OpenSSL') {
                             throw new BadConfigurationException('Engine OpenSSL is forced but because phpseclib is unable to save Curve25519 / Curve448 to PKCS8 strings currently OpenSSL cannot be used');

@@ -129,7 +129,7 @@ abstract class AsymmetricKey
         }
 
         if (!isset(self::$configFile)) {
-            self::$configFile = dirname(__FILE__) . '/../openssl.cnf';
+            self::$configFile = dirname(__FILE__) . '/../../openssl.cnf';
         }
 
         self::loadPlugins('Keys');
@@ -448,7 +448,7 @@ abstract class AsymmetricKey
     /**
      * Force engine (useful for unit testing)
      */
-    public static function forceEngine($engine)
+    public static function forceEngine($engine = null)
     {
         if (!isset($engine)) {
             self::$forcedEngine = null;

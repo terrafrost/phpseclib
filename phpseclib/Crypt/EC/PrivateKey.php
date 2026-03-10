@@ -147,8 +147,9 @@ final class PrivateKey extends EC implements Common\PrivateKey
                 if (self::$forcedEngine === 'OpenSSL') {
                     if (!defined($keyTypeConstant)) {
                         throw new BadConfigurationException('Engine OpenSSL is forced but unsupported for Ed25519 / Ed448');
+                    }
                     // OpenSSL supports Ed25519/Ed448 but not Ed25519ctx (context), so skip if context is set
-                    } elseif (isset($this->context)) {
+                    if (isset($this->context)) {
                         throw new BadConfigurationException('Engine OpenSSL is forced but unsupported for Ed25519 / Ed448 curves with context\'s');
                     }
                 }
