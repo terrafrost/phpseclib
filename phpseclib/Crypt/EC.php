@@ -205,6 +205,8 @@ abstract class EC extends AsymmetricKey
         } else {
             $privatekey->dA = $dA = $curve->createRandomMultiplier();
         }
+        $privatekey->curve = $curve;
+        $privatekey->curveName = $curveName;
 
         // phpseclib doesn't support saving Curve25519 keys so we can't employ the same tricks that we do above
         if ($curve instanceof Curve25519) {
@@ -228,13 +230,11 @@ abstract class EC extends AsymmetricKey
         if (!isset($privatekey->QA)) {
             $privatekey->QA = $curve->multiplyPoint($curve->getBasePoint(), $dA);
         }
-        $privatekey->curve = $curve;
 
         //$publickey = clone $privatekey;
         //unset($publickey->dA);
         //unset($publickey->x);
 
-        $privatekey->curveName = $curveName;
         //$publickey->curveName = $curveName;
 
         if ($privatekey->curve instanceof TwistedEdwardsCurve) {
@@ -268,8 +268,8 @@ abstract class EC extends AsymmetricKey
                 // OpenSSL's PHP bindings don't support the extraction of a public key from a private key - all it can do is
                 // generate a new public / private key pair so we'll just reassign the private key
                 $details = openssl_pkey_get_details($temp);
-                $privatekey->QA = $details["x$type"]['pub_key'];
-                $privatekey->dA = $dA = $details["x$type"]['priv_key'];
+                $privatekey->dA = new BigInteger($details["x$type"]['priv_key'], 256);
+                $privatekey->QA = [$privatekey->curve->convertInteger(new BigInteger(strrev($details["x$type"]['pub_key']), 256))];
             } elseif (self::$forcedEngine == 'OpenSSL') {
                 throw new BadConfigurationException("Engine OpenSSL is forced but unsupported for curve$type");
             }
@@ -358,7 +358,9 @@ abstract class EC extends AsymmetricKey
         if (!$key) {
             return null;
         }
-        openssl_pkey_export($key, $privateKeyStr);
+        if (!openssl_pkey_export($key, $privateKeyStr, null, $config)) {
+            return null;
+        }
         // clear the buffer of error strings
         while (openssl_error_string() !== false) {
         }

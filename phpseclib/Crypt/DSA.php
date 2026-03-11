@@ -226,12 +226,10 @@ abstract class DSA extends AsymmetricKey
                 'q' => $params->q,
                 'g' => $params->g,
             ]);
-            if ($dsa) {
-                openssl_pkey_export($dsa, $privatekeystr, null, $config);
-
+            if ($dsa && openssl_pkey_export($dsa, $privatekeystr, null, $config)) {
                 // clear the buffer of error strings stemming from a minimalistic openssl.cnf
                 // https://github.com/php/php-src/issues/11054 talks about other errors this'll pick up
-               while (openssl_error_string() !== false) {
+                while (openssl_error_string() !== false) {
                 }
 
                 return DSA::load($privatekeystr)

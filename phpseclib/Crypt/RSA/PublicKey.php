@@ -301,6 +301,49 @@ final class PublicKey extends RSA implements Common\PublicKey
      */
     public function verify($message, $signature)
     {
+        if (self::$forcedEngine === 'libsodium') {
+            throw new BadConfigurationException('Engine libsodium is not supported for RSA');
+        }
+
+        if (self::$forcedEngine !== 'PHP') {
+            if (self::$forcedEngine === 'OpenSSL' && !function_exists('openssl_verify')) {
+                throw new BadConfigurationException('Engine OpenSSL is forced but unavailable for RSA');
+            }
+            if ($this->signaturePadding === self::SIGNATURE_PSS) {
+                switch (true) {
+                    case !defined('OPENSSL_PKCS1_PSS_PADDING'):
+                        $error = 'Engine OpenSSL is forced but PSS encryption requires PHP >= 8.5.0';
+                        break;
+                    case $this->hash->getHash() !== $this->mgfHash->getHash():
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the Hash and MGF Hash do not match';
+                        break;
+                    case $this->getSaltLength() !== $this->hLen:
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the salt length doesn\'t match the hash length';
+                }
+            }
+            if (isset($error)) {
+                if (self::$forcedEngine === 'OpenSSL') {
+                    throw new BadConfigurationException($error);
+                }
+            } else {
+                switch (true) {
+                    case $this->signaturePadding === self::SIGNATURE_PSS && defined('OPENSSL_PKCS1_PSS_PADDING'):
+                    case $this->signaturePadding !== self::SIGNATURE_PSS && function_exists('openssl_sign'):
+                        $key = $this->toString('PKCS8');
+                        $hash = $this->hash->getHash();
+                        $result = $this->signaturePadding === self::SIGNATURE_PSS ?
+                            openssl_verify($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
+                            openssl_verify($message, $signature, $key, $hash);
+                        if ($result !== -1 && $result !== false) {
+                            return (bool) $signature;
+                        }
+                        if (self::$forcedEngine === 'OpenSSL') {
+                            throw new BadConfigurationException('Engine OpenSSL is forced but was unable to create signature because of ' . openssl_error_string());
+                        }
+                }
+            }
+        }
+
         switch ($this->signaturePadding) {
             case self::SIGNATURE_RELAXED_PKCS1:
                 return $this->rsassa_pkcs1_v1_5_relaxed_verify($message, $signature);

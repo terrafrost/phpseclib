@@ -312,13 +312,11 @@ abstract class RSA extends AsymmetricKey
                 }
                 // OpenSSL uses 65537 as the exponent and requires RSA keys be 384 bits minimum
                 $rsa = openssl_pkey_new(['private_key_bits' => $bits] + $config);
-                if (!$rsa) {
+                if (!$rsa || !openssl_pkey_export($rsa, $privatekeystr, null, $config)) {
                     if (isset(self::$forcedEngine)) {
                         throw new BadConfigurationException('Engine OpenSSL is forced but produced an error - ' . openssl_error_string());
                     }
                 } else {
-                    openssl_pkey_export($rsa, $privatekeystr, null, $config);
-
                     // clear the buffer of error strings stemming from a minimalistic openssl.cnf
                     // https://github.com/php/php-src/issues/11054 talks about other errors this'll pick up
                     while (openssl_error_string() !== false) {
