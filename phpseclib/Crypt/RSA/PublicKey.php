@@ -305,6 +305,10 @@ final class PublicKey extends RSA implements Common\PublicKey
             throw new BadConfigurationException('Engine libsodium is not supported for RSA');
         }
 
+        if ((isset(self::$forcedEngine) && self::$forcedEngine !== 'PHP') && $this->signaturePadding === self::SIGNATURE_RELAXED_PKCS1) {
+            throw new BadConfigurationException('Only the PHP engine can be used with relaxed PKCS1 padding');
+        }
+
         if (self::$forcedEngine !== 'PHP') {
             if (self::$forcedEngine === 'OpenSSL' && !function_exists('openssl_verify')) {
                 throw new BadConfigurationException('Engine OpenSSL is forced but unavailable for RSA');
