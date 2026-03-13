@@ -883,4 +883,107 @@ abstract class RSA extends AsymmetricKey
     {
         static::$enableBlinding = false;
     }
+
+    /**
+     * Handles OpenSSL encryption / decryption / signature creation / verification
+     *
+     * @param string $func
+     * @param string $message
+     * @param ?string $signature
+     * @return bool|string|null
+     */
+    protected function handleOpenSSL($func, $message, $signature = null)
+    {
+        switch ($func) {
+            case 'openssl_verify':
+            case 'openssl_sign':
+                $paddingType = 'signaturePadding';
+                break;
+            case 'openssl_public_encrypt':
+            case 'openssl_private_decrypt':
+                $paddingType = 'encryptionPadding';
+        }
+
+        if (self::$forcedEngine === 'libsodium') {
+            throw new BadConfigurationException('Engine libsodium is not supported for RSA');
+        }
+
+        if ((isset(self::$forcedEngine) && self::$forcedEngine !== 'PHP') && $this->$paddingType === self::SIGNATURE_RELAXED_PKCS1) {
+            throw new BadConfigurationException('Only the PHP engine can be used with relaxed PKCS1 padding');
+        }
+
+        if (self::$forcedEngine !== 'PHP') {
+            if (self::$forcedEngine === 'OpenSSL' && !function_exists($func)) {
+                throw new BadConfigurationException('Engine OpenSSL is forced but unavailable for RSA');
+            }
+            if ($this->$paddingType === self::SIGNATURE_PSS) {
+                switch (true) {
+                    case !defined('OPENSSL_PKCS1_PSS_PADDING'):
+                        $error = 'Engine OpenSSL is forced but PSS encryption requires PHP >= 8.5.0';
+                        break;
+                    case $this->hash->getHash() !== $this->mgfHash->getHash():
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the Hash and MGF Hash do not match';
+                        break;
+                    case $this->getSaltLength() !== $this->hLen:
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the salt length doesn\'t match the hash length';
+                }
+            }
+            if ($this->$paddingType === self::ENCRYPTION_OAEP) {
+                switch (true) {
+                    case $this->hash->getHash() !== $this->mgfHash->getHash():
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the Hash and MGF Hash do not match';
+                        break;
+                    case $this->hash->getHash() !== 'sha1' && PHP_VERSION_ID < 80500:
+                        $error = 'Engine OpenSSL is forced but non-sha1 hashes are only supported on PHP 8.5.0+';
+                        break;
+                    case strlen($this->label):
+                        $error = 'Engine OpenSSL is forced but can\'t be used because the label is not the empty string';
+                }
+            }
+            if (isset($error)) {
+                if (self::$forcedEngine === 'OpenSSL') {
+                    throw new BadConfigurationException($error);
+                }
+            } elseif ($paddingType === 'signaturePadding') {
+                switch (true) {
+                    case $this->signaturePadding === self::SIGNATURE_PSS && defined('OPENSSL_PKCS1_PSS_PADDING'):
+                    case $this->signaturePadding !== self::SIGNATURE_PSS && function_exists($func):
+                        $key = $this->toString('PKCS8');
+                        $hash = $this->hash->getHash();
+                        $result = $this->signaturePadding === self::SIGNATURE_PSS ?
+                            $func($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
+                            $func($message, $signature, $key, $hash);
+                        if ($func === 'openssl_verify' && $result !== -1 && $result !== false) {
+                            return (bool) $result;
+                        }
+                        if ($result) {
+                            return $signature;
+                        }
+                        if (self::$forcedEngine === 'OpenSSL') {
+                            throw new BadConfigurationException('Engine OpenSSL is forced but was unable to create signature because of ' . openssl_error_string());
+                        }
+                }
+            } else {
+                if ($this->encryptionPadding !== self::ENCRYPTION_OAEP || PHP_VERSION_ID >= 80500) {
+                    $key = $this->toString('PKCS8');
+                    $hash = $this->hash->getHash();
+                    $output = '';
+                    switch ($this->encryptionPadding) {
+                        case self::ENCRYPTION_NONE:
+                        case self::ENCRYPTION_PKCS1:
+                            $padding = $this->encryptionPadding === self::ENCRYPTION_NONE ? OPENSSL_NO_PADDING : OPENSSL_PKCS1_PADDING;
+                            $result = $func($message, $output, $key, $padding);
+                            break;
+                        //case self::ENCRYPTION_OAEP:
+                        default:
+                            $result = $func($message, $output, $key, OPENSSL_PKCS1_OAEP_PADDING, $hash);
+                    }
+                    if ($result) {
+                        return $output;
+                    }
+                }
+            }
+            return null;
+        }
+    }
 }
