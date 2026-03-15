@@ -949,6 +949,12 @@ abstract class RSA extends AsymmetricKey
                     case $this->signaturePadding === self::SIGNATURE_PSS && defined('OPENSSL_PKCS1_PSS_PADDING'):
                     case $this->signaturePadding !== self::SIGNATURE_PSS && function_exists($func):
                         $key = $this->toString('PKCS8');
+                        if ($func === 'openssl_sign' && strpos($key, 'PUBLIC') !== false) {
+                            if (self::$forcedEngine === 'OpenSSL') {
+                                throw new BadConfigurationException('Engine OpenSSL is forced but cannot be used because the private key does not have the prime components within it');
+                            }
+                            break;
+                        }
                         $hash = $this->hash->getHash();
                         $result = $this->signaturePadding === self::SIGNATURE_PSS ?
                             $func($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
@@ -966,6 +972,15 @@ abstract class RSA extends AsymmetricKey
             } else {
                 if ($this->encryptionPadding !== self::ENCRYPTION_OAEP || PHP_VERSION_ID >= 80500) {
                     $key = $this->toString('PKCS8');
+                    if ($func === 'openssl_private_decrypt' && strpos($key, 'PUBLIC') !== false) {
+                        if ($this->encryptionPadding === self::ENCRYPTION_OAEP) {
+                            if (self::$forcedEngine === 'OpenSSL') {
+                                throw new BadConfigurationException('Engine OpenSSL is forced but cannot be used because openssl_public_decrypt() doesn\'t have a hash parameter like openssl_private_decrypt() does');
+                            }
+                            return null;
+                        }
+                        $func = 'openssl_public_decrypt';
+                    }
                     $hash = $this->hash->getHash();
                     $output = '';
                     switch ($this->encryptionPadding) {

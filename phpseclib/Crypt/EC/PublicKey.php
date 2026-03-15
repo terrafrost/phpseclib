@@ -60,6 +60,10 @@ final class PublicKey extends EC implements Common\PublicKey
         // at this point either self::$forcedEngine is NOT libsodium or the curve is Ed25519
 
         if ($this->curve instanceof Ed25519 && self::$forcedEngine !== 'PHP' && self::$forcedEngine !== 'OpenSSL') {
+            if ($shortFormat == 'SSH2') {
+                [, $signature] = Strings::unpackSSH2('ss', $signature);
+            }
+
             if (self::$forcedEngine === 'libsodium' && !function_exists('sodium_crypto_sign_verify_detached')) {
                 throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519 / Ed448');
             }
@@ -71,6 +75,10 @@ final class PublicKey extends EC implements Common\PublicKey
         // at this point self::$forcedEngine CAN'T be libsodium so we won't check for it henceforth
 
         if ($this->curve instanceof TwistedEdwardsCurve) {
+            if ($shortFormat == 'SSH2') {
+                [, $signature] = Strings::unpackSSH2('ss', $signature);
+            }
+
             if (self::$forcedEngine !== 'PHP') {
                 $keyTypeConstant = $this->curve instanceof Ed25519 ? 'OPENSSL_KEYTYPE_ED25519' : 'OPENSSL_KEYTYPE_ED448';
                 if (self::$forcedEngine === 'OpenSSL') {
@@ -86,7 +94,7 @@ final class PublicKey extends EC implements Common\PublicKey
                     // algorithm 0 is used because EdDSA has a built-in hash
                     $result = openssl_verify($message, $signature, $this->toString('PKCS8'), 0) === 1;
                     if ($result !== -1 && $result !== false) {
-                        return $result;
+                        return (bool) $result;
                     }
                     if (self::$forcedEngine === 'OpenSSL') {
                         throw new BadConfigurationException('Engine OpenSSL is forced but was unable to create signature because of ' . openssl_error_string());

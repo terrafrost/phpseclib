@@ -386,6 +386,13 @@ abstract class EC extends AsymmetricKey
         }
         // some versions of OpenSSL / PHP return PKCS1 keys, others return PKCS8 keys
         $privatekey = EC::load($privateKeyStr);
+        switch ($curveName) {
+            case 'prime256v1':
+                $curveName = 'secp256r1';
+                break;
+            case 'prime192v1':
+                $curveName = 'secp192r1';
+        }
         $privatekey->curveName = $curveName;
         return $privatekey;
     }
