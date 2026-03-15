@@ -323,48 +323,50 @@ abstract class DH extends AsymmetricKey
                         if ($forcedEngine === 'OpenSSL' && !function_exists('openssl_pkey_derive')) {
                             throw new BadConfigurationException('Engine OpenSSL is forced but unsupported for ECDH');
                         }
-                        if (isset($orig)) {
-                            $privateStr = (string) $private->withPassword();
-                            $publicStr = (string) $orig;
-                        } else {
-                            // create the key as a binary one so that the parameters can be extracted, if necessary
-                            $privateStr = $this->withPassword()->toString('PKCS8', ['binary' => true]);
-                            // we need to encode the public key as a PCKS8 public key
-                            // we can't use EC\Formats\Keys\PKCS8::savePublicKey() because that wants an array
-                            // that represents the x, y coordinate
-                            $publicArr = [];
-                            if ($this->curve instanceof Curve25519) {
-                                $oid = '1.3.101.110';
-                            } elseif ($this->curve instanceof Curve448) {
-                                $oid = '1.3.101.111';
+                        if (function_exists('openssl_pkey_derive')) {
+                            if (isset($orig)) {
+                                $privateStr = (string) $private->withPassword();
+                                $publicStr = (string) $orig;
                             } else {
-                                $oid = '1.2.840.10045.2.1'; // id-ecPublicKey
+                                // create the key as a binary one so that the parameters can be extracted, if necessary
+                                $privateStr = $this->withPassword()->toString('PKCS8', ['binary' => true]);
+                                // we need to encode the public key as a PCKS8 public key
+                                // we can't use EC\Formats\Keys\PKCS8::savePublicKey() because that wants an array
+                                // that represents the x, y coordinate
+                                $publicArr = [];
+                                if ($this->curve instanceof Curve25519) {
+                                    $oid = '1.3.101.110';
+                                } elseif ($this->curve instanceof Curve448) {
+                                    $oid = '1.3.101.111';
+                                } else {
+                                    $oid = '1.2.840.10045.2.1'; // id-ecPublicKey
 
-                                // extract the parameters from the private key
-                                $decoded = ASN1::decodeBER($private);
-                                $mapped = ASN1::asn1map($decoded[0], Maps\OneAsymmetricKey::MAP);
-                                $publicArr['publicKeyAlgorithm']['parameters'] = $mapped['privateKeyAlgorithm']['parameters'];
+                                    // extract the parameters from the private key
+                                    $decoded = ASN1::decodeBER($private);
+                                    $mapped = ASN1::asn1map($decoded[0], Maps\OneAsymmetricKey::MAP);
+                                    $publicArr['publicKeyAlgorithm']['parameters'] = $mapped['privateKeyAlgorithm']['parameters'];
+                                }
+                                $publicArr['publicKeyAlgorithm']['algorithm'] = $oid;
+                                $publicArr['publicKey'] = "\0" . $coordinates;
+                                $publicArr = ASN1::encodeDER($publicArr, Maps\PublicKeyInfo::MAP);
+                                $privateStr = "-----BEGIN PRIVATE KEY-----\n" .
+                                        chunk_split(base64_encode($private), 64) .
+                                        "-----END PRIVATE KEY-----";
+                                $publicStr = "-----BEGIN PUBLIC KEY-----\n" .
+                                        chunk_split(base64_encode($public), 64) .
+                                        "-----END PUBLIC KEY-----";
                             }
-                            $publicArr['publicKeyAlgorithm']['algorithm'] = $oid;
-                            $publicArr['publicKey'] = "\0" . $coordinates;
-                            $publicArr = ASN1::encodeDER($publicArr, Maps\PublicKeyInfo::MAP);
-                            $privateStr = "-----BEGIN PRIVATE KEY-----\n" .
-                                       chunk_split(base64_encode($private), 64) .
-                                       "-----END PRIVATE KEY-----";
-                            $publicStr = "-----BEGIN PUBLIC KEY-----\n" .
-                                      chunk_split(base64_encode($public), 64) .
-                                      "-----END PUBLIC KEY-----";
-                        }
-                        $result = openssl_pkey_derive($publicStr, $privateStr);
-                        if ($result) {
-                            return $result;
-                        }
-                        if ($forcedEngine === 'OpenSSL') {
-                            // i suppose we _could_ try openssl_dh_compute_key() at this point
-                            // quoting https://www.php.net/openssl-dh-compute-key "ECDH is only supported as of PHP 8.1.0 and OpenSSL 3.0.0". ie.
-                            // PHP_VERSION_ID >= 80100 && OPENSSL_VERSION_NUMBER >= 0x3000000f
-                            // but i think that's overkill. if openssl_pkey_derive() doesn't work it seems doubtful to me that openssl_dh_compute_key() would
-                            throw new BadConfigurationException('Engine OpenSSL is forced but was unable to perform ECDH because of ' . openssl_error_string());
+                            $result = openssl_pkey_derive($publicStr, $privateStr);
+                            if ($result) {
+                                return $result;
+                            }
+                            if ($forcedEngine === 'OpenSSL') {
+                                // i suppose we _could_ try openssl_dh_compute_key() at this point
+                                // quoting https://www.php.net/openssl-dh-compute-key "ECDH is only supported as of PHP 8.1.0 and OpenSSL 3.0.0". ie.
+                                // PHP_VERSION_ID >= 80100 && OPENSSL_VERSION_NUMBER >= 0x3000000f
+                                // but i think that's overkill. if openssl_pkey_derive() doesn't work it seems doubtful to me that openssl_dh_compute_key() would
+                                throw new BadConfigurationException('Engine OpenSSL is forced but was unable to perform ECDH because of ' . openssl_error_string());
+                            }
                         }
                     }
                     $point = $private->multiply($public);

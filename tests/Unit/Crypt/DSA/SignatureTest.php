@@ -10,6 +10,7 @@ namespace phpseclib3\Tests\Unit\Crypt\DSA;
 
 use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Exception\BadConfigurationException;
 use phpseclib3\Tests\PhpseclibTestCase;
 
 class SignatureTest extends PhpseclibTestCase
