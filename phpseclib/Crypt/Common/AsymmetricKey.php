@@ -388,8 +388,6 @@ abstract class AsymmetricKey
         self::$configFile = $val;
     }
 
-
-
     /**
      * Add a fileformat plugin
      *
