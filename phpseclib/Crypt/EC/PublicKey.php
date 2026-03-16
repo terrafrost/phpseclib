@@ -172,7 +172,7 @@ final class PublicKey extends EC implements Common\PublicKey
                 $result = openssl_verify($message, $sig, $this->toString('PKCS8', ['namedCurve' => false]), $this->hash->getHash());
 
                 if ($result !== -1 && $result !== false) {
-                    return $result;
+                    return (bool) $result;
                 }
                 if (self::$forcedEngine === 'OpenSSL') {
                     throw new BadConfigurationException('Engine OpenSSL is forced but was unable to verify signature because of ' . openssl_error_string());
