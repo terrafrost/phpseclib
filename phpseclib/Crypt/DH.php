@@ -329,7 +329,7 @@ abstract class DH extends AsymmetricKey
                                 $publicStr = (string) $orig;
                             } else {
                                 // create the key as a binary one so that the parameters can be extracted, if necessary
-                                $privateStr = $this->withPassword()->toString('PKCS8', ['binary' => true]);
+                                $privateStr = $private->withPassword()->toString('PKCS8', ['binary' => true]);
                                 // we need to encode the public key as a PCKS8 public key
                                 // we can't use EC\Formats\Keys\PKCS8::savePublicKey() because that wants an array
                                 // that represents the x, y coordinate

@@ -61,7 +61,7 @@ final class PublicKey extends EC implements Common\PublicKey
 
         if ($this->curve instanceof Ed25519 && self::$forcedEngine !== 'PHP' && self::$forcedEngine !== 'OpenSSL') {
             if ($shortFormat == 'SSH2') {
-                [, $signature] = Strings::unpackSSH2('ss', $signature);
+                list(, $signature) = Strings::unpackSSH2('ss', $signature);
             }
 
             if (self::$forcedEngine === 'libsodium') {
