@@ -76,7 +76,8 @@ final class PrivateKey extends EC implements Common\PrivateKey
                 throw new BadConfigurationException('Engine libsodium is forced but unsupported for Curve25519');
             }
             if (function_exists('sodium_crypto_scalarmult')) {
-                return sodium_crypto_scalarmult($this->dA->toBytes(), $coordinates);
+                $dA = str_pad($this->dA->toBytes(), 32, "\0", STR_PAD_LEFT);
+                return sodium_crypto_scalarmult($dA, $coordinates);
             }
         }
 
