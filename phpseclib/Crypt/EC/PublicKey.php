@@ -64,10 +64,15 @@ final class PublicKey extends EC implements Common\PublicKey
                 [, $signature] = Strings::unpackSSH2('ss', $signature);
             }
 
-            if (self::$forcedEngine === 'libsodium' && !function_exists('sodium_crypto_sign_verify_detached')) {
-                throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519 / Ed448');
+            if (self::$forcedEngine === 'libsodium') {
+                if (!function_exists('sodium_crypto_sign_verify_detached')) {
+                    throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519 / Ed448');
+                }
+                if (isset($this->context)) {
+                    throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519ctx (context)');
+                }
             }
-            if (function_exists('sodium_crypto_sign_verify_detached')) {
+            if (function_exists('sodium_crypto_sign_verify_detached') && !isset($this->context)) {
                 return sodium_crypto_sign_verify_detached($signature, $message, $this->toString('libsodium'));
             }
         }
