@@ -622,18 +622,4 @@ abstract class EC extends AsymmetricKey
 
         return parent::withHash($hash);
     }
-
-    /**
-     * __toString() magic method
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        if ($this->curve instanceof MontgomeryCurve) {
-            return '';
-        }
-
-        return parent::__toString();
-    }
 }
