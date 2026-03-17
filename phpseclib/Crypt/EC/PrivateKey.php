@@ -130,10 +130,15 @@ final class PrivateKey extends EC implements Common\PrivateKey
         // at this point either self::$forcedEngine is NOT libsodium or the curve is Ed25519
 
         if ($this->curve instanceof Ed25519 && self::$forcedEngine !== 'PHP' && self::$forcedEngine !== 'OpenSSL') {
-            if (self::$forcedEngine === 'libsodium' && !function_exists('sodium_crypto_sign_detached')) {
-                throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519 / Ed448');
+            if (self::$forcedEngine === 'libsodium') {
+                if (!function_exists('sodium_crypto_sign_detached')) {
+                    throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519 / Ed448');
+                }
+                if (isset($this->context)) {
+                    throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519ctx (context)');
+                }
             }
-            if (function_exists('sodium_crypto_sign_detached')) {
+            if (function_exists('sodium_crypto_sign_detached') && !isset($this->context)) {
                 $result = sodium_crypto_sign_detached($message, $this->withPassword()->toString('libsodium'));
                 return $shortFormat == 'SSH2' ? Strings::packSSH2('ss', 'ssh-' . strtolower($this->getCurve()), $result) : $result;
             }
