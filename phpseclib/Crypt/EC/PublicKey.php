@@ -81,7 +81,7 @@ final class PublicKey extends EC implements Common\PublicKey
 
         if ($this->curve instanceof TwistedEdwardsCurve) {
             if ($shortFormat == 'SSH2') {
-                [, $signature] = Strings::unpackSSH2('ss', $signature);
+                list(, $signature) = Strings::unpackSSH2('ss', $signature);
             }
 
             if (self::$forcedEngine !== 'PHP') {
