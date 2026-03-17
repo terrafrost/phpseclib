@@ -60,10 +60,6 @@ final class PublicKey extends EC implements Common\PublicKey
         // at this point either self::$forcedEngine is NOT libsodium or the curve is Ed25519
 
         if ($this->curve instanceof Ed25519 && self::$forcedEngine !== 'PHP' && self::$forcedEngine !== 'OpenSSL') {
-            if ($shortFormat == 'SSH2') {
-                list(, $signature) = Strings::unpackSSH2('ss', $signature);
-            }
-
             if (self::$forcedEngine === 'libsodium') {
                 if (!function_exists('sodium_crypto_sign_verify_detached')) {
                     throw new BadConfigurationException('Engine libsodium is forced but unsupported for Ed25519 / Ed448');
@@ -73,6 +69,10 @@ final class PublicKey extends EC implements Common\PublicKey
                 }
             }
             if (function_exists('sodium_crypto_sign_verify_detached') && !isset($this->context)) {
+                if ($shortFormat == 'SSH2') {
+                    list(, $signature) = Strings::unpackSSH2('ss', $signature);
+                }
+
                 return sodium_crypto_sign_verify_detached($signature, $message, $this->toString('libsodium'));
             }
         }
