@@ -972,7 +972,7 @@ abstract class RSA extends AsymmetricKey
                             $func($message, $signature, $key, $hash);
     if (defined('START_DEBUG') && !defined('START_DEBUG2')) {
     echo openssl_error_string() . "\n";
-   throw new \Exception('zzz');
+//   throw new \Exception('zzz');
    define('START_DEBUG2', true);
     }
                         if ($func === 'openssl_verify' && $result !== -1 && $result !== false) {
