@@ -966,11 +966,15 @@ abstract class RSA extends AsymmetricKey
    print_r($matches);
    echo OPENSSL_VERSION_TEXT . "\n";
     echo $key . "\n";
+    set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
+        echo $errstr . "\n";
+    });
    }
-                        $result = @$this->signaturePadding === self::SIGNATURE_PSS ?
+                        $result = $this->signaturePadding === self::SIGNATURE_PSS ?
                             $func($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
                             $func($message, $signature, $key, $hash);
     if (defined('START_DEBUG') && !defined('START_DEBUG2')) {
+        restore_error_handler();
     echo openssl_error_string() . "\n";
 //   throw new \Exception('zzz');
    define('START_DEBUG2', true);
