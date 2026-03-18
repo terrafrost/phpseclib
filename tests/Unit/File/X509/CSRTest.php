@@ -206,7 +206,7 @@ yGSdZsGMatjn2ld+Ndj3uAYlujyKlqGcAOb53bu+PswH5KXTJJquOJH84UoKraog
             ['extnId' => 'id-ce-extKeyUsage', 'extnValue' => ['id-kp-serverAuth', 'id-kp-clientAuth']]
         ];
         $subject->setAttribute('pkcs-9-at-extensionRequest', $extensions);
-
+define('START_DEBUG', true);
         $csr = $subject->signCSR();
         $csrPem = $subject->saveCSR($csr);
 
