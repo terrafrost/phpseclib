@@ -948,7 +948,7 @@ abstract class RSA extends AsymmetricKey
                 switch (true) {
                     case $this->signaturePadding === self::SIGNATURE_PSS && defined('OPENSSL_PKCS1_PSS_PADDING'):
                     case $this->signaturePadding !== self::SIGNATURE_PSS && function_exists($func):
-                        $key = str_replace("\r\n", "\n", $this->toString('PKCS8')) . "\n";
+                        $key = str_replace("\r\n", "\n", $this->toString('PKCS1')) . "\n";
                         if ($func === 'openssl_sign' && strpos($key, 'PUBLIC') !== false) {
                             if (self::$forcedEngine === 'OpenSSL') {
                                 throw new BadConfigurationException('Engine OpenSSL is forced but cannot be used because the private key does not have the prime components within it');
