@@ -956,17 +956,24 @@ abstract class RSA extends AsymmetricKey
                             break;
                         }
                         $hash = $this->hash->getHash();
-   if (defined('START_DEBUG')) {
+   if (defined('START_DEBUG') && !defined('START_DEBUG2')) {
    echo "$func\n";
+                   ob_start();
+                @phpinfo();
+                $content = ob_get_contents();
+                ob_end_clean();
+   preg_match_all('#OpenSSL (Header|Library) Version(.*)#im', $content, $matches);
+   print_r($matches);
    echo OPENSSL_VERSION_TEXT . "\n";
     echo $key . "\n";
    }
                         $result = @$this->signaturePadding === self::SIGNATURE_PSS ?
                             $func($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
                             $func($message, $signature, $key, $hash);
-    if (defined('START_DEBUG')) {
+    if (defined('START_DEBUG') && !defined('START_DEBUG2')) {
     echo openssl_error_string() . "\n";
    throw new \Exception('zzz');
+   define('START_DEBUG2', true);
     }
                         if ($func === 'openssl_verify' && $result !== -1 && $result !== false) {
                             return (bool) $result;
