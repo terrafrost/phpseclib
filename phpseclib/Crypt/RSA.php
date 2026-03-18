@@ -956,9 +956,24 @@ abstract class RSA extends AsymmetricKey
                             break;
                         }
                         $hash = $this->hash->getHash();
-                        $result = $this->signaturePadding === self::SIGNATURE_PSS ?
-                            $func($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
-                            $func($message, $signature, $key, $hash);
+
+                        // on github actions, php 7.0 and 7.1 on windows emit the following warning:
+                        // openssl_sign(): supplied key param cannot be coerced into a private key
+                        set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
+                            throw new BadConfigurationException("Engine OpenSSL is forced but got error: $errstr");
+                        });
+                        try {
+                            $result = $this->signaturePadding === self::SIGNATURE_PSS ?
+                                $func($message, $signature, $key, $hash, OPENSSL_PKCS1_PSS_PADDING) :
+                                $func($message, $signature, $key, $hash);
+                        } catch (BadConfigurationException $e) {
+                            if (self::$forcedEngine === 'OpenSSL') {
+                                throw $e;
+                            }
+                        } finally {
+                            restore_error_handler();
+                        }
+
                         if ($func === 'openssl_verify' && $result !== -1 && $result !== false) {
                             return (bool) $result;
                         }
