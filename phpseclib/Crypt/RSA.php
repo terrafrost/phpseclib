@@ -959,7 +959,7 @@ abstract class RSA extends AsymmetricKey
 
                         // on github actions, php 7.0 and 7.1 on windows emit the following warning:
                         // openssl_sign(): supplied key param cannot be coerced into a private key
-                        set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
+                        set_error_handler(function ($errno, $errstr, $errfile, $errline, $errcontext) {
                             throw new BadConfigurationException("Engine OpenSSL is forced but got error: $errstr");
                         });
                         try {
