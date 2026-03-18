@@ -970,6 +970,7 @@ abstract class RSA extends AsymmetricKey
                             if (self::$forcedEngine === 'OpenSSL') {
                                 throw $e;
                             }
+                            $result = false;
                         } finally {
                             restore_error_handler();
                         }
