@@ -1527,7 +1527,7 @@ abstract class SymmetricKey
             throw new BadMethodCallException('Authentication tags are only utilized in GCM mode or with Poly1305');
         }
 
-        if ($this->newtag === false) {
+        if (!isset($this->newtag)) {
             throw new BadMethodCallException('A tag can only be returned after a round of encryption has been performed');
         }
 

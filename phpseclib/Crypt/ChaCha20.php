@@ -145,12 +145,12 @@ class ChaCha20 extends Salsa20
         $params = [$ciphertext, $this->aad, $this->nonce, $this->key];
 
         if (isset($this->poly1305Key)) {
-            if ($this->oldtag === false) {
+            if (!isset($this->oldtag)) {
                 throw new InsufficientSetupException('Authentication Tag has not been set');
             }
             if ($this->usingGeneratedPoly1305Key && strlen($this->nonce) == 12) {
                 $plaintext = sodium_crypto_aead_chacha20poly1305_ietf_decrypt(...$params);
-                $this->oldtag = false;
+                $this->oldtag = null;
                 if ($plaintext === false) {
                     throw new BadDecryptionException('Derived authentication tag and supplied authentication tag do not match');
                 }
@@ -158,10 +158,10 @@ class ChaCha20 extends Salsa20
             }
             $newtag = $this->poly1305($ciphertext);
             if ($this->oldtag != substr($newtag, 0, strlen($this->oldtag))) {
-                $this->oldtag = false;
+                $this->oldtag = null;
                 throw new BadDecryptionException('Derived authentication tag and supplied authentication tag do not match');
             }
-            $this->oldtag = false;
+            $this->oldtag = null;
         }
 
         $plaintext = strlen($this->nonce) == 8 ?
