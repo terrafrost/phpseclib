@@ -30,24 +30,18 @@ class Salsa20 extends StreamCipher
 {
     /**
      * Part 1 of the state
-     *
-     * @var string|false
      */
-    protected $p1 = false;
+    protected ?string $p1 = null;
 
     /**
      * Part 2 of the state
-     *
-     * @var string|false
      */
-    protected $p2 = false;
+    protected ?string $p2 = null;
 
     /**
      * Key Length (in bytes)
-     *
-     * @var int
      */
-    protected $key_length = 32; // = 256 bits
+    protected int $key_length = 32; // = 256 bits
 
     /**
      * @see \phpseclib4\Crypt\Salsa20::crypt()
@@ -61,31 +55,23 @@ class Salsa20 extends StreamCipher
 
     /**
      * Encryption buffer for continuous mode
-     *
-     * @var array
      */
-    protected $enbuffer;
+    protected array $enbuffer;
 
     /**
      * Decryption buffer for continuous mode
-     *
-     * @var array
      */
-    protected $debuffer;
+    protected array $debuffer;
 
     /**
      * Counter
-     *
-     * @var int
      */
-    protected $counter = 0;
+    protected int $counter = 0;
 
     /**
      * Using Generated Poly1305 Key
-     *
-     * @var boolean
      */
-    protected $usingGeneratedPoly1305Key = false;
+    protected bool $usingGeneratedPoly1305Key = false;
 
     /**
      * Salsa20 uses a nonce
@@ -293,7 +279,6 @@ class Salsa20 extends StreamCipher
     /**
      * Encrypts or decrypts a message.
      *
-     * @return string $text
      * @see self::decrypt()
      * @see self::encrypt()
      */
@@ -418,23 +403,6 @@ class Salsa20 extends StreamCipher
 
     /**
      * The doubleround function
-     *
-     * @param int $x0 (by reference)
-     * @param int $x1 (by reference)
-     * @param int $x2 (by reference)
-     * @param int $x3 (by reference)
-     * @param int $x4 (by reference)
-     * @param int $x5 (by reference)
-     * @param int $x6 (by reference)
-     * @param int $x7 (by reference)
-     * @param int $x8 (by reference)
-     * @param int $x9 (by reference)
-     * @param int $x10 (by reference)
-     * @param int $x11 (by reference)
-     * @param int $x12 (by reference)
-     * @param int $x13 (by reference)
-     * @param int $x14 (by reference)
-     * @param int $x15 (by reference)
      */
     protected static function doubleRound(int &$x0, int &$x1, int &$x2, int &$x3, int &$x4, int &$x5, int &$x6, int &$x7, int &$x8, int &$x9, int &$x10, int &$x11, int &$x12, int &$x13, int &$x14, int &$x15): void
     {
@@ -453,7 +421,7 @@ class Salsa20 extends StreamCipher
     /**
      * The Salsa20 hash function function
      */
-    protected static function salsa20(string $x)
+    protected static function salsa20(string $x): string
     {
         $z = $x = unpack('V*', $x);
         for ($i = 0; $i < 10; $i++) {
