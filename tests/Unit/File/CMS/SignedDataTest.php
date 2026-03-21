@@ -237,6 +237,7 @@ ybcPA9iklr0wAwYBAAMBAA==
 
         file_put_contents(__DIR__ . '/cms.pem', "$cms");
         file_put_contents(__DIR__ . '/ca.pem', (string) $ca->getCertificates()[0]);
+echo "\nZZZZZZZZZZZZZZZZZZZZ\nZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\nZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n";
 echo "\n\n\n$cms\n\n\n" . $ca->getCertificates()[0] . "\n\n\n";
         $result = openssl_cms_verify(
             input_filename: __DIR__ . '/cms.pem',
