@@ -77,7 +77,7 @@ class Hash
      *
      * @see self::setHash()
      */
-    private int $hashParam;
+    private string $hashParam;
 
     /**
      * Byte-length of hash output (Internal HMAC)
@@ -255,10 +255,8 @@ class Hash
      * Gets the hash function.
      *
      * As set by the constructor or by the setHash() method.
-     *
-     * @return string
      */
-    public function getHash(): int
+    public function getHash(): string
     {
         return $this->hashParam;
     }
