@@ -91,7 +91,7 @@ class Hash
      *
      * @see self::setHash()
      */
-    private string $algo;
+    private string|array $algo;
 
     /**
      * Key
@@ -247,7 +247,7 @@ class Hash
         }
 
         $this->computedKey = is_array($this->algo) ?
-            call_user_func($this->algo, $this->key) :
+            ($this->algo)($this->key) :
             hash($this->algo, $this->key, true);
     }
 
