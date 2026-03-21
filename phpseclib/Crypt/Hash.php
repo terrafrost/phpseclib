@@ -171,12 +171,12 @@ class Hash
     private static PrimeField $factory36;
     private static PrimeField $factory64;
     private static PrimeField $factory128;
-    private static PrimeField $offset64;
-    private static PrimeField $offset128;
-    private static PrimeField $marker64;
-    private static PrimeField $marker128;
-    private static PrimeField $maxwordrange64;
-    private static PrimeField $maxwordrange128;
+    private static PrimeField\Integer $offset64;
+    private static PrimeField\Integer $offset128;
+    private static PrimeField\Integer $marker64;
+    private static PrimeField\Integer $marker128;
+    private static PrimeField\Integer $maxwordrange64;
+    private static PrimeField\Integer $maxwordrange128;
     /**#@-*/
 
     /**#@+
