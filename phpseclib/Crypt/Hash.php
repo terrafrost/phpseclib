@@ -268,7 +268,7 @@ class Hash
      */
     public function setHash(string $hash): void
     {
-        $oldHash = $this->hashParam;
+        $oldHash = $this->hashParam ?? null;
         $this->hashParam = $hash = strtolower($hash);
         switch ($hash) {
             case 'umac-32':
