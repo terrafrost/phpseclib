@@ -237,7 +237,7 @@ class Hash
     private function computeKey(): void
     {
         if (!isset($this->key)) {
-            $this->computedKey = false;
+            $this->computedKey = null;
             return;
         }
 
@@ -989,10 +989,10 @@ class Hash
                     $prime128 = new BigInteger("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x61", 256);
                     self::$factory128 = new PrimeField($prime128);
 
-                    self::$offset64 = new BigInteger("\1\0\0\0\0\0\0\0\0", 256);
-                    self::$offset64 = self::$factory64->newInteger(self::$offset64->subtract($prime64));
-                    self::$offset128 = new BigInteger("\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 256);
-                    self::$offset128 = self::$factory128->newInteger(self::$offset128->subtract($prime128));
+                    $temp = new BigInteger("\1\0\0\0\0\0\0\0\0", 256);
+                    self::$offset64 = self::$factory64->newInteger($temp->subtract($prime64));
+                    $temp = new BigInteger("\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 256);
+                    self::$offset128 = self::$factory128->newInteger($temp->subtract($prime128));
 
                     self::$marker64 = self::$factory64->newInteger($prime64->subtract($one));
                     self::$marker128 = self::$factory128->newInteger($prime128->subtract($one));
