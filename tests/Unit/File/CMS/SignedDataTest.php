@@ -245,7 +245,8 @@ echo "\n\n\n$cms\n\n\n" . $ca->getCertificates()[0] . "\n\n\n";
             encoding: OPENSSL_ENCODING_PEM
         );
 
-        $this->assertTrue($result, 'openssl_cms_verify() was unable to verify signature: ' . openssl_error_string());
+        $this->assertTrue($result, 'openssl_cms_verify() was unable to verify signature: ' . openssl_error_string() . "\n\n$cms\n\n" .
+        $ca->getCertificates()[0] . "\n");
 
         X509::clearCAStore();
     }
