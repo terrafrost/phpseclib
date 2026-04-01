@@ -162,7 +162,7 @@ class SSH2Test extends PhpseclibFunctionalTestCase
             ->expects($this->atLeastOnce())
             ->method('callbackMethod')
             ->will($this->returnValue(true));
-        $ssh->exec('pwd', [$callbackObject, 'callbackMethod']);
+        $ssh->exec('pwd', fn($output) => $callbackObject->callbackMethod($output));
 
         $this->assertFalse(
             $ssh->isPTYOpen(),
@@ -313,7 +313,7 @@ class SSH2Test extends PhpseclibFunctionalTestCase
 
         $ssh->enablePTY();
 
-        $this->assertTrue(
+        $this->assertNull(
             $ssh->exec('bash'),
             'Failed asserting exec command succeeded.'
         );
@@ -468,7 +468,7 @@ class SSH2Test extends PhpseclibFunctionalTestCase
 
         $ssh->enablePTY();
 
-        $this->assertTrue(
+        $this->assertNull(
             $ssh->exec('bash'),
             'Failed asserting that pty exec succeeds'
         );

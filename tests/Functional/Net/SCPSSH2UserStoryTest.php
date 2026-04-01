@@ -8,6 +8,7 @@
 
 namespace phpseclib4\Tests\Functional\Net;
 
+use phpseclib4\Exception\RuntimeException;
 use phpseclib4\Net\SCP;
 use phpseclib4\Tests\PhpseclibFunctionalTestCase;
 
@@ -44,7 +45,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     /** @depends testConstructor */
     public function testPutGetString($scp)
     {
-        $this->assertTrue(
+        $this->assertNull(
             $scp->put(self::$remoteFile, self::$exampleData),
             'Failed asserting that data could successfully be put() into file.'
         );
@@ -66,7 +67,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     public function testGetFile($scp)
     {
         $localFilename = $this->createTempFile();
-        $this->assertTrue(
+        $this->assertNull(
             $scp->get(self::$remoteFile, $localFilename),
             'Failed asserting that get() into file was successful.'
         );
@@ -90,12 +91,13 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     public function testGetBadFilePutGet($scp)
     {
         $scp->exec('rm ' . self::$remoteFile);
-        $this->assertFalse(
-            $scp->get(self::$remoteFile),
-            'Failed asserting that get() on a non-existant file failed'
-        );
-        $this->assertCount(1, $scp->getSCPErrors());
-        $this->assertTrue(
+        try {
+            $scp->get(self::$remoteFile);
+            $this->assertFalse(true); // we shouldn't get to this point
+        } catch (RuntimeException $e) {
+            $this->assertInstanceOf(RuntimeException::class, $e);
+        }
+        $this->assertNull(
             $scp->put(self::$remoteFile, self::$exampleData),
             'Failed asserting that put() succeeded'
         );
