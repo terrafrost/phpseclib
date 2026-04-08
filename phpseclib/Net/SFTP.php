@@ -3023,19 +3023,11 @@ return;
     /**
      * Returns all errors on the SFTP layer and resets internal error array
      */
-    public function getSFTPErrors(): array
+    public function getErrors(): array
     {
         $copy = $this->sftp_errors;
         $this->sftp_errors = [];
         return $copy;
-    }
-
-    /**
-     * Returns the last error on the SFTP layer
-     */
-    public function getLastSFTPError(): string
-    {
-        return count($this->sftp_errors) ? $this->sftp_errors[count($this->sftp_errors) - 1] : '';
     }
 
     /**

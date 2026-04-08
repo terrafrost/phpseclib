@@ -4401,30 +4401,6 @@ class SSH2
     }
 
     /**
-     * Returns all errors / debug messages on the SSH layer
-     *
-     * If you are looking for messages from the SFTP layer, please see SFTP::getSFTPErrors()
-     *
-     * @return string[]
-     */
-    public function getErrors(): array
-    {
-        return $this->errors;
-    }
-
-    /**
-     * Returns the last error received on the SSH layer
-     *
-     * If you are looking for messages from the SFTP layer, please see SFTP::getLastSFTPError()
-     */
-    public function getLastError(): ?string
-    {
-        $count = count($this->errors);
-
-        return $count > 0 ? $this->errors[$count - 1] : null;
-    }
-
-    /**
      * Return the server identification.
      */
     public function getServerIdentification(): string
