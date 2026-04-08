@@ -992,7 +992,7 @@ class SSH2
      * still will be used
      *
      * @see self::login()
-     * @param string|resource $kexinit_payload_server optional
+     * @param string|resource $host
      */
     public function __construct(mixed $host, int $port = 22, int $timeout = 10)
     {
@@ -2904,12 +2904,11 @@ class SSH2
      *
      * @see self::startSubsystem()
      */
-    public function stopSubsystem(): bool
+    public function stopSubsystem(): void
     {
         if ($this->isInteractiveChannelOpen(self::CHANNEL_SUBSYSTEM)) {
             $this->close_channel(self::CHANNEL_SUBSYSTEM);
         }
-        return true;
     }
 
     /**
@@ -4125,7 +4124,7 @@ class SSH2
      *
      * @param resource &$realtime_log_file
      */
-    protected function append_log_helper(int $constant, string $message_number, string $message, array &$message_number_log, array &$message_log, int &$log_size, &$realtime_log_file, bool &$realtime_log_wrap, int &$realtime_log_size): void
+    protected function append_log_helper(int $constant, string $message_number, string $message, array &$message_number_log, array &$message_log, ?int &$log_size, mixed &$realtime_log_file, ?bool &$realtime_log_wrap, ?int &$realtime_log_size): void
     {
         // remove the byte identifying the message type from all but the first two messages (ie. the identification strings)
         if (!in_array(substr($message_number, 0, 4), ['<- (', '-> (']) && strlen($message_number) > 2) {
