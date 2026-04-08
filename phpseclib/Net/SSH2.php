@@ -118,6 +118,11 @@ class SSH2
     public const MASK_DISCONNECT    = 0x00000020;
 
     /*
+     * @var int[]
+     */
+    protected array $unavailableChannels = [10];
+
+    /*
      * Channel constants
      *
      * RFC4254 refers not to client and server channels but rather to sender and recipient channels.  we don't refer
@@ -4127,7 +4132,7 @@ class SSH2
     protected function append_log_helper(int $constant, string $message_number, string $message, array &$message_number_log, array &$message_log, ?int &$log_size, mixed &$realtime_log_file, ?bool &$realtime_log_wrap, ?int &$realtime_log_size): void
     {
         // remove the byte identifying the message type from all but the first two messages (ie. the identification strings)
-        if (!in_array(substr($message_number, 0, 4), ['<- (', '-> (']) && strlen($message_number) > 2) {
+        if (!in_array(substr($message_number, 0, 4), ['<- (', '-> (']) && strlen($message_number) > 2 && substr($message_number, 3, 8) != 'SSH_FXP_') {
             Strings::shift($message);
         }
 

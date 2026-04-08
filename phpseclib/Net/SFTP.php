@@ -3,6 +3,18 @@
 /**
  * Pure-PHP implementation of SFTP.
  *
+ * This is an expiremetal fork of SFTP.php. The idea is that every SFTP command results in creation and subsequent destruction of an SFTP channel.
+ *
+ * eg. you can do $sftp->putString('filename.ext', 'whatever') and that'll upload the string in one go. it won't use an already open SFTP channel because all open SFTP channels are in-use. it'll instead create a new SFTP channel.
+ * you can also do $file = $sftp->open($filename, $mode) and then do random seeking on that file as you see fit. eg. $file->seek(1000), $file->write('whatever), $file->read(1024).
+ * you could then do $file->close() or unset($file), which would call the destructor, which would basically do the same thing as $file->close()
+ *
+ * for this to work all calls to $sftp->send_sftp_packet() and $sftp->get_sftp_packet() will need to be updated to take in a new param at the beginning - $channel_id.
+ *
+ * TO DO:
+ * what to do about $this->canonicalize_paths ?
+ * rewrite realpath() to use realpathHelper()
+ *
  * PHP version 5
  *
  * Supports SFTPv2/3/4/5/6. Defaults to v3.
@@ -106,8 +118,9 @@ class SFTP extends SSH2
      * concurrent actions, so it's somewhat academic, here.
      *
      * @see self::_send_sftp_packet()
+     * @var bool[]
      */
-    private bool $use_request_id = false;
+    private array $use_request_id = [];
 
     /**
      * The Packet Type
@@ -130,6 +143,7 @@ class SFTP extends SSH2
      * Extensions supported by the server
      *
      * @see self::_initChannel()
+     * @var array[]
      */
     private array $extensions = [];
 
@@ -137,15 +151,17 @@ class SFTP extends SSH2
      * Server SFTP version
      *
      * @see self::_initChannel()
+     * @var int[]
      */
-    private int $version;
+    private array $version;
 
     /**
      * Default Server SFTP version
      *
      * @see self::_initChannel()
+     * @var int[]
      */
-    private int $defaultVersion;
+    private array $defaultVersion;
 
     /**
      * Preferred SFTP version
@@ -330,6 +346,212 @@ class SFTP extends SSH2
         if (defined('NET_SFTP_UPLOAD_QUEUE_SIZE')) {
             $this->uploadQueueSize = NET_SFTP_UPLOAD_QUEUE_SIZE;
         }
+    }
+
+    /**
+     * Check a few things before SFTP functions are called
+     */
+    private function openSFTPChannel(bool $returnEarly = false): int
+    {
+        if (!($this->bitmap & SSH2::MASK_LOGIN)) {
+            throw new RuntimeException("Function should not be called before you've logged in");
+        }
+
+        $channel = max($this->unavailableChannels) + 1;
+        $this->unavailableChannels[] = $channel;
+        $this->use_request_id[$channel] = false;
+        $response = $this->open_channel($channel, true);
+        if ($response === true && $this->isTimeout()) {
+            throw new RuntimeException('Attempt to (re)connect timed out');
+        }
+
+        $packet = Strings::packSSH2(
+            'CNsbs',
+            SSH2MessageType::CHANNEL_REQUEST,
+            $this->server_channels[$channel],
+            'subsystem',
+            true,
+            'sftp'
+        );
+        $this->send_binary_packet($packet);
+
+        $this->channel_status[$channel] = SSH2MessageType::CHANNEL_REQUEST;
+
+        $response = $this->get_channel_packet($channel, true);
+        if ($response === false) {
+            // from PuTTY's psftp.exe
+            $command = "test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n" .
+                "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n" .
+                "exec sftp-server";
+            // we don't do $this->exec($command, false) because exec() operates on a different channel and plus the SSH_MSG_CHANNEL_OPEN that exec() does
+            // is redundant
+            $packet = Strings::packSSH2(
+                'CNsCs',
+                SSH2MessageType::CHANNEL_REQUEST,
+                $this->server_channels[$channel],
+                'exec',
+                1,
+                $command
+            );
+            $this->send_binary_packet($packet);
+
+            $this->channel_status[$channel] = SSH2MessageType::CHANNEL_REQUEST;
+
+            $response = $this->get_channel_packet($channel, true);
+            if ($response === false) {
+                throw new RuntimeException('Received failure message when trying to open SFTP channel');
+            }
+        } elseif ($response === true && $this->isTimeout()) {
+            throw new RuntimeException('Attempt to (re)connect timed out');
+        }
+
+        $this->channel_status[$channel] = SSH2MessageType::CHANNEL_DATA;
+        $this->send_sftp_packet($channel, SFTPPacketType::INIT, "\0\0\0\3");
+
+        $response = $this->get_sftp_packet($channel);
+        if ($this->packet_type != SFTPPacketType::VERSION) {
+            throw new UnexpectedValueException(
+                'Expected PacketType::VERSION. '
+                . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
+            );
+        }
+
+        $this->use_request_id[$channel] = true;
+        [$this->defaultVersion[$channel]] = Strings::unpackSSH2('N', $response);
+        while (!empty($response)) {
+            [$key, $value] = Strings::unpackSSH2('ss', $response);
+            $this->extensions[$channel][$key] = $value;
+        }
+
+        if ($returnEarly) {
+            return $channel;
+        }
+
+        /*
+         A Note on SFTPv4/5/6 support:
+         <http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-5.1> states the following:
+
+         "If the client wishes to interoperate with servers that support noncontiguous version
+          numbers it SHOULD send '3'"
+
+         Given that the server only sends its version number after the client has already done so, the above
+         seems to be suggesting that v3 should be the default version.  This makes sense given that v3 is the
+         most popular.
+
+         <http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-5.5> states the following;
+
+         "If the server did not send the "versions" extension, or the version-from-list was not included, the
+          server MAY send a status response describing the failure, but MUST then close the channel without
+          processing any further requests."
+
+         So what do you do if you have a client whose initial SSH_FXP_INIT packet says it implements v3 and
+         a server whose initial SSH_FXP_VERSION reply says it implements v4 and only v4?  If it only implements
+         v4, the "versions" extension is likely not going to have been sent so version re-negotiation as discussed
+         in draft-ietf-secsh-filexfer-13 would be quite impossible.  As such, what \phpseclib4\Net\SFTP would do is close the
+         channel and reopen it with a new and updated SSH_FXP_INIT packet.
+        */
+        $this->version[$channel] = $this->defaultVersion[$channel];
+        if (isset($this->extensions[$channel]['versions']) && (!$this->preferredVersion || $this->preferredVersion != $this->version[$channel])) {
+            $versions = explode(',', $this->extensions[$channel]['versions']);
+            $supported = [6, 5, 4];
+            if ($this->preferredVersion) {
+                $supported = array_diff($supported, [$this->preferredVersion]);
+                array_unshift($supported, $this->preferredVersion);
+            }
+            foreach ($supported as $ver) {
+                if (in_array($ver, $versions)) {
+                    if ($ver === $this->version[$channel]) {
+                        break;
+                    }
+                    $this->version[$channel] = (int) $ver;
+                    $packet = Strings::packSSH2('ss', 'version-select', "$ver");
+                    $this->send_sftp_packet($channel, SFTPPacketType::EXTENDED, $packet);
+                    $response = $this->get_sftp_packet($channel);
+                    if ($this->packet_type != SFTPPacketType::STATUS) {
+                        throw new UnexpectedValueException(
+                            'Expected PacketType::STATUS. '
+                            . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
+                        );
+                    }
+                    [$status] = Strings::unpackSSH2('N', $response);
+                    if ($status != StatusCode::OK) {
+                        $this->logError($response, $status);
+                        throw new UnexpectedValueException(
+                            'Expected StatusCode::OK. '
+                            . ' Got ' . $status
+                        );
+                    }
+                    break;
+                }
+            }
+        }
+
+        /*
+         SFTPv4+ defines a 'newline' extension.  SFTPv3 seems to have unofficial support for it via 'newline@vandyke.com',
+         however, I'm not sure what 'newline@vandyke.com' is supposed to do (the fact that it's unofficial means that it's
+         not in the official SFTPv3 specs) and 'newline@vandyke.com' / 'newline' are likely not drop-in substitutes for
+         one another due to the fact that 'newline' comes with a SSH_FXF_TEXT bitmask whereas it seems unlikely that
+         'newline@vandyke.com' would.
+        */
+        /*
+        if (isset($this->extensions['newline@vandyke.com'])) {
+            $this->extensions['newline'] = $this->extensions['newline@vandyke.com'];
+            unset($this->extensions['newline@vandyke.com']);
+        }
+        */
+        if ($this->version[$channel] < 2 || $this->version[$channel] > 6) {
+            throw new RuntimeException('The only SFTP versions phpseclib supports are >= 2 and <= 6 - not ' . $this->version);
+        }
+
+        if ($this->pwd === false) {
+            $this->pwd = true;
+            try {
+                $this->pwd = $this->realpathHelper($channel, '.');
+            } catch (\UnexpectedValueException $e) {
+                if (!$this->canonicalize_paths) {
+                    throw $e;
+                }
+                $this->canonicalize_paths = false;
+                exit('NOT CURRENTLY SUPPORTED');
+                $this->reset_sftp();
+                $this->init_sftp_connection();
+                return -1;
+            }
+        }
+
+
+
+//exit('this ar');
+
+        return $channel;
+    }
+
+    public function opendir(string $dir = '.'): SFTP\OpenDirectory
+    {
+        $channel = $this->openSFTPChannel();
+        $dir = $this->realpath($dir . '/');
+
+        // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.1.2
+        $this->send_sftp_packet($channel, SFTPPacketType::OPENDIR, Strings::packSSH2('s', $dir));
+
+        $response = $this->get_sftp_packet($channel);
+        switch ($this->packet_type) {
+            case SFTPPacketType::HANDLE:
+                // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-9.2
+                // since 'handle' is the last field in the SSH_FXP_HANDLE packet, we'll just remove the first four bytes that
+                // represent the length of the string and leave it at that
+                $handle = substr($response, 4);
+                break;
+            case SFTPPacketType::STATUS:
+                // presumably the status code is either SSH_FX_NO_SUCH_FILE or SSH_FX_PERMISSION_DENIED
+                throw $this->throwStatusError($response);
+            default:
+                throw new UnexpectedValueException(
+                    'Expected PacketType::HANDLE or PacketType::STATUS. '
+                    . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
+                );
+        }
+        return new SFTP\OpenDirectory($this, $dir, $channel, $handle);
     }
 
     /**
@@ -712,6 +934,85 @@ class SFTP extends SSH2
                 case '..':
                     array_pop($new);
                     // fall-through
+                case '.':
+                    break;
+                default:
+                    $new[] = $dir;
+            }
+        }
+
+        return '/' . implode('/', $new);
+    }
+
+    private function realpathHelper(int $channel, string $path): string
+    {
+        $path = (string) $path;
+
+        if (!$this->canonicalize_paths) {
+            if ($this->pwd === true) {
+                return '.';
+            }
+            if (!strlen($path) || $path[0] != '/') {
+                $path = $this->pwd[$channel] . '/' . $path;
+            }
+            $parts = explode('/', $path);
+            $afterPWD = $beforePWD = [];
+            foreach ($parts as $part) {
+                switch ($part) {
+                    //case '': // some SFTP servers /require/ double /'s. see https://github.com/phpseclib/phpseclib/pull/1137
+                    case '.':
+                        break;
+                    case '..':
+                        if (!empty($afterPWD)) {
+                            array_pop($afterPWD);
+                        } else {
+                            $beforePWD[] = '..';
+                        }
+                        break;
+                    default:
+                        $afterPWD[] = $part;
+                }
+            }
+            $beforePWD = count($beforePWD) ? implode('/', $beforePWD) : '.';
+            return $beforePWD . '/' . implode('/', $afterPWD);
+        }
+
+        if ($this->pwd === true) {
+            // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.9
+            $this->send_sftp_packet($channel, SFTPPacketType::REALPATH, Strings::packSSH2('s', $path));
+
+            $response = $this->get_sftp_packet($channel);
+            switch ($this->packet_type) {
+                case SFTPPacketType::NAME:
+                    // although SSH_FXP_NAME is implemented differently in SFTPv3 than it is in SFTPv4+, the following
+                    // should work on all SFTP versions since the only part of the SSH_FXP_NAME packet the following looks
+                    // at is the first part and that part is defined the same in SFTP versions 3 through 6.
+                    [, $filename] = Strings::unpackSSH2('Ns', $response);
+                    return $filename;
+                case SFTPPacketType::STATUS:
+                    throw $this->throwStatusError($response);
+                default:
+                    throw new UnexpectedValueException(
+                        'Expected PacketType::NAME or PacketType::STATUS. '
+                        . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
+                    );
+            }
+        }
+
+        if (!strlen($path) || $path[0] != '/') {
+            $path = $this->pwd . '/' . $path;
+        }
+
+        $path = explode('/', $path);
+        $new = [];
+        foreach ($path as $dir) {
+            if (!strlen($dir)) {
+                continue;
+            }
+            switch ($dir) {
+                case '..':
+                    array_pop($new);
+                // fall-through
                 case '.':
                     break;
                 default:
@@ -2603,7 +2904,7 @@ return;
      *
      * See '7.7.  Times' of draft-ietf-secsh-filexfer-13 for more info.
      */
-    private function parseTime(string $key, int $flags, string &$response): array
+    private static function parseTime(string $key, int $flags, string &$response): array
     {
         $attr = [];
         [$attr[$key]] = Strings::unpackSSH2('Q', $response);
@@ -2618,11 +2919,11 @@ return;
      *
      * See '7.  File Attributes' of draft-ietf-secsh-filexfer-13 for more info.
      */
-    protected function parseAttributes(string &$response): array
+    protected static function parseAttributes(int $version, string &$response): array
     {
         $attr = [];
 
-        if ($this->version >= 4) {
+        if ($version >= 4) {
             [$flags, $attr['type']] = Strings::unpackSSH2('NC', $response);
         } else {
             [$flags] = Strings::unpackSSH2('N', $response);
@@ -2631,7 +2932,7 @@ return;
         foreach (Attribute::getConstants() as $value => $key) {
             switch ($flags & $key) {
                 case Attribute::UIDGID:
-                    if ($this->version > 3) {
+                    if ($version > 3) {
                         continue 2;
                     }
                     break;
@@ -2640,12 +2941,12 @@ return;
                 case Attribute::ACL:
                 case Attribute::OWNERGROUP:
                 case Attribute::SUBSECOND_TIMES:
-                    if ($this->version < 4) {
+                    if ($version < 4) {
                         continue 2;
                     }
                     break;
                 case Attribute::BITS:
-                    if ($this->version < 5) {
+                    if ($version < 5) {
                         continue 2;
                     }
                     break;
@@ -2655,7 +2956,7 @@ return;
                 case Attribute::LINK_COUNT:
                 case Attribute::UNTRANSLATED_NAME:
                 case Attribute::CTIME:
-                    if ($this->version < 6) {
+                    if ($version < 6) {
                         continue 2;
                     }
             }
@@ -2674,23 +2975,23 @@ return;
                     break;
                 case Attribute::PERMISSIONS: // 0x00000004
                     [$attr['mode']] = Strings::unpackSSH2('N', $response);
-                    $fileType = $this->parseMode($attr['mode']);
-                    if ($this->version < 4 && $fileType !== false) {
+                    $fileType = self::parseMode($attr['mode']);
+                    if ($version < 4 && $fileType !== false) {
                         $attr += ['type' => $fileType];
                     }
                     break;
                 case Attribute::ACCESSTIME: // 0x00000008
-                    if ($this->version >= 4) {
-                        $attr += $this->parseTime('atime', $flags, $response);
+                    if ($version >= 4) {
+                        $attr += self::parseTime($version, 'atime', $flags, $response);
                         break;
                     }
                     [$attr['atime'], $attr['mtime']] = Strings::unpackSSH2('NN', $response);
                     break;
                 case Attribute::CREATETIME:       // 0x00000010 (SFTPv4+)
-                    $attr += $this->parseTime('createtime', $flags, $response);
+                    $attr += self::parseTime($version, 'createtime', $flags, $response);
                     break;
                 case Attribute::MODIFYTIME:       // 0x00000020
-                    $attr += $this->parseTime('mtime', $flags, $response);
+                    $attr += self::parseTime($version, 'mtime', $flags, $response);
                     break;
                 case Attribute::ACL:              // 0x00000040
                     // access control list
@@ -2745,7 +3046,7 @@ return;
                 case Attribute::CTIME:            // 0x00008000
                     // 'ctime' contains the last time the file attributes were changed.  The
                     // exact meaning of this field depends on the server.
-                    $attr += $this->parseTime('ctime', $flags, $response);
+                    $attr += self::parseTime($version, 'ctime', $flags, $response);
                     break;
                 case Attribute::EXTENDED: // 0x80000000
                     [$count] = Strings::unpackSSH2('N', $response);
@@ -2765,7 +3066,7 @@ return;
      *
      * @return int
      */
-    private function parseMode(int $mode)
+    private static function parseMode(int $mode)
     {
         // values come from http://lxr.free-electrons.com/source/include/uapi/linux/stat.h#L12
         // see, also, http://linux.die.net/man/2/stat
@@ -2808,7 +3109,7 @@ return;
      *
      * If the longname is in an unrecognized format bool(false) is returned.
      */
-    private function parseLongname(string $longname)
+    private static function parseLongname(string $longname)
     {
         // http://en.wikipedia.org/wiki/Unix_file_types
         // http://en.wikipedia.org/wiki/Filesystem_permissions#Notation_of_traditional_Unix_permissions
@@ -2836,19 +3137,19 @@ return;
      * @see self::_get_sftp_packet()
      * @see self::send_channel_packet()
      */
-    private function send_sftp_packet(int $type, string $data, int $request_id = 1): void
+    private function send_sftp_packet(int $channel, int $type, string $data, int $request_id = 1): void
     {
         // in SSH2.php the timeout is cumulative per function call. eg. exec() will
         // timeout after 10s. but for SFTP.php it's cumulative per packet
         $this->curTimeout = $this->timeout;
         $this->is_timeout = false;
 
-        $packet = $this->use_request_id ?
+        $packet = $this->use_request_id[$channel] ?
             pack('NCNa*', strlen($data) + 5, $type, $request_id, $data) :
             pack('NCa*', strlen($data) + 1, $type, $data);
 
         $start = microtime(true);
-        $this->send_channel_packet(self::CHANNEL, $packet);
+        $this->send_channel_packet($channel, $packet);
         $stop = microtime(true);
         if (defined('NET_SFTP_LOGGING')) {
             $packet_type = '-> SSH_FXP_' . SFTPPacketType::getConstantNameByValue($type) .
@@ -2889,7 +3190,7 @@ return;
      * @see    self::_send_sftp_packet()
      * @return string
      */
-    private function get_sftp_packet($request_id = null)
+    private function get_sftp_packet(int $channel_id, ?int $request_id = null)
     {
         $this->channel_close = false;
 
@@ -2909,9 +3210,9 @@ return;
 
         // SFTP packet length
         while (strlen($this->packet_buffer) < 4) {
-            $temp = $this->get_channel_packet(self::CHANNEL, true);
+            $temp = $this->get_channel_packet($channel_id, true);
             if ($temp === true) {
-                if ($this->channel_status[self::CHANNEL] === SSH2MessageType::CHANNEL_CLOSE) {
+                if ($this->channel_status[$channel_id] === SSH2MessageType::CHANNEL_CLOSE) {
                     $this->channel_close = true;
                 }
                 $this->packet_type = -1;
@@ -2929,15 +3230,15 @@ return;
         $tempLength -= strlen($this->packet_buffer);
 
         // 256 * 1024 is what SFTP_MAX_MSG_LENGTH is set to in OpenSSH's sftp-common.h
-        if (!$this->allow_arbitrary_length_packets && !$this->use_request_id && $tempLength > 256 * 1024) {
+        if (!$this->allow_arbitrary_length_packets && !$this->use_request_id[$channel_id] && $tempLength > 256 * 1024) {
             throw new RuntimeException('Invalid Size');
         }
 
         // SFTP packet type and data payload
         while ($tempLength > 0) {
-            $temp = $this->get_channel_packet(self::CHANNEL, true);
+            $temp = $this->get_channel_packet($channel_id, true);
             if ($temp === true) {
-                if ($this->channel_status[self::CHANNEL] === SSH2MessageType::CHANNEL_CLOSE) {
+                if ($this->channel_status[$channel_id] === SSH2MessageType::CHANNEL_CLOSE) {
                     $this->channel_close = true;
                 }
                 $this->packet_type = -1;
@@ -2952,7 +3253,7 @@ return;
 
         $this->packet_type = ord(Strings::shift($this->packet_buffer));
 
-        if ($this->use_request_id) {
+        if ($this->use_request_id[$channel_id]) {
             ['packet_id' => $packet_id] = unpack('Npacket_id', Strings::shift($this->packet_buffer, 4)); // remove the request id
             $length -= 5; // account for the request id and the packet type
         } else {
@@ -3101,6 +3402,7 @@ return;
      */
     protected function disconnect_helper(int $reason): bool
     {
+        return true;
         $this->pwd = false;
         return parent::disconnect_helper($reason);
     }
