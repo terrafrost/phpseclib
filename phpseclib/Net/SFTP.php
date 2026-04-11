@@ -405,7 +405,7 @@ class SFTP extends SSH2
         if ($this->packet_type != SFTPPacketType::VERSION) {
             throw new UnexpectedValueException(
                 'Expected PacketType::VERSION. '
-                . 'Got packet type: ' .SFTPPacketType::getConstantNameByValue($this->packet_type)
+                . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
             );
         }
 
@@ -591,11 +591,11 @@ class SFTP extends SSH2
 
     private function throwStatusError(string $response, int $status = -1): RuntimeException
     {
-        $this->lastErrorResponse = $response;
-
         if ($status == -1) {
             [$status] = Strings::unpackSSH2('N', $response);
         }
+
+        $this->lastErrorResponse = $response;
 
         $error = StatusCode::getConstantNameByValue($status);
 
@@ -809,7 +809,7 @@ class SFTP extends SSH2
                 try {
                     $temp = $this->nlist_helper($dir . '/' . $value, true, $relativeDir . $value . '/');
                 } catch (\Exception $e) {
-                    $this->logError($this->lastErrorResponse, filename: "OPENDIR $path");
+                    $this->logError($this->lastErrorResponse, $e->getCode(), "OPENDIR $path");
                     $temp = [];
                 }
 
@@ -836,7 +836,7 @@ class SFTP extends SSH2
                 throw $e;
             }
             $files = [];
-            $this->logError($this->lastErrorResponse, filename: "OPENDIR $dir");
+            $this->logError($this->lastErrorResponse, $e->getCode(), "OPENDIR $dir");
         }
         if (!$recursive) {
             return $files;
@@ -924,9 +924,9 @@ class SFTP extends SSH2
                         if ($this->version < 4) {
                             [$longname] = Strings::unpackSSH2('s', $response);
                         }
-                        $attributes = $this->parseAttributes($response);
+                        $attributes = self::parseAttributes($this->version, $response);
                         if (!isset($attributes['type']) && $this->version < 4) {
-                            $fileType = $this->parseLongname($longname);
+                            $fileType = self::parseLongname($longname);
                             if ($fileType) {
                                 $attributes['type'] = $fileType;
                             }
@@ -1278,7 +1278,7 @@ class SFTP extends SSH2
         $response = $this->get_sftp_packet();
         switch ($this->packet_type) {
             case SFTPPacketType::ATTRS:
-                return $this->parseAttributes($response);
+                return self::parseAttributes($this->version, $response);
             case SFTPPacketType::STATUS:
                 throw $this->throwStatusError($response);
         }
@@ -1294,6 +1294,8 @@ class SFTP extends SSH2
      */
     public function truncate(string $filename, int $new_size): void
     {
+        $this->precheck();
+
         $attr = Strings::packSSH2('NQ', Attribute::SIZE, $new_size);
 
         $this->setstat($filename, $attr, false);
@@ -1335,7 +1337,8 @@ return;
         $response = $this->get_sftp_packet();
         switch ($this->packet_type) {
             case SFTPPacketType::HANDLE:
-//                return $this->close_handle(substr($response, 4));
+                $this->close_handle(substr($response, 4));
+                return;
             case SFTPPacketType::STATUS:
                 throw $this->throwStatusError($response);
             default:
@@ -1358,6 +1361,8 @@ return;
      */
     public function chown(string $filename, int|string $uid, bool $recursive = false): void
     {
+        $this->precheck();
+
         /*
          quoting <https://datatracker.ietf.org/doc/html/draft-ietf-secsh-filexfer-13#section-7.5>,
 
@@ -1400,6 +1405,8 @@ return;
      */
     public function chgrp(string $filename, int|string $gid, bool $recursive = false): void
     {
+        $this->precheck();
+
         $attr = $this->version < 4 ?
             pack('N3', Attribute::UIDGID, -1, $gid) :
             Strings::packSSH2('Nss', Attribute::OWNERGROUP, '', $gid);
@@ -1408,42 +1415,16 @@ return;
     }
 
     /**
-     * Set permissions on a file.
-     *
-     * Returns the new file permissions on success or false on error.
-     * If $recursive is true than this just returns true or false.
+     * Set permissions on a file
      *
      * @throws UnexpectedValueException on receipt of unexpected packets
      */
-    public function chmod(int $mode, string $filename, bool $recursive = false): void
+    public function chmod(string $filename, int $mode, bool $recursive = false): void
     {
-return;
+        $this->precheck();
+
         $attr = pack('N2', Attribute::PERMISSIONS, $mode & 0o7777);
         $this->setstat($filename, $attr, $recursive);
-        if ($recursive) {
-            return;
-        }
-
-        $filename = $this->realpath($filename);
-        // rather than return what the permissions *should* be, we'll return what they actually are.  this will also
-        // tell us if the file actually exists.
-        // incidentally, SFTPv4+ adds an additional 32-bit integer field - flags - to the following:
-        $packet = pack('Na*', strlen($filename), $filename);
-        $this->send_sftp_packet(SFTPPacketType::STAT, $packet);
-
-        $response = $this->get_sftp_packet();
-        switch ($this->packet_type) {
-            case SFTPPacketType::ATTRS:
-                $attrs = $this->parseAttributes($response);
-//                return $attrs['mode'];
-            case SFTPPacketType::STATUS:
-                throw $this->throwStatusError($response);
-        }
-
-        throw new UnexpectedValueException(
-            'Expected PacketType::ATTRS or PacketType::STATUS. '
-            . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
-        );
     }
 
     /**
@@ -1453,16 +1434,14 @@ return;
      */
     private function setstat(string $filename, string $attr, bool $recursive): void
     {
-        $this->precheck();
-
         $filename = $this->realpath($filename);
 
         $this->remove_from_stat_cache($filename);
 
         if ($recursive) {
-            $i = 0;
-            $this->setstat_recursive($filename, $attr, $i);
-            $this->read_put_responses($i);
+            $files = [];
+            $this->setstat_recursive($filename, $attr, $files);
+            $this->read_put_responses($files);
             return;
         }
 
@@ -1498,16 +1477,21 @@ return;
      *
      * Minimizes directory lookups and SSH_FXP_STATUS requests for speed.
      */
-    private function setstat_recursive(string $path, string $attr, int &$i): void
+    private function setstat_recursive(string $path, string $attr, array &$files): void
     {
-        $this->read_put_responses($i);
+        $this->read_put_responses($files);
 
         try {
             // try to open $path as a directory
             $entries = $this->readlist($path, true);
         } catch (\Exception $e) {
+            $this->logError($this->lastErrorResponse, $e->getCode(), "OPENDIR $path");
             // if it can't be opened assume it's a file
-            $this->setstat($path, $attr, false);
+            try {
+                $this->setstat($path, $attr, false);
+            } catch (\Exception $e) {
+                $this->logError($this->lastErrorResponse, $e->getCode(), "SETSTAT $path");
+            }
             return;
         }
 
@@ -1525,7 +1509,7 @@ return;
 
             $temp = $path . '/' . $filename;
             if ($props['type'] == FileType::DIRECTORY) {
-                $this->setstat_recursive($temp, $attr, $i);
+                $this->setstat_recursive($temp, $attr, $files);
             } else {
                 $packet = Strings::packSSH2('s', $temp);
                 $packet .= $this->version >= 4 ?
@@ -1533,9 +1517,9 @@ return;
                     $attr;
                 $this->send_sftp_packet(SFTPPacketType::SETSTAT, $packet);
 
-                $i++;
-                if ($i >= $this->queueSize) {
-                    $this->read_put_responses($i);
+                $files[] = $filename;
+                if (count($files) >= $this->queueSize) {
+                    $this->read_put_responses($files);
                 }
             }
         }
@@ -1546,20 +1530,18 @@ return;
             $attr;
         $this->send_sftp_packet(SFTPPacketType::SETSTAT, $packet);
 
-        $i++;
-        if ($i >= $this->queueSize) {
-            $this->read_put_responses($i);
+        $files[] = $filename;
+        if (count($files) >= $this->queueSize) {
+            $this->read_put_responses($files);
         }
     }
 
     /**
      * Return the target of a symbolic link
      *
-     * Returns null if the path is not a symlink
-     *
      * @throws UnexpectedValueException on receipt of unexpected packets
      */
-    public function readlink(string $link): ?string
+    public function readlink(string $link): string
     {
         $this->precheck();
 
@@ -1582,8 +1564,7 @@ return;
 
         [$count] = Strings::unpackSSH2('N', $response);
         if (!$count) {
-            return null;
-            //throw new RuntimException('The file in question is not a symlink');
+            throw new RuntimException('The file in question is not a symlink');
         }
 
         [$filename] = Strings::unpackSSH2('s', $response);
@@ -1594,7 +1575,7 @@ return;
     /**
      * Create a symlink
      *
-     * symlink() creates a symbolic link to the existing target with the specified name link.
+     * symlink() creates a symbolic link to the existing $target with the specified name $link.
      *
      * @throws UnexpectedValueException on receipt of unexpected packets
      */
@@ -1840,7 +1821,7 @@ return;
             case SFTPPacketType::HANDLE:
                 $handle = substr($response, 4);
                 break;
-            case SFTPPacketType::STATUS:
+            case SFTPPacketType::STATUS:break;
                 throw $this->throwStatusError($response);
             default:
                 throw new UnexpectedValueException(
@@ -2242,7 +2223,7 @@ return;
         try {
             $entries = $this->readlist($path, true);
         } catch (\Exception $e) {
-            $this->logError($this->lastErrorResponse, filename: "OPENDIR $path");
+            $this->logError($this->lastErrorResponse, $e->getCode(), "OPENDIR $path");
             if ($e->getCode() == StatusCode::NO_SUCH_FILE) {
                 return;
             }
@@ -2296,7 +2277,12 @@ return;
             }
         }
 
-        return $this->stat($path) !== false;
+        try {
+            $this->stat($path);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -2396,7 +2382,7 @@ return;
     /**
      * Gets last access time of file
      */
-    public function fileatime(string $path)
+    public function fileatime(string $path): int
     {
         return $this->get_stat_cache_prop($path, 'atime');
     }
@@ -2404,7 +2390,7 @@ return;
     /**
      * Gets file modification time
      */
-    public function filemtime(string $path)
+    public function filemtime(string $path): int
     {
         return $this->get_stat_cache_prop($path, 'mtime');
     }
@@ -2412,7 +2398,7 @@ return;
     /**
      * Gets file permissions
      */
-    public function fileperms(string $path)
+    public function fileperms(string $path): int
     {
         return $this->get_stat_cache_prop($path, 'mode');
     }
@@ -2420,17 +2406,21 @@ return;
     /**
      * Gets file owner
      */
-    public function fileowner(string $path)
+    public function fileowner(string $path): int|string
     {
-        return $this->get_stat_cache_prop($path, 'uid');
+        $this->precheck();
+
+        return $this->get_stat_cache_prop($path, $this->version > 3 ? 'owner' : 'uid');
     }
 
     /**
      * Gets file group
      */
-    public function filegroup(string $path)
+    public function filegroup(string $path): int|string
     {
-        return $this->get_stat_cache_prop($path, 'gid');
+        $this->precheck();
+
+        return $this->get_stat_cache_prop($path, $this->version > 3 ? 'group' : 'gid');
     }
 
     /**
@@ -2453,7 +2443,7 @@ return;
     /**
      * Gets file size
      */
-    public function filesize(string $path, bool $recursive = false)
+    public function filesize(string $path, bool $recursive = false): int
     {
         return !$recursive || $this->filetype($path) != 'dir' ?
             $this->get_stat_cache_prop($path, 'size') :
@@ -2462,32 +2452,19 @@ return;
 
     /**
      * Gets file type
-     *
-     * @return string|false
      */
-    public function filetype(string $path)
+    public function filetype(string $path): string
     {
         $type = $this->get_stat_cache_prop($path, 'type');
-        if ($type === false) {
-            return false;
-        }
 
-        switch ($type) {
-            case FileType::BLOCK_DEVICE:
-                return 'block';
-            case FileType::CHAR_DEVICE:
-                return 'char';
-            case FileType::DIRECTORY:
-                return 'dir';
-            case FileType::FIFO:
-                return 'fifo';
-            case FileType::REGULAR:
-                return 'file';
-            case FileType::SYMLINK:
-                return 'link';
-            default:
-                return false;
-        }
+        return match ($type) {
+            FileType::BLOCK_DEVICE => 'block',
+            FileType::CHAR_DEVICE => 'char',
+            FileType::DIRECTORY => 'dir',
+            FileType::FIFO => 'fifo',
+            FileType::REGULAR => 'link',
+            default => throw new RuntimeException("Unable to map file type ($type) to a known type")
+        };
     }
 
     /**
@@ -2545,15 +2522,12 @@ return;
      *
      * @throws UnexpectedValueException on receipt of unexpected packets
      */
-    public function rename(string $oldname, string $newname): bool
+    public function rename(string $oldname, string $newname): void
     {
         $this->precheck();
 
         $oldname = $this->realpath($oldname);
         $newname = $this->realpath($newname);
-        if ($oldname === false || $newname === false) {
-            return false;
-        }
 
         // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.3
         $packet = Strings::packSSH2('ss', $oldname, $newname);
@@ -2585,8 +2559,7 @@ return;
          */
         [$status] = Strings::unpackSSH2('N', $response);
         if ($status != StatusCode::OK) {
-            $this->logError($response, $status);
-            return false;
+            throw $this->throwStatusError($response, $status);
         }
 
         // don't move the stat cache entry over since this operation could very well change the
@@ -2594,8 +2567,6 @@ return;
         //$this->update_stat_cache($newname, $this->query_stat_cache($oldname));
         $this->remove_from_stat_cache($oldname);
         $this->remove_from_stat_cache($newname);
-
-        return true;
     }
 
     /**
@@ -2603,7 +2574,7 @@ return;
      *
      * See '7.7.  Times' of draft-ietf-secsh-filexfer-13 for more info.
      */
-    private function parseTime(string $key, int $flags, string &$response): array
+    private static function parseTime(string $key, int $flags, string &$response): array
     {
         $attr = [];
         [$attr[$key]] = Strings::unpackSSH2('Q', $response);
@@ -2618,11 +2589,11 @@ return;
      *
      * See '7.  File Attributes' of draft-ietf-secsh-filexfer-13 for more info.
      */
-    protected function parseAttributes(string &$response): array
+    protected static function parseAttributes(int $version, string &$response): array
     {
         $attr = [];
 
-        if ($this->version >= 4) {
+        if ($version >= 4) {
             [$flags, $attr['type']] = Strings::unpackSSH2('NC', $response);
         } else {
             [$flags] = Strings::unpackSSH2('N', $response);
@@ -2631,7 +2602,7 @@ return;
         foreach (Attribute::getConstants() as $value => $key) {
             switch ($flags & $key) {
                 case Attribute::UIDGID:
-                    if ($this->version > 3) {
+                    if ($version > 3) {
                         continue 2;
                     }
                     break;
@@ -2640,12 +2611,12 @@ return;
                 case Attribute::ACL:
                 case Attribute::OWNERGROUP:
                 case Attribute::SUBSECOND_TIMES:
-                    if ($this->version < 4) {
+                    if ($version < 4) {
                         continue 2;
                     }
                     break;
                 case Attribute::BITS:
-                    if ($this->version < 5) {
+                    if ($version < 5) {
                         continue 2;
                     }
                     break;
@@ -2655,7 +2626,7 @@ return;
                 case Attribute::LINK_COUNT:
                 case Attribute::UNTRANSLATED_NAME:
                 case Attribute::CTIME:
-                    if ($this->version < 6) {
+                    if ($version < 6) {
                         continue 2;
                     }
             }
@@ -2674,23 +2645,23 @@ return;
                     break;
                 case Attribute::PERMISSIONS: // 0x00000004
                     [$attr['mode']] = Strings::unpackSSH2('N', $response);
-                    $fileType = $this->parseMode($attr['mode']);
-                    if ($this->version < 4 && $fileType !== false) {
+                    $fileType = self::parseMode($attr['mode']);
+                    if ($version < 4 && isset($fileType)) {
                         $attr += ['type' => $fileType];
                     }
                     break;
                 case Attribute::ACCESSTIME: // 0x00000008
-                    if ($this->version >= 4) {
-                        $attr += $this->parseTime('atime', $flags, $response);
+                    if ($version >= 4) {
+                        $attr += self::parseTime('atime', $flags, $response);
                         break;
                     }
                     [$attr['atime'], $attr['mtime']] = Strings::unpackSSH2('NN', $response);
                     break;
                 case Attribute::CREATETIME:       // 0x00000010 (SFTPv4+)
-                    $attr += $this->parseTime('createtime', $flags, $response);
+                    $attr += self::parseTime('createtime', $flags, $response);
                     break;
                 case Attribute::MODIFYTIME:       // 0x00000020
-                    $attr += $this->parseTime('mtime', $flags, $response);
+                    $attr += self::parseTime('mtime', $flags, $response);
                     break;
                 case Attribute::ACL:              // 0x00000040
                     // access control list
@@ -2702,7 +2673,7 @@ return;
                     }
                     break;
                 case Attribute::OWNERGROUP:       // 0x00000080
-                    [$attr['owner'], $attr['$group']] = Strings::unpackSSH2('ss', $response);
+                    [$attr['owner'], $attr['group']] = Strings::unpackSSH2('ss', $response);
                     break;
                 case Attribute::SUBSECOND_TIMES:  // 0x00000100
                     break;
@@ -2745,7 +2716,7 @@ return;
                 case Attribute::CTIME:            // 0x00008000
                     // 'ctime' contains the last time the file attributes were changed.  The
                     // exact meaning of this field depends on the server.
-                    $attr += $this->parseTime('ctime', $flags, $response);
+                    $attr += self::parseTime('ctime', $flags, $response);
                     break;
                 case Attribute::EXTENDED: // 0x80000000
                     [$count] = Strings::unpackSSH2('N', $response);
@@ -2762,39 +2733,27 @@ return;
      * Attempt to identify the file type
      *
      * Quoting the SFTP RFC, "Implementations MUST NOT send bits that are not defined" but they seem to anyway
-     *
-     * @return int
      */
-    private function parseMode(int $mode)
+    private static function parseMode(int $mode): ?int
     {
         // values come from http://lxr.free-electrons.com/source/include/uapi/linux/stat.h#L12
         // see, also, http://linux.die.net/man/2/stat
-        switch ($mode & 0o170000) {// ie. 1111 0000 0000 0000
-            case 0: // no file type specified - figure out the file type using alternative means
-                return false;
-            case 0o040000:
-                return FileType::DIRECTORY;
-            case 0o100000:
-                return FileType::REGULAR;
-            case 0o120000:
-                return FileType::SYMLINK;
+        return match ($mode & 0o170000) {// ie. 1111 0000 0000 0000
+            0 => null, // no file type specified - figure out the file type using alternative means
+            0o040000 => FileType::DIRECTORY,
+            0o100000 => FileType::REGULAR,
+            0o120000 => FileType::SYMLINK,
             // new types introduced in SFTPv5+
             // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-05#section-5.2
-            case 0o010000: // named pipe (fifo)
-                return FileType::FIFO;
-            case 0o020000: // character special
-                return FileType::CHAR_DEVICE;
-            case 0o060000: // block special
-                return FileType::BLOCK_DEVICE;
-            case 0o140000: // socket
-                return FileType::SOCKET;
-            case 0o160000: // whiteout
-                // "SPECIAL should be used for files that are of
-                //  a known type which cannot be expressed in the protocol"
-                return FileType::SPECIAL;
-            default:
-                return FileType::UNKNOWN;
-        }
+            0o010000 => FileType::FIFO, // named pipe (fifo)
+            0o020000 => FileType::CHAR_DEVICE, // character special
+            0o060000 => FileType::BLOCK_DEVICE, // block special
+            0o140000 => FileType::SOCKET, // socket
+            // "SPECIAL should be used for files that are of
+            //  a known type which cannot be expressed in the protocol"
+            0o160000 => FileType::SPECIAL, // whiteout
+            default => FileType::UNKNOWN
+        };
     }
 
     /**
@@ -2808,24 +2767,20 @@ return;
      *
      * If the longname is in an unrecognized format bool(false) is returned.
      */
-    private function parseLongname(string $longname)
+    private static function parseLongname(string $longname): ?int
     {
         // http://en.wikipedia.org/wiki/Unix_file_types
         // http://en.wikipedia.org/wiki/Filesystem_permissions#Notation_of_traditional_Unix_permissions
         if (preg_match('#^[^/]([r-][w-][xstST-]){3}#', $longname)) {
-            switch ($longname[0]) {
-                case '-':
-                    return FileType::REGULAR;
-                case 'd':
-                    return FileType::DIRECTORY;
-                case 'l':
-                    return FileType::SYMLINK;
-                default:
-                    return FileType::SPECIAL;
-            }
+            return match ($longname[0]) {
+                '-' => FileType::REGULAR,
+                'd' => FileType::DIRECTORY,
+                'l' => FileType::SYMLINK,
+                default => FileType::SPECIAL
+            };
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -2886,10 +2841,11 @@ return;
      * There can be one SSH_MSG_CHANNEL_DATA messages containing two SFTP packets or there can be two SSH_MSG_CHANNEL_DATA
      * messages containing one SFTP packet.
      *
+     * By the time this function is called the channel_status is SSH2MessageType::CHANNEL_DATA.
+     *
      * @see    self::_send_sftp_packet()
-     * @return string
      */
-    private function get_sftp_packet($request_id = null)
+    private function get_sftp_packet(?int $request_id = null): string
     {
         $this->channel_close = false;
 
@@ -2916,7 +2872,7 @@ return;
                 }
                 $this->packet_type = -1;
                 $this->packet_buffer = '';
-                return false;
+                throw new RuntimeException('Error reading next SFTP packet');
             }
             $this->packet_buffer .= $temp;
         }
@@ -2942,7 +2898,7 @@ return;
                 }
                 $this->packet_type = -1;
                 $this->packet_buffer = '';
-                return false;
+                throw new RuntimeException('Error reading next SFTP packet');
             }
             $this->packet_buffer .= $temp;
             $tempLength -= strlen($temp);
@@ -3002,24 +2958,19 @@ return;
      * Returns a log of the packets that have been sent and received.
      *
      * Returns a string if PacketType::LOGGING == self::LOG_COMPLEX, an array if PacketType::LOGGING == self::LOG_SIMPLE and false if !defined('NET_SFTP_LOGGING')
-     *
-     * @return array|string|false
      */
-    public function getSFTPLog()
+    public function getSFTPLog(): array|string|null
     {
         if (!defined('NET_SFTP_LOGGING')) {
-            return false;
+            return null;
         }
 
-        switch (NET_SFTP_LOGGING) {
-            case self::LOG_COMPLEX:
-                return $this->format_log($this->packet_log, $this->packet_type_log);
-                break;
-            //case self::LOG_SIMPLE:
-            default:
-                return $this->packet_type_log;
-        }
+        return match (NET_SFTP_LOGGING ?? -1) {
+            self::LOG_COMPLEX => $this->format_log($this->packet_log, $this->packet_type_log),
+            default => $this->packet_type_log
+        };
     }
+
     /**
      * Returns all errors on the SFTP layer and resets internal error array
      */
@@ -3032,13 +2983,11 @@ return;
 
     /**
      * Get supported SFTP versions
-     *
-     * @return array
      */
-    public function getSupportedVersions()
+    public function getSupportedVersions(): array
     {
         if (!($this->bitmap & SSH2::MASK_LOGIN)) {
-            return false;
+            throw new RuntimeException("Function should not be called before you've logged in");
         }
 
         if (!$this->partial_init) {
@@ -3054,13 +3003,11 @@ return;
 
     /**
      * Get supported SFTP extensions
-     *
-     * @return array
      */
-    public function getSupportedExtensions()
+    public function getSupportedExtensions(): array
     {
         if (!($this->bitmap & SSH2::MASK_LOGIN)) {
-            return false;
+            throw new RuntimeException("Function should not be called before you've logged in");
         }
 
         if (!$this->partial_init) {
@@ -3072,10 +3019,8 @@ return;
 
     /**
      * Get supported SFTP versions
-     *
-     * @return int|false
      */
-    public function getNegotiatedVersion()
+    public function getNegotiatedVersion(): int
     {
         $this->precheck();
 
@@ -3125,20 +3070,13 @@ return;
      * Copy
      *
      * This method (currently) only works if the copy-data extension is available
-     *
-     * @param string $oldname
-     * @param string $newname
-     * @return bool
      */
-    public function copy(string $oldname, string $newname): bool
+    public function copy(string $oldname, string $newname): void
     {
         $this->precheck();
 
         $oldname = $this->realpath($oldname);
         $newname = $this->realpath($newname);
-        if ($oldname === false || $newname === false) {
-            return false;
-        }
 
         if (!isset($this->extensions['copy-data']) || $this->extensions['copy-data'] !== '1') {
             throw new \RuntimeException(
@@ -3161,18 +3099,15 @@ return;
                 $oldhandle = substr($response, 4);
                 break;
             case PacketType::STATUS: // presumably SSH_FX_NO_SUCH_FILE or SSH_FX_PERMISSION_DENIED
-                $this->logError($response);
-                return false;
+                throw $this->throwStatusError($response);
             default:
                 throw new \UnexpectedValueException('Expected NET_SFTP_HANDLE or NET_SFTP_STATUS. '
                                                   . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type));
         }
 
-        if ($this->version >= 5) {
-            $flags = OpenFlag5::OPEN_OR_CREATE;
-        } else {
-            $flags = OpenFlag::WRITE | OpenFlag::CREATE;
-        }
+        $flags = $this->version >= 5 ?
+            OpenFlag5::OPEN_OR_CREATE :
+            OpenFlag::WRITE | OpenFlag::CREATE;
 
         $packet = Strings::packSSH2('s', $newname);
         $packet .= $this->version >= 5 ?
@@ -3186,8 +3121,7 @@ return;
                 $newhandle = substr($response, 4);
                 break;
             case PacketType::STATUS:
-                $this->logError($response);
-                return false;
+                throw $this->throwStatusError($response);
             default:
                 throw new \UnexpectedValueException('Expected NET_SFTP_HANDLE or NET_SFTP_STATUS. '
                                                   . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type));
@@ -3204,8 +3138,6 @@ return;
 
         $this->close_handle($oldhandle);
         $this->close_handle($newhandle);
-
-        return true;
     }
 
     /**
@@ -3216,15 +3148,12 @@ return;
      * ie. "there is no observable instant in time where the name does not refer to either the old or the new file"
      * (draft-ietf-secsh-filexfer-13#page-39).
      */
-    public function posix_rename(string $oldname, string $newname): bool
+    public function posix_rename(string $oldname, string $newname): void
     {
         $this->precheck();
 
         $oldname = $this->realpath($oldname);
         $newname = $this->realpath($newname);
-        if ($oldname === false || $newname === false) {
-            return false;
-        }
 
         if ($this->version >= 5) {
             $packet = Strings::packSSH2('ssN', $oldname, $newname, 2); // 2 = SSH_FXP_RENAME_ATOMIC
@@ -3250,8 +3179,7 @@ return;
         // if $status isn't SSH_FX_OK it's probably SSH_FX_NO_SUCH_FILE or SSH_FX_PERMISSION_DENIED
         [$status] = Strings::unpackSSH2('N', $response);
         if ($status != StatusCode::OK) {
-            $this->logError($response, $status);
-            return false;
+            throw $this->throwStatusError($response, $status);
         }
 
         // don't move the stat cache entry over since this operation could very well change the
@@ -3259,8 +3187,6 @@ return;
         //$this->update_stat_cache($newname, $this->query_stat_cache($oldname));
         $this->remove_from_stat_cache($oldname);
         $this->remove_from_stat_cache($newname);
-
-        return true;
     }
 
     /**
@@ -3271,7 +3197,7 @@ return;
      *
      * @return array{bsize: int, frsize: int, blocks: int, bfree: int, bavail: int, files: int, ffree: int, favail: int, fsid: int, flag: int, namemax: int}
      */
-    public function statvfs(string $path): array|bool
+    public function statvfs(string $path): array
     {
         $this->precheck();
 
@@ -3283,9 +3209,6 @@ return;
         }
 
         $realpath = $this->realpath($path);
-        if ($realpath === false) {
-            return false;
-        }
 
         $packet = Strings::packSSH2('ss', 'statvfs@openssh.com', $realpath);
         $this->send_sftp_packet(PacketType::EXTENDED, $packet);
