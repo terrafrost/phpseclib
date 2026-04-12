@@ -82,8 +82,10 @@ class Stream
 
     /**
      * Notification callback function
+     * 
+     * @var callable
      */
-    private callable $notification;
+    private \Closure|string|array $notification;
 
     /**
      * Registers this class as a URL wrapper.
