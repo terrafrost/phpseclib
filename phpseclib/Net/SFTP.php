@@ -1310,7 +1310,6 @@ class SFTP extends SSH2
      */
     public function touch(string $filename, ?int $time = null, ?int $atime = null): void
     {
-return;
         $this->precheck();
 
         $filename = $this->realpath($filename);

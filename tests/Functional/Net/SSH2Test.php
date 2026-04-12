@@ -162,7 +162,7 @@ class SSH2Test extends PhpseclibFunctionalTestCase
             ->expects($this->atLeastOnce())
             ->method('callbackMethod')
             ->will($this->returnValue(true));
-        $ssh->exec('pwd', [$callbackObject, 'callbackMethod']);
+        $ssh->exec('pwd', \Closure::fromCallable([$callbackObject, 'callbackMethod']));
 
         $this->assertFalse(
             $ssh->isPTYOpen(),

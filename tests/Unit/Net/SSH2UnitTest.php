@@ -301,6 +301,7 @@ class SSH2UnitTest extends PhpseclibTestCase
             ->with(-1)
             ->willReturnCallback(function () use ($ssh): string|bool {
                 self::setVar($ssh, 'window_size_client_to_server', [1 => 0x7FFFFFFF]);
+                return true;
             });
         $ssh->expects($this->once())
             ->method('send_binary_packet')
@@ -328,6 +329,7 @@ class SSH2UnitTest extends PhpseclibTestCase
             ->with(-1)
             ->willReturnCallback(function () use ($ssh): string|bool {
                 self::setVar($ssh, 'window_size_client_to_server', [1 => 0x7FFFFFFF]);
+                return true;
             });
         $ssh->expects($this->once())
             ->method('send_binary_packet')
