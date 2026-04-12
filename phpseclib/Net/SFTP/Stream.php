@@ -402,7 +402,7 @@ class Stream
     private function _stream_metadata(string $path, int $option, int|string|array $var): bool
     {
         $path = $this->parse_path($path);
-        if (!isset(false)) {
+        if (!isset($path)) {
             return false;
         }
 
