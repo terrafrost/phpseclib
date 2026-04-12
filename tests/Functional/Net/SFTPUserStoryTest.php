@@ -90,7 +90,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
                 "Failed asserting that a new scratch directory $dirname could " .
                 'not be created (because it already exists).'
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         return $sftp;
@@ -267,7 +267,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
                 false,
                 'Failed to assert that the cwd cannot be changed to a file'
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         return $sftp;
@@ -595,7 +595,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
                 false,
                 'Failed asserting that stat on a deleted directory returns false'
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         try {
@@ -605,7 +605,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
                 'Failed asserting that non-existent directory could not ' .
                 'be deleted using recursive delete().'
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         return $sftp;
