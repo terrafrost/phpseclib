@@ -477,6 +477,7 @@ class SFTP extends SSH2
                     }
                     [$status] = Strings::unpackSSH2('N', $response);
                     if ($status != StatusCode::OK) {
+                        $this->logError($response, $status);
                         throw new UnexpectedValueException(
                             'Expected StatusCode::OK. '
                             . ' Got ' . $status
@@ -612,9 +613,11 @@ class SFTP extends SSH2
     /**
      * Logs errors
      */
-    private function logError(string $response, int $status, string $filename): void
+    private function logError(string $response, int $status = -1, ?string $filename = null): void
     {
-        [$status] = Strings::unpackSSH2('N', $response);
+        if ($status == -1) {
+            [$status] = Strings::unpackSSH2('N', $response);
+        }
 
         $error = StatusCode::getConstantNameByValue($status);
 
