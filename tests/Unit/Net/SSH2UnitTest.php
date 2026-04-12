@@ -100,7 +100,7 @@ class SSH2UnitTest extends PhpseclibTestCase
     {
         $ssh = $this->createSSHMock();
 
-        $this->assertFalse($ssh->getExitStatus());
+        $this->assertNull($ssh->getExitStatus());
     }
 
     /**
@@ -359,8 +359,9 @@ class SSH2UnitTest extends PhpseclibTestCase
         $ssh->expects($this->once())
             ->method('get_channel_packet')
             ->with(-1)
-            ->willReturnCallback(function () use ($ssh): void {
+            ->willReturnCallback(function () use ($ssh): string|bool {
                 self::setVar($ssh, 'is_timeout', true);
+                return true;
             });
         $ssh->expects($this->once())
             ->method('send_binary_packet')
