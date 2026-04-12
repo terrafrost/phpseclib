@@ -100,7 +100,7 @@ class SSH2UnitTest extends PhpseclibTestCase
     {
         $ssh = $this->createSSHMock();
 
-        $this->assertNull($ssh->getExitStatus());
+        $this->assertFalse($ssh->getExitStatus());
     }
 
     /**
@@ -299,10 +299,8 @@ class SSH2UnitTest extends PhpseclibTestCase
         $ssh->expects($this->once())
             ->method('get_channel_packet')
             ->with(-1)
-            ->willReturnCallback(function () use ($ssh): bool {
+            ->willReturnCallback(function () use ($ssh): void {
                 self::setVar($ssh, 'window_size_client_to_server', [1 => 0x7FFFFFFF]);
-
-                return true;
             });
         $ssh->expects($this->once())
             ->method('send_binary_packet')
@@ -328,10 +326,8 @@ class SSH2UnitTest extends PhpseclibTestCase
         $ssh->expects($this->once())
             ->method('get_channel_packet')
             ->with(-1)
-            ->willReturnCallback(function () use ($ssh): bool {
+            ->willReturnCallback(function () use ($ssh): void {
                 self::setVar($ssh, 'window_size_client_to_server', [1 => 0x7FFFFFFF]);
-
-                return true;
             });
         $ssh->expects($this->once())
             ->method('send_binary_packet')
@@ -361,10 +357,8 @@ class SSH2UnitTest extends PhpseclibTestCase
         $ssh->expects($this->once())
             ->method('get_channel_packet')
             ->with(-1)
-            ->willReturnCallback(function () use ($ssh): bool {
+            ->willReturnCallback(function () use ($ssh): void {
                 self::setVar($ssh, 'is_timeout', true);
-
-                return true;
             });
         $ssh->expects($this->once())
             ->method('send_binary_packet')
