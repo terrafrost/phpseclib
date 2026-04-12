@@ -141,10 +141,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
      */
     public function testPutSizeGetFile(SFTP $sftp)
     {
-        $this->assertTrue(
-            $sftp->put('file1.txt', self::$exampleData),
-            'Failed asserting that example data could be successfully put().'
-        );
+        $sftp->put('file1.txt', self::$exampleData);
 
         $this->assertSame(
             self::$exampleDataLength,
@@ -158,10 +155,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
             'Failed asserting that get() returns expected example data.'
         );
 
-        $this->assertTrue(
-            $sftp->put('file1.txt', 'xxx', SFTP::RESUME),
-            'Failed asserting that an upload could be successfully resumed'
-        );
+        $sftp->put('file1.txt', 'xxx', SFTP::RESUME);
 
         $this->assertSame(
             self::$exampleDataLength + 3,
@@ -192,10 +186,7 @@ class SFTPUserStoryTest extends PhpseclibFunctionalTestCase
             }
             return null;
         };
-        $this->assertTrue(
-            $sftp->put('file1.txt', $closure, $sftp::SOURCE_CALLBACK),
-            'Failed asserting that example data could be successfully put().'
-        );
+        $sftp->put('file1.txt', $closure, $sftp::SOURCE_CALLBACK);
 
         $this->assertSame(
             self::$exampleDataLength,

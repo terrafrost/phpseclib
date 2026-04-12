@@ -63,10 +63,7 @@ class SCPSSH2UserStoryTest extends PhpseclibFunctionalTestCase
     public function testGetFile($scp)
     {
         $localFilename = $this->createTempFile();
-        $this->assertTrue(
-            $scp->get(self::$remoteFile, $localFilename),
-            'Failed asserting that get() into file was successful.'
-        );
+        $scp->get(self::$remoteFile, $localFilename);
         $this->assertContains(
             filesize($localFilename),
             array(self::$exampleDataLength, self::$exampleDataLength + 1),

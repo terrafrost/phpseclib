@@ -2630,7 +2630,7 @@ class SSH2
      * @see self::read()
      * @see self::write()
      */
-    public function openShell(): bool
+    public function openShell(): void
     {
         if (!$this->isAuthenticated()) {
             throw new InsufficientSetupException('Operation disallowed prior to login()');
@@ -2680,8 +2680,6 @@ class SSH2
         $this->channel_id_last_interactive = self::CHANNEL_SHELL;
 
         $this->bitmap |= self::MASK_SHELL;
-
-        return true;
     }
 
     /**
@@ -2794,9 +2792,8 @@ class SSH2
         if (!$this->is_channel_status_data($channel) && empty($this->channel_buffers[$channel])) {
             if ($channel != self::CHANNEL_SHELL) {
                 throw new InsufficientSetupException('Data is not available on channel');
-            } elseif (!$this->openShell()) {
-                throw new RuntimeException('Unable to initiate an interactive shell session');
             }
+            $this->openShell();
         }
 
         if ($mode == self::READ_NEXT) {
@@ -2851,9 +2848,8 @@ class SSH2
         if (!$this->is_channel_status_data($channel)) {
             if ($channel != self::CHANNEL_SHELL) {
                 throw new InsufficientSetupException('Data is not available on channel');
-            } elseif (!$this->openShell()) {
-                throw new RuntimeException('Unable to initiate an interactive shell session');
             }
+            $this->openShell();
         }
 
         $this->curTimeout = $this->timeout;
