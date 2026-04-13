@@ -44,7 +44,7 @@ trait ASN1Signature
         $hash = (string) $key->getHash();
         if ($key instanceof RSA) {
             if ($key->getPadding() & RSA::SIGNATURE_PSS) {
-                $r = PSS::load($key->withPassword()->toString('PSS'));
+                $r = PSS::load($key->toString('PSS'));
                 return [
                     'algorithm' => 'id-RSASSA-PSS',
                     'parameters' => PSS::savePSSParams($r)
