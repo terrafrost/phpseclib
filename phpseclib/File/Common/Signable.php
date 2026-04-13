@@ -25,6 +25,6 @@ interface Signable
 {
     public function getSignableSection(): string;
     public function setSignature(string $signature): void;
-    public function identifySignatureAlgorithm(PrivateKey $key): void;
+    public function identifySignatureAlgorithm(PublicKey $key): void;
     public function copySigningX509Attributes(X509 $x509): void;
 }
