@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\Common;
 
-use phpseclib4\Crypt\Common\PrivateKey;
+use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\File\X509;
 
 /**
