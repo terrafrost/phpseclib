@@ -232,7 +232,7 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
      *
      * @throws UnsupportedAlgorithmException if the algorithm is unsupported
      */
-    public function identifySignatureAlgorithm(PrivateKey $key): void
+    public function identifySignatureAlgorithm(PublicKey $key): void
     {
         if (!isset($this->tempSigner)) {
             $x509 = new X509($key->getPublicKey());
