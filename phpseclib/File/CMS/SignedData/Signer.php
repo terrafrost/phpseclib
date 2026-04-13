@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace phpseclib4\File\CMS\SignedData;
 
 use phpseclib4\Common\Functions\Arrays;
-use phpseclib4\Crypt\Common\PrivateKey;
+use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\Hash;
 use phpseclib4\Exception\RuntimeException;
 use phpseclib4\Exception\UnsupportedAlgorithmException;
