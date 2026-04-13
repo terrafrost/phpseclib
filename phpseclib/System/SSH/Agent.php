@@ -87,8 +87,6 @@ class Agent
 
     /**
      * Agent forwarding status
-     *
-     * @var int
      */
     private int $forward_status = self::FORWARD_NONE;
 
@@ -96,8 +94,6 @@ class Agent
      * Buffer for accumulating forwarded authentication
      * agent data arriving on SSH data channel destined
      * for agent unix socket
-     *
-     * @var string
      */
     private string $socket_buffer = '';
 
@@ -105,32 +101,20 @@ class Agent
      * Tracking the number of bytes we are expecting
      * to arrive for the agent socket on the SSH data
      * channel
-     *
-     * @var int
      */
     private int $expected_bytes = 0;
 
     /**
      * Default Constructor
      *
-     * @return Agent
      * @throws BadConfigurationException if SSH_AUTH_SOCK cannot be found
      * @throws RuntimeException on connection errors
      */
     public function __construct(?string $address = null)
     {
-        if (!$address) {
-            switch (true) {
-                case isset($_SERVER['SSH_AUTH_SOCK']):
-                    $address = $_SERVER['SSH_AUTH_SOCK'];
-                    break;
-                case isset($_ENV['SSH_AUTH_SOCK']):
-                    $address = $_ENV['SSH_AUTH_SOCK'];
-                    break;
-                default:
-                    throw new BadConfigurationException('SSH_AUTH_SOCK not found');
-            }
-        }
+        $address = $_SERVER['SSH_AUTH_SOCK'] ??
+                   $_ENV['SSH_AUTH_SOCK'] ??
+                   throw new BadConfigurationException('SSH_AUTH_SOCK not found');
 
         if (in_array('unix', stream_get_transports())) {
             $this->fsock = fsockopen('unix://' . $address, 0, $errno, $errstr);

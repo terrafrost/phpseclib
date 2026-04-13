@@ -237,7 +237,7 @@ class Identity implements PrivateKey
      * @throws RuntimeException on connection errors
      * @throws UnsupportedAlgorithmException if the algorithm is unsupported
      */
-    public function sign(string|Signable $message): string
+    public function sign(string|Signable $source): string
     {
         if ($source instanceof Signable) {
             if ($source instanceof CSR && !$source->hasPublicKey()) {
