@@ -90,7 +90,7 @@ class Agent
      *
      * @var int
      */
-    private $forward_status = self::FORWARD_NONE;
+    private int $forward_status = self::FORWARD_NONE;
 
     /**
      * Buffer for accumulating forwarded authentication
@@ -99,7 +99,7 @@ class Agent
      *
      * @var string
      */
-    private $socket_buffer = '';
+    private string $socket_buffer = '';
 
     /**
      * Tracking the number of bytes we are expecting
@@ -108,7 +108,7 @@ class Agent
      *
      * @var int
      */
-    private $expected_bytes = 0;
+    private int $expected_bytes = 0;
 
     /**
      * Default Constructor
@@ -206,10 +206,8 @@ class Agent
 
     /**
      * Returns the SSH Agent identity matching a given public key or null if no identity is found
-     *
-     * @return ?Identity
      */
-    public function findIdentityByPublicKey(PublicKey $key)
+    public function findIdentityByPublicKey(PublicKey $key): ?Identity
     {
         $identities = $this->requestIdentities();
         $key = (string) $key;
@@ -267,7 +265,7 @@ class Agent
      * @return string Data from SSH Agent
      * @throws RuntimeException on connection errors
      */
-    public function forwardData(string $data)
+    public function forwardData(string $data): ?string
     {
         if ($this->expected_bytes > 0) {
             $this->socket_buffer .= $data;
@@ -278,7 +276,7 @@ class Agent
             $this->socket_buffer = $data;
             if ($current_data_bytes != $agent_data_bytes + 4) {
                 $this->expected_bytes = ($agent_data_bytes + 4) - $current_data_bytes;
-                return false;
+                return null;
             }
         }
 

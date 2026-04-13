@@ -52,18 +52,16 @@ class Identity implements PrivateKey
     /**
      * Key Object
      *
-     * @var PublicKey
      * @see self::getPublicKey()
      */
-    private $key;
+    private PublicKey $key;
 
     /**
      * Key Blob
      *
-     * @var string
      * @see self::sign()
      */
-    private $key_blob;
+    private string $key_blob;
 
     /**
      * Socket Resource
@@ -76,25 +74,20 @@ class Identity implements PrivateKey
     /**
      * Signature flags
      *
-     * @var int
      * @see self::sign()
      * @see self::setHash()
      */
-    private $flags = 0;
+    private int $flags = 0;
 
     /**
      * Comment
-     *
-     * @var null|string
      */
-    private $comment;
+    private ?string $comment;
 
     /**
      * Curve Aliases
-     *
-     * @var array
      */
-    private static $curveAliases = [
+    private static array $curveAliases = [
         'secp256r1' => 'nistp256',
         'secp384r1' => 'nistp384',
         'secp521r1' => 'nistp521',
@@ -162,33 +155,19 @@ class Identity implements PrivateKey
         $hash = strtolower($hash);
 
         if ($this->key instanceof RSA) {
-            $new->flags = 0;
-            switch ($hash) {
-                case 'sha1':
-                    break;
-                case 'sha256':
-                    $new->flags = self::SSH_AGENT_RSA2_256;
-                    break;
-                case 'sha512':
-                    $new->flags = self::SSH_AGENT_RSA2_512;
-                    break;
-                default:
-                    throw new UnsupportedAlgorithmException('The only supported hashes for RSA are sha1, sha256 and sha512');
-            }
+            $new->flags = match ($hash) {
+                'sha1' => 0,
+                'sha256' => self::SSH_AGENT_RSA2_256,
+                'sha512' => self::SSH_AGENT_RSA2_512,
+                default => throw new UnsupportedAlgorithmException('The only supported hashes for RSA are sha1, sha256 and sha512')
+            };
         }
         if ($this->key instanceof EC) {
-            switch ($this->key->getCurve()) {
-                case 'secp256r1':
-                    $expectedHash = 'sha256';
-                    break;
-                case 'secp384r1':
-                    $expectedHash = 'sha384';
-                    break;
-                //case 'secp521r1':
-                //case 'Ed25519':
-                default:
-                    $expectedHash = 'sha512';
-            }
+            $expectedHash = match ($this->key->getCurve()) {
+                'secp256r1' => 'sha256',
+                'secp384r1' => 'sha384',
+                default => 'sha512' // eg. secp512r1 or Ed25519
+            };
             if ($hash != $expectedHash) {
                 throw new UnsupportedAlgorithmException('The only supported hash for ' . self::$curveAliases[$this->key->getCurve()] . ' is ' . $expectedHash);
             }
@@ -238,10 +217,8 @@ class Identity implements PrivateKey
      * Returns the curve
      *
      * Returns a string if it's a named curve, an array if not
-     *
-     * @return string|array
      */
-    public function getCurve()
+    public function getCurve(): string|array
     {
         if (!$this->key instanceof EC) {
             throw new UnsupportedAlgorithmException('Only EC keys have curves');
@@ -255,11 +232,10 @@ class Identity implements PrivateKey
      *
      * See "2.6.2 Protocol 2 private key signature request"
      *
-     * @param string $message
      * @throws RuntimeException on connection errors
      * @throws UnsupportedAlgorithmException if the algorithm is unsupported
      */
-    public function sign($message): string
+    public function sign(string $message): string
     {
         // the last parameter (currently 0) is for flags and ssh-agent only defines one flag (for ssh-dss): SSH_AGENT_OLD_SIGNATURE
         $packet = Strings::packSSH2(
@@ -314,7 +290,7 @@ class Identity implements PrivateKey
     /**
      * Sets the comment
      */
-    public function withComment($comment = null)
+    public function withComment($comment = null): PrivateKey
     {
         $new = clone $this;
         $new->comment = $comment;
@@ -323,10 +299,8 @@ class Identity implements PrivateKey
 
     /**
      * Returns the comment
-     *
-     * @return null|string
      */
-    public function getComment()
+    public function getComment(): ?string
     {
         return $this->comment;
     }
