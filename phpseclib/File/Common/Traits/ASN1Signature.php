@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace phpseclib4\File\Common\Traits;
 
 use phpseclib4\Crypt\Common\PublicKey;
-use phpseclib4\Crypt\Common\PrivateKey;
 use phpseclib4\Crypt\DSA;
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\RSA;
@@ -40,7 +39,7 @@ trait ASN1Signature
      *
      * @throws UnsupportedAlgorithmException if the algorithm is unsupported
      */
-    private static function identifySignatureAlgorithmHelper(PrivateKey $key): array
+    private static function identifySignatureAlgorithmHelper(PublicKey $key): array
     {
         $hash = (string) $key->getHash();
         if ($key instanceof RSA) {

@@ -551,9 +551,8 @@ class SSH2
      * can be de-duplicated upon resuming write
      *
      * @see self::send_channel_packet()
-     * @var array
      */
-    private $channel_buffers_write = [];
+    private array $channel_buffers_write = [];
 
     /**
      * Channel Status

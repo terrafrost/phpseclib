@@ -25,6 +25,8 @@ use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Exception\RuntimeException;
 use phpseclib4\Exception\UnsupportedAlgorithmException;
+use phpseclib4\File\Common\Signable;
+use phpseclib4\File\CSR;
 use phpseclib4\System\SSH\Agent;
 use phpseclib4\System\SSH\Common\Traits\ReadBytes;
 
@@ -235,8 +237,18 @@ class Identity implements PrivateKey
      * @throws RuntimeException on connection errors
      * @throws UnsupportedAlgorithmException if the algorithm is unsupported
      */
-    public function sign(string $message): string
+    public function sign(string|Signable $message): string
     {
+        if ($source instanceof Signable) {
+            if ($source instanceof CSR && !$source->hasPublicKey()) {
+                $source->setPublicKey($this->getPublicKey());
+            }
+            $source->identifySignatureAlgorithm($this->getPublicKey());
+            $message = $source->getSignableSection();
+        } else {
+            $message = $source;
+        }
+
         // the last parameter (currently 0) is for flags and ssh-agent only defines one flag (for ssh-dss): SSH_AGENT_OLD_SIGNATURE
         $packet = Strings::packSSH2(
             'CssN',
@@ -258,11 +270,13 @@ class Identity implements PrivateKey
             throw new RuntimeException('Unable to retrieve signature');
         }
 
-        if (!$this->key instanceof RSA) {
-            return $signature_blob;
+        if ($this->key instanceof RSA) {
+            [$type, $signature_blob] = Strings::unpackSSH2('ss', $signature_blob);
         }
 
-        [$type, $signature_blob] = Strings::unpackSSH2('ss', $signature_blob);
+        if ($source instanceof Signable) {
+            $source->setSignature($signature_blob);
+        }
 
         return $signature_blob;
     }
