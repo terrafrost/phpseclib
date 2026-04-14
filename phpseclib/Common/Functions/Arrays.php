@@ -35,10 +35,6 @@ abstract class Arrays
      */
     public static function isSubArrayValid(array|\ArrayAccess $root, string $path): bool
     {
-        if (!isset($root)) {
-            return false;
-        }
-
         foreach (explode('/', $path) as $i) {
             if (!isset($root)) {
                 return false;
@@ -122,12 +118,8 @@ abstract class Arrays
         return $root;
     }
 
-    public static function &subArrayWithWildcards(array|\ArrayAccess|null &$root, string $path, bool $create = false): mixed
+    public static function &subArrayWithWildcards(array|\ArrayAccess &$root, string $path, bool $create = false): mixed
     {
-        if (!isset($root)) {
-            throw new RuntimeException('root is not set');
-        }
-
         $parts = explode('/', $path);
         foreach ($parts as $k=>$i) {
             if (!isset($root)) {
@@ -169,7 +161,7 @@ abstract class Arrays
         return $root;
     }
 
-    public static function subArrayMapWithWildcards(array|\ArrayAccess|null &$root, string $path, \Closure $func): void
+    public static function subArrayMapWithWildcards(array|\ArrayAccess &$root, string $path, \Closure $func): void
     {
         $parts = explode('/', $path);
         foreach ($parts as $k=>$i) {
