@@ -3886,7 +3886,7 @@ class SSH2
 
                     if ($channel == self::CHANNEL_AGENT_FORWARD) {
                         $agent_response = $this->agent->forwardData($data);
-                        if (!is_bool($agent_response)) {
+                        if (isset($agent_response)) {
                             $this->send_channel_packet($channel, $agent_response);
                         }
                         break;
