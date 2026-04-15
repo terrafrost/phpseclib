@@ -1,0 +1,56 @@
+Common\Functions\Arrays:
+
+  - ArrayAccessException (extends UnexpectedValueException) -- should we just make this UnexpectedValueException?
+
+Common\Functions\Strings:
+
+  - UnexpectedValueException
+  - UnsupportedValueException
+  - ConflictingStateException (extends InvalidStateException)
+
+Crypt\Common\AsymmetricKey:
+
+  - InvalidStateException
+  - ExceptionInterface
+  - NoKeyLoadedException (extends UnexpectedValueException)
+  - UnsupportedFormatException (extends UnsupportedValueException)
+  - BadConfigurationException
+
+Crypt\Common\SymmetricKey:
+
+  - BadModeException (extends UnsupportedValueException)
+  - BadMethodCallException (extends InvalidStateException)
+  - LengthException (extends UnsupportedValueException)
+  - ConflictingStateException (extends InvalidStateException)
+  - MissingArgumentsException (extends InvalidStateException)
+  - UnsupportedAlgorithmException (extends UnsupportedValueException)
+  - BadDecryptionException (extends UnexpectedValueException)
+  - InvalidStateException
+
+Crypt\Common\Formats\JWK:
+
+  - UnsupportedValueException
+  - UnexpectedValueException
+
+Crypt\Common\Formats\Keys\OpenSSH:
+
+  - UnexpectedValueException
+  - UnsupportedValueException
+  - UnsupportedAlgorithmException (extends UnexpectedValueException)
+
+
+
+
+File\ASN1.php
+
+  - UnexpectedValueException
+  - EOCException (extends UnsupportedValueException) (this one is specifically caught in places)
+
+
+
+
+
+
+questions:
+in Arrays.php do we replace ArrayAccessException with UnexpectedValueSyntax?
+in SymmetricKey.php there's ConflictingStateException

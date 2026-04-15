@@ -745,7 +745,7 @@ abstract class ASN1
      *
      * @param Element|string|array $source
      */
-    public static function encodeDER(array $source, array $mapping): string
+    public static function encodeDER(array|Constructed $source, array $mapping): string
     {
         self::$location = [];
         return self::encode_der($source, $mapping);
