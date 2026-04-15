@@ -56,7 +56,7 @@ abstract class OpenSSH
      */
     public static function load(string|array $key, #[SensitiveParameter] ?string $password = null): array
     {
-        if (!Strings::is_stringable($key)) {
+        if (!is_string($key)) {
             throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
         }
 
@@ -68,14 +68,14 @@ abstract class OpenSSH
             $key = Strings::base64_decode($key);
             $magic = Strings::shift($key, 15);
             if ($magic != "openssh-key-v1\0") {
-                throw new RuntimeException('Expected openssh-key-v1');
+                throw new UnexpectedValueException('Expected openssh-key-v1');
             }
             [$ciphername, $kdfname, $kdfoptions, $numKeys] = Strings::unpackSSH2('sssN', $key);
             if ($numKeys != 1) {
                 // if we wanted to support multiple keys we could update PublicKeyLoader to preview what the # of keys
                 // would be; it'd then call Common\Keys\OpenSSH.php::load() and get the paddedKey. it'd then pass
                 // that to the appropriate key loading parser $numKey times or something
-                throw new RuntimeException('Although the OpenSSH private key format supports multiple keys phpseclib does not');
+                throw new UnsupportedValueException('Although the OpenSSH private key format supports multiple keys phpseclib does not');
             }
 
             switch ($ciphername) {
@@ -83,7 +83,7 @@ abstract class OpenSSH
                     break;
                 case 'aes256-ctr':
                     if ($kdfname != 'bcrypt') {
-                        throw new RuntimeException('Only the bcrypt kdf is supported (' . $kdfname . ' encountered)');
+                        throw new UnsupportedAlgorithmException('Only the bcrypt kdf is supported (' . $kdfname . ' encountered)');
                     }
                     [$salt, $rounds] = Strings::unpackSSH2('sN', $kdfoptions);
                     $crypto = new AES('ctr');
@@ -92,7 +92,7 @@ abstract class OpenSSH
                     $crypto->setPassword($password, 'bcrypt', $salt, $rounds, 32);
                     break;
                 default:
-                    throw new RuntimeException('The only supported ciphers are: none, aes256-ctr (' . $ciphername . ' is being used)');
+                    throw new UnsupportedAlgorithmException('The only supported ciphers are: none, aes256-ctr (' . $ciphername . ' is being used)');
             }
 
             [$publicKey, $paddedKey] = Strings::unpackSSH2('ss', $key);
@@ -106,7 +106,7 @@ abstract class OpenSSH
                 if (isset($crypto)) {
                     throw new BadDecryptionException('Unable to decrypt key - please verify the password you are using');
                 }
-                throw new RuntimeException("The two checkints do not match ($checkint1 vs. $checkint2)");
+                throw new UnexpectedValueException("The two checkints do not match ($checkint1 vs. $checkint2)");
             }
             self::checkType($type);
 
@@ -116,22 +116,19 @@ abstract class OpenSSH
         $parts = preg_split("#[\t ]+#", $key);
 
         if (!isset($parts[1])) {
-            $key = base64_decode($parts[0]);
+            $key = Strings::base64_decode($parts[0]);
             $comment = null;
         } else {
             $asciiType = $parts[0];
             self::checkType($parts[0]);
-            $key = base64_decode($parts[1]);
+            $key = Strings::base64_decode($parts[1]);
             $comment = $parts[2] ?? null;
-        }
-        if ($key === false) {
-            throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
         }
 
         [$type] = Strings::unpackSSH2('s', $key);
         self::checkType($type);
         if (isset($asciiType) && $asciiType != $type) {
-            throw new RuntimeException('Two different types of keys are claimed: ' . $asciiType . ' and ' . $type);
+            throw new UnexpectedValueException('Two different types of keys are claimed: ' . $asciiType . ' and ' . $type);
         }
         if (strlen($key) <= 4) {
             throw new UnexpectedValueException('Key appears to be malformed');
@@ -159,7 +156,7 @@ abstract class OpenSSH
     private static function checkType(string $candidate): void
     {
         if (!in_array($candidate, static::$types)) {
-            throw new RuntimeException("The key type ($candidate) is not equal to: " . implode(',', static::$types));
+            throw new UnexpectedValueException("The key type ($candidate) is not equal to: " . implode(',', static::$types));
         }
     }
 

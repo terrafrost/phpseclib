@@ -240,7 +240,7 @@ abstract class ASN1
     public static function decodeTag(string $encoded, int &$encoded_pos = 0): array
     {
         if (!isset($encoded[$encoded_pos])) {
-            throw new RuntimeException('Not enough bytes to decode tag 1');
+            throw new UnexpectedValueException('Not enough bytes to decode tag 1');
         }
 
         $type = ord($encoded[$encoded_pos++]);
@@ -254,7 +254,7 @@ abstract class ASN1
             // process septets (since the eighth bit is ignored, it's not an octet)
             do {
                 if (!isset($encoded[$encoded_pos])) {
-                    throw new RuntimeException('Not enough bytes to decode tag 2');
+                    throw new UnexpectedValueException('Not enough bytes to decode tag 2');
                 }
                 $temp = ord($encoded[$encoded_pos++]);
                 $offset++;
@@ -262,7 +262,7 @@ abstract class ASN1
                 $tag <<= 7;
                 $temp &= 0x7F;
                 if ($offset == 2 && $temp == 0) {
-                    throw new RuntimeException('Bits 7 to 1 of the first subsequent octet shall not be all zero');
+                    throw new UnexpectedValueException('Bits 7 to 1 of the first subsequent octet shall not be all zero');
                 }
                 $tag |= $temp;
             } while ($loop);
@@ -282,7 +282,7 @@ abstract class ASN1
     {
         // Length, as discussed in paragraph 8.1.3 of X.690-0207.pdf#page=13
         if (!isset($encoded[$encoded_pos])) {
-            throw new RuntimeException('Not enough bytes to decode length');
+            throw new UnexpectedException('Not enough bytes to decode length');
         }
         $length = ord($encoded[$encoded_pos++]);
         if ($length == 0x80) { // indefinite length
@@ -346,7 +346,7 @@ abstract class ASN1
         $start += $current['headerlength'];
 
         if ($length > (strlen($encoded) - $encoded_pos)) {
-            throw new RuntimeException("Length ($length) exceeds number of available bytes (" . (strlen($encoded) - $encoded_pos) . ')');
+            throw new UnexpectedValueException("Length ($length) exceeds number of available bytes (" . (strlen($encoded) - $encoded_pos) . ')');
         }
         $content = substr($encoded, $encoded_pos, $length);
         $headercontent = substr($encoded, $old_encoded_pos, $current['headerlength']);
@@ -401,7 +401,7 @@ abstract class ASN1
                     break;
                 default:
                     if (!self::$blobsOnBadDecodes) {
-                        throw new RuntimeException("Tag #$tag should not have the constructed bit set");
+                        throw new UnexpectedValueException("Tag #$tag should not have the constructed bit set");
                     }
                     return $current + ['content' => new MalformedData($headercontent . $content)];
             }
@@ -423,7 +423,7 @@ abstract class ASN1
                     // paragraph 8.2.1
                     if (!self::$blobsOnBadDecodes) {
                         // paragraph 8.8.2
-                        throw new RuntimeException('The contents octets shall consist of a single octet for bit strings');
+                        throw new UnexpectedValueException('The contents octets shall consist of a single octet for bit strings');
                     }
                     $current['content'] = new Element($headercontent . $content);
                     break;
@@ -451,7 +451,7 @@ abstract class ASN1
                 if (strlen($content)) {
                     if (!self::$blobsOnBadDecodes) {
                         // paragraph 8.8.2
-                        throw new RuntimeException('The contents octets shall not contain any octets for nulls');
+                        throw new UnexpectedValueException('The contents octets shall not contain any octets for nulls');
                     }
                     $current['content'] = new MalformedData($headercontent . $content);
                     break;
@@ -461,7 +461,7 @@ abstract class ASN1
             case self::TYPE_SEQUENCE:
             case self::TYPE_SET:
                 if (!self::$blobsOnBadDecodes) {
-                    throw new RuntimeException('All SEQUENCE and SET tags should be constructed');
+                    throw new UnexpectedValueException('All SEQUENCE and SET tags should be constructed');
                 }
                 $current['content'] = new MalformedData($headercontent . $content);
                 break;
@@ -516,7 +516,7 @@ abstract class ASN1
             case self::TYPE_GENERALIZED_TIME:
                 try {
                     $current['content'] = self::decodeTime($content, $tag);
-                } catch (\Exception $e) {
+                } catch (UnexpectedValueException $e) {
                     $current['content'] = new Element($headercontent . $content);
                 }
                 break;
@@ -524,7 +524,7 @@ abstract class ASN1
                 if ($tag === 0 && $length === 0) {
                     throw new EOCException('End-of-content (indefinite form) tag encountered');
                 }
-                throw new NoValidTagFoundException("An unknown tag ($tag) was encountered");
+                throw new UnexpectedValueException("An unknown tag ($tag) was encountered");
         }
 
         // ie. length is the length of the full TLV encoding - it's not just the length of the value
@@ -551,7 +551,7 @@ abstract class ASN1
                     return new Choice($key, self::map($decoded, $option, $rules[$key] ?? []));
             }
         }
-        throw new RuntimeException('No valid CHOICEs found');
+        throw new UnexpectedValueException('No valid CHOICEs found');
     }
 
     /**
@@ -567,7 +567,7 @@ abstract class ASN1
 
         if (isset($mapping['explicit'])) {
             if (!$decoded['content'] instanceof Constructed) {
-                throw new RuntimeException('Child is explicit but actual data is not constructed');
+                throw new UnexpectedValueException('Child is explicit but actual data is not constructed');
             }
             $decoded = ASN1::decodeBER($decoded['content']->getEncodedWithoutHeader());
         }
@@ -633,7 +633,7 @@ abstract class ASN1
             case Integer::class:
                 $temp = $content->toString();
                 if (strlen($temp) > 1) {
-                    throw new RuntimeException('Mapped integers > 255 are not supported');
+                    throw new UnsupportedValueException('Mapped integers > 255 are not supported');
                 }
                 $key = (int) $temp;
                 if (isset($mapping[$key])) {
@@ -1279,7 +1279,7 @@ abstract class ASN1
             GeneralizedTime::createFromFormat($format, $content);
 
         if ($result === false) {
-            throw new RuntimeException('Unable to parse date time');
+            throw new UnexpectedValueException('Unable to parse date time');
         }
 
         return $result;

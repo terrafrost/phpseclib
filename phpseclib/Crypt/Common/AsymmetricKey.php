@@ -120,7 +120,7 @@ abstract class AsymmetricKey
 
         $class = new \ReflectionClass(static::class);
         if ($class->isFinal()) {
-            throw new \RuntimeException('load() should not be called from final classes (' . static::class . ')');
+            throw new InvalidStateException('load() should not be called from final classes (' . static::class . ')');
         }
 
         foreach (self::$plugins[static::ALGORITHM]['Keys'] as $format) {
@@ -130,7 +130,7 @@ abstract class AsymmetricKey
             try {
                 $components = $format::load($key, $password);
                 break;
-            } catch (\Exception) {
+            } catch (ExceptionInterface) {
             }
         }
 
@@ -376,7 +376,7 @@ abstract class AsymmetricKey
                 static::$forcedEngine = $engine;
                 break;
             default:
-                throw new \InvalidArgumentException('Valid engines are null, PHP, OpenSSL or libsodium');
+                throw new BadConfigurationException('Valid engines are null, PHP, OpenSSL or libsodium');
         }
     }
 

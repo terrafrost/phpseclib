@@ -124,12 +124,12 @@ abstract class Arrays
         foreach ($parts as $k=>$i) {
             if (!isset($root)) {
                 $loc = implode('/', array_slice($parts, 0, $k));
-                throw new RuntimeException("Unable to find node for $loc");
+                throw new ArrayAccessException("Unable to find node for $loc");
             }
 
             if (!is_array($root) && !$root instanceof \ArrayAccess) {
                 $loc = implode('/', array_slice($parts, 0, $k));
-                throw new RuntimeException("$loc isn't an array or an instance of ArrayAccess");
+                throw new ArrayAccessException("$loc isn't an array or an instance of ArrayAccess");
             }
 
             if ($i == '*') {
@@ -143,13 +143,13 @@ abstract class Arrays
                     }
                 }
                 $loc = implode('/', array_slice($parts, 0, $k));
-                throw new RuntimeException("$loc wasn't found");
+                throw new ArrayAccessException("$loc wasn't found");
             }
 
             if (!isset($root[$i])) {
                 if (!$create) {
                     $loc = implode('/', array_slice($parts, 0, $k));
-                    throw new RuntimeException("$loc wasn't found and the create flag wasn't set");
+                    throw new ArrayAccessException("$loc wasn't found and the create flag wasn't set");
                 }
 
                 $root[$i] = [];
@@ -193,6 +193,6 @@ abstract class Arrays
             $root = &$root[$i];
         }
 
-        throw new RuntimeException('Reached supposedly unreachable section of code');
+        throw new InvalidStateException('Reached supposedly unreachable section of code');
     }
 }

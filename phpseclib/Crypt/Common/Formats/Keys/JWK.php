@@ -30,7 +30,7 @@ abstract class JWK
      */
     protected static function loadHelper(string|array $key): \stdClass
     {
-        if (!Strings::is_stringable($key)) {
+        if (!is_string($key)) {
             throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
         }
 
@@ -42,16 +42,12 @@ abstract class JWK
             return $key;
         }
 
-        if (!is_object($key)) {
-            throw new UnexpectedValueException('Invalid JWK: not an object');
-        }
-
         if (!isset($key->keys)) {
-            throw new UnexpectedValueException('invalid JWK: object has no property "keys"');
+            throw new UnexpectedValueException('Invalid JWK: object has no property "keys"');
         }
 
         if (count($key->keys) != 1) {
-            throw new UnexpectedValueException('Although the JWK key format supports multiple keys phpseclib does not');
+            throw new UnsupportedValueException('Although the JWK key format supports multiple keys phpseclib does not');
         }
 
         return $key->keys[0];

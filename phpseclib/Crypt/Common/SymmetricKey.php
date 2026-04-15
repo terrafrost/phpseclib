@@ -478,8 +478,6 @@ abstract class SymmetricKey
      * - ofb8
      *
      * - gcm
-     *
-     * @throws BadModeException if an invalid / unsupported mode is provided
      */
     public function __construct(string $mode)
     {
@@ -538,9 +536,6 @@ abstract class SymmetricKey
      * setIV() is not required when ecb or gcm modes are being used.
      *
      * {@internal Can be overwritten by a sub class, but does not have to be}
-     *
-     * @throws LengthException if the IV length isn't equal to the block size
-     * @throws BadMethodCallException if an IV is provided when one shouldn't be
      */
     public function setIV(string $iv): void
     {
@@ -568,8 +563,6 @@ abstract class SymmetricKey
      * Enables Poly1305 mode.
      *
      * Once enabled Poly1305 cannot be disabled.
-     *
-     * @throws BadMethodCallException if Poly1305 is enabled whilst in GCM mode
      */
     public function enablePoly1305(): void
     {
@@ -585,10 +578,6 @@ abstract class SymmetricKey
      *
      * Once enabled Poly1305 cannot be disabled. If $key is not passed then an attempt to call createPoly1305Key
      * will be made.
-     *
-     * @param string|null $key optional
-     * @throws LengthException if the key isn't long enough
-     * @throws BadMethodCallException if Poly1305 is enabled whilst in GCM mode
      */
     public function setPoly1305Key(?string $key = null): void
     {
@@ -613,8 +602,6 @@ abstract class SymmetricKey
      * Sets the nonce.
      *
      * setNonce() is only required when gcm is used
-     *
-     * @throws BadMethodCallException if an nonce is provided when one shouldn't be
      */
     public function setNonce(string $nonce): void
     {
@@ -630,8 +617,6 @@ abstract class SymmetricKey
      * Sets additional authenticated data
      *
      * setAAD() is only used by gcm or in poly1305 mode
-     *
-     * @throws BadMethodCallException if mode isn't GCM or if poly1305 isn't being utilized
      */
     public function setAAD(string $aad): void
     {
@@ -699,9 +684,8 @@ abstract class SymmetricKey
     {
         $this->explicit_key_length = $length >> 3;
 
-        if (is_string($this->key) && strlen($this->key) != $this->explicit_key_length) {
-            $this->key = false;
-            throw new InconsistentSetupException('Key has already been set and is not ' . $this->explicit_key_length . ' bytes long');
+        if (isset($this->key) && strlen($this->key) != $this->explicit_key_length) {
+            throw new ConflictingStateException('Key has already been set and is not ' . $this->explicit_key_length . ' bytes long');
         }
     }
 
@@ -720,7 +704,7 @@ abstract class SymmetricKey
     public function setKey(string $key): void
     {
         if (isset($this->explicit_key_length) && strlen($key) != $this->explicit_key_length) {
-            throw new InconsistentSetupException('Key length has already been set to ' . $this->explicit_key_length . ' bytes and this key is ' . strlen($key) . ' bytes');
+            throw new ConflictingStateException('Key length has already been set to ' . $this->explicit_key_length . ' bytes and this key is ' . strlen($key) . ' bytes');
         }
 
         $this->key = $key;
@@ -743,8 +727,6 @@ abstract class SymmetricKey
      *
      * {@internal Could, but not must, extend by the child Crypt_* class}
      *
-     * @throws LengthException if pbkdf1 is being used and the derived key length exceeds the hash length
-     * @throws RuntimeException if bcrypt is being used and a salt isn't provided
      * @see Crypt/Hash.php
      */
     public function setPassword(string $password, string $method = 'pbkdf2', int|string ...$func_args): void
@@ -755,7 +737,7 @@ abstract class SymmetricKey
         switch ($method) {
             case 'bcrypt':
                 if (!isset($func_args[2])) {
-                    throw new RuntimeException('A salt must be provided for bcrypt to work');
+                    throw new MissingArgumentsException('A salt must be provided for bcrypt to work');
                 }
 
                 $salt = $func_args[0];
@@ -907,7 +889,6 @@ abstract class SymmetricKey
      *
      * {@internal Could, but not must, extend by the child Crypt_* class}
      *
-     * @return string $ciphertext
      * @see self::decrypt()
      */
     public function encrypt(string $plaintext): string
@@ -1208,20 +1189,18 @@ abstract class SymmetricKey
      *
      * {@internal Could, but not must, extend by the child Crypt_* class}
      *
-     * @return string $plaintext
-     * @throws LengthException if we're inside a block cipher and the ciphertext length is not a multiple of the block size
      * @see self::encrypt()
      */
     public function decrypt(string $ciphertext): string
     {
         if ($this->paddable && strlen($ciphertext) % $this->block_size) {
-            throw new LengthException('The ciphertext length (' . strlen($ciphertext) . ') needs to be a multiple of the block size (' . $this->block_size . ')');
+            throw new BadDecryptionException('The ciphertext length (' . strlen($ciphertext) . ') needs to be a multiple of the block size (' . $this->block_size . ')');
         }
         $this->setup();
 
         if ($this->mode == self::MODE_GCM || isset($this->poly1305Key)) {
             if (!isset($this->oldtag)) {
-                throw new InsufficientSetupException('Authentication Tag has not been set');
+                throw new InvalidStateException('Authentication Tag has not been set - call setTag() first');
             }
 
             if (isset($this->poly1305Key)) {
@@ -1515,8 +1494,6 @@ abstract class SymmetricKey
      *
      * Only used in GCM or Poly1305 mode
      *
-     * @throws LengthException if $length isn't of a sufficient length
-     * @throws RuntimeException if GCM mode isn't being used
      * @see self::encrypt()
      */
     public function getTag(int $length = 16): string
@@ -1548,8 +1525,6 @@ abstract class SymmetricKey
      *
      * Only used in GCM mode
      *
-     * @throws LengthException if $length isn't of a sufficient length
-     * @throws RuntimeException if GCM mode isn't being used
      * @see self::decrypt()
      */
     public function setTag(string $tag): void
@@ -1708,22 +1683,15 @@ abstract class SymmetricKey
      */
     protected function openssl_translate_mode(): ?string
     {
-        switch ($this->mode) {
-            case self::MODE_ECB:
-                return 'ecb';
-            case self::MODE_CBC:
-                return 'cbc';
-            case self::MODE_CTR:
-            case self::MODE_GCM:
-                return 'ctr';
-            case self::MODE_CFB:
-                return 'cfb';
-            case self::MODE_CFB8:
-                return 'cfb8';
-            case self::MODE_OFB:
-                return 'ofb';
-        }
-        return null;
+        return match ($this->mode) {
+            self::MODE_ECB => 'ecb',
+            self::MODE_CBC => 'cbc',
+            self::MODE_CTR, self::MODE_GCM => 'ctr',
+            self::MODE_CFB => 'cfb',
+            self::MODE_CFB8 => 'cfb8',
+            self::MODE_OFB => 'ufb',
+            default => null
+        };
     }
 
     /**
@@ -1873,7 +1841,7 @@ abstract class SymmetricKey
     /**
      * Test for engine validity
      *
-          * @see self::__construct()
+     * @see self::__construct()
      */
     public function isValidEngine(string $engine): bool
     {
@@ -2032,7 +2000,7 @@ abstract class SymmetricKey
 
         if ($this->usesNonce()) {
             if (!isset($this->nonce)) {
-                throw new InsufficientSetupException('No nonce has been defined');
+                throw new InvalidStateException('No nonce has been defined - call setNonce() first');
             }
             if ($this->mode == self::MODE_GCM && !in_array($this->engine, [self::ENGINE_LIBSODIUM, self::ENGINE_OPENSSL_GCM])) {
                 $this->setupGCM();
@@ -2043,12 +2011,12 @@ abstract class SymmetricKey
 
         if (!isset($this->iv) && !in_array($this->mode, [self::MODE_STREAM, self::MODE_ECB])) {
             if ($this->mode != self::MODE_GCM || !in_array($this->engine, [self::ENGINE_LIBSODIUM, self::ENGINE_OPENSSL_GCM])) {
-                throw new InsufficientSetupException('No IV has been defined');
+                throw new InvalidStateException('No IV has been defined - call setIV() first');
             }
         }
 
         if (!isset($this->key)) {
-            throw new InsufficientSetupException('No key has been defined');
+            throw new InvalidStateException('No key has been defined - call setKey() first');
         }
 
         $this->encryptIV = $this->decryptIV = $this->iv;
@@ -2077,7 +2045,6 @@ abstract class SymmetricKey
      * If padding is disabled and $text is not a multiple of the blocksize, the string will be padded regardless
      * and padding will, hence forth, be enabled.
      *
-     * @throws LengthException if padding is disabled and the plaintext's length is not a multiple of the block size
      * @see self::unpad()
      */
     protected function pad(string $text): string
@@ -2103,7 +2070,6 @@ abstract class SymmetricKey
      * If padding is enabled and the reported padding length is invalid the encryption key will be assumed to be wrong
      * and false will be returned.
      *
-     * @throws LengthException if the ciphertext's length is not a multiple of the block size
      * @see self::pad()
      */
     protected function unpad(string $text): string
@@ -2738,11 +2704,7 @@ abstract class SymmetricKey
             PHP
         );
 
-        $bindedClosure = \Closure::bind($func, $this, static::class);
-        if ($bindedClosure instanceof \Closure) {
-            return $bindedClosure;
-        }
-        throw new LogicException('\Closure::bind() failed.');
+        return \Closure::bind($func, $this, static::class);
     }
 
     /**
