@@ -80,7 +80,7 @@ trait Common
     protected static function loadCurveByParam(array $params)
     {
         if (count($params) > 1) {
-            throw new RuntimeException('No parameters are present');
+            throw new UnexpectedValueException('No parameters are present');
         }
         if (isset($params['namedCurve'])) {
             $curve = '\phpseclib4\Crypt\EC\Curves\\' . $params['namedCurve'];
@@ -91,7 +91,7 @@ trait Common
         }
         if (isset($params['implicitCurve'])) {
             if (!isset(self::$implicitCurve)) {
-                throw new RuntimeException('Implicit curves can be provided by calling setImplicitCurve');
+                throw new UnexpectedValueException('Implicit curves can be provided by calling setImplicitCurve');
             }
             return self::$implicitCurve;
         }
@@ -140,7 +140,7 @@ trait Common
                     throw new UnsupportedCurveException('Field Type of ' . $data['fieldID']['fieldType'] . ' is not supported');
             }
         }
-        throw new RuntimeException('No valid parameters are present');
+        throw new UnexpectedValueException('No valid parameters are present');
     }
 
     /**
@@ -165,11 +165,11 @@ trait Common
             $y[0] = $y[0] & chr(0x7F);
             $y = new BigInteger($y, 256);
             if ($y->compare($curve->getModulo()) >= 0) {
-                throw new RuntimeException('The Y coordinate should not be >= the modulo');
+                throw new UnexpectedValueParameter('The Y coordinate should not be >= the modulo');
             }
             $point = $curve->recoverX($y, $sign);
             if (!$curve->verifyPoint($point)) {
-                throw new RuntimeException('Unable to verify that point exists on curve');
+                throw new UnexpectedValueParameter('Unable to verify that point exists on curve');
             }
             return $point;
         }
@@ -203,7 +203,7 @@ trait Common
             ];
 
             if (!$curve->verifyPoint($point)) {
-                throw new RuntimeException('Unable to verify that point exists on curve');
+                throw new UnexpectedValueException('Unable to verify that point exists on curve');
             }
 
             return $point;
@@ -306,7 +306,7 @@ trait Common
         // https://crypto.stackexchange.com/a/27914/4520
         // https://en.wikipedia.org/wiki/Schoof%E2%80%93Elkies%E2%80%93Atkin_algorithm
         if (!$order) {
-            throw new RuntimeException('Specified Curves need the order to be specified');
+            throw new UnsupportedValueException('Specified Curves need the order to be specified');
         }
         $point = $curve->getBasePoint();
         $x = $point[0]->toBytes();

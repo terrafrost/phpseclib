@@ -214,20 +214,6 @@ class RC2 extends BlockCipher
     ];
 
     /**
-     * Default Constructor.
-     *
-     * @throws InvalidArgumentException if an invalid / unsupported mode is provided
-     */
-    public function __construct(string $mode)
-    {
-        parent::__construct($mode);
-
-        if ($this->mode == self::MODE_STREAM) {
-            throw new BadModeException('Block ciphers cannot be ran in stream mode');
-        }
-    }
-
-    /**
      * Test for engine validity
      *
      * This is mainly just a wrapper to set things up for \phpseclib4\Crypt\Common\SymmetricKey::isValidEngine()

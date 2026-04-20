@@ -39,10 +39,10 @@ abstract class XML
     /**
      * Break a public or private key down into its constituent components
      */
-    public static function load(string|array $key): array
+    public static function load(string|array $key, #[SensitiveParameter] ?string $password = null): array
     {
-        if (!Strings::is_stringable($key)) {
-            throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
+        if (!is_string($key)) {
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         if (!class_exists('DOMDocument')) {
@@ -63,8 +63,9 @@ abstract class XML
             $key = '<xml>' . $key . '</xml>';
         }
         if (!$dom->loadXML($key)) {
+            $message = 'Error loading XML - ' . libxml_get_last_error();
             libxml_use_internal_errors($use_errors);
-            throw new UnexpectedValueException('Key does not appear to contain XML');
+            throw new UnexpectedValueException($message);
         }
         $xpath = new \DOMXPath($dom);
         $keys = ['modulus', 'exponent', 'p', 'q', 'dp', 'dq', 'inverseq', 'd'];
@@ -130,7 +131,7 @@ abstract class XML
         }
 
         if (isset($password)) {
-            throw new UnsupportedFormatException('XML private keys do not support encryption');
+            throw new InvalidArgumentException('XML private keys do not support encryption');
         }
 
         return "<RSAKeyPair>\r\n" .

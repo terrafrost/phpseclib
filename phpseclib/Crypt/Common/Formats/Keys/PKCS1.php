@@ -60,7 +60,7 @@ abstract class PKCS1 extends PKCS
             case 'CTR':
                 return $mode;
         }
-        throw new UnexpectedValueException('Unsupported block cipher mode of operation');
+        throw new BadModeException('Unsupported block cipher mode of operation');
     }
 
     /**
@@ -104,7 +104,7 @@ abstract class PKCS1 extends PKCS
     protected static function loadHelper(string|array $key, #[SensitiveParameter] ?string $password = null): string
     {
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not an array');
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         /* Although PKCS#1 proposes a format that public and private keys can use, encrypting them is
@@ -124,7 +124,7 @@ abstract class PKCS1 extends PKCS
            * OpenSSL is the de facto standard.  It's utilized by OpenSSH and other projects */
         if (preg_match('#DEK-Info: (.+),(.+)#', $key, $matches)) {
             if (!isset($password)) {
-                throw new BadDecryptionException('Unable to perform decryption without some sort of password');
+                throw new PasswordNeededException('Unable to perform decryption without some sort of password');
             }
             $iv = Strings::hex2bin(trim($matches[2]));
             // remove the Proc-Type / DEK-Info sections as they're no longer needed
@@ -140,11 +140,13 @@ abstract class PKCS1 extends PKCS
             $key = $crypto->decrypt($ciphertext);
         } else {
             if (self::$format != self::MODE_DER) {
-                $decoded = ASN1::extractBER($key);
-                if ($decoded !== false) {
+                try {
+                    $decoded = ASN1::extractBER($key);
                     $key = $decoded;
-                } elseif (self::$format == self::MODE_PEM) {
-                    throw new UnexpectedValueException('Expected base64-encoded PEM format but was unable to decode base64 text');
+                } catch (\Exception $e) {
+                    if (self::$format == self::MODE_PEM) {
+                        throw $e;
+                    }
                 }
             }
         }

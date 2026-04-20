@@ -92,6 +92,10 @@ abstract class JWK extends Progenitor
      */
     public static function savePrivateKey(BigInteger $n, BigInteger $e, BigInteger $d, array $primes, array $exponents, array $coefficients, #[SensitiveParameter] ?string $password = null, array $options = []): string
     {
+        if (isset($password)) {
+            throw new InvalidArgumentException('JWK private keys do not support encryption');
+        }
+
         if (count($primes) != 2) {
             throw new InvalidArgumentException('JWK does not support multi-prime RSA keys');
         }

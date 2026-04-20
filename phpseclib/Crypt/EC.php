@@ -482,7 +482,7 @@ abstract class EC extends AsymmetricKey
     public function withSignatureFormat(string $format): EC
     {
         if ($this->curve instanceof MontgomeryCurve) {
-            throw new UnsupportedOperationException('Montgomery Curves cannot be used to create signatures');
+            throw new BadMethodCallException('Montgomery Curves cannot be used to create signatures');
         }
 
         $new = clone $this;
@@ -510,7 +510,7 @@ abstract class EC extends AsymmetricKey
     public function withContext(?string $context = null): EC
     {
         if (!$this->curve instanceof TwistedEdwardsCurve) {
-            throw new UnsupportedCurveException('Only Ed25519 and Ed448 support contexts');
+            throw new BadMethodCallExceptionx('Only Ed25519 and Ed448 support contexts');
         }
 
         $new = clone $this;
@@ -518,9 +518,7 @@ abstract class EC extends AsymmetricKey
             $new->context = null;
             return $new;
         }
-        if (!is_string($context)) {
-            throw new InvalidArgumentException('setContext expects a string');
-        }
+
         if (strlen($context) > 255) {
             throw new LengthException('The context is supposed to be, at most, 255 bytes long');
         }
@@ -542,13 +540,13 @@ abstract class EC extends AsymmetricKey
     public function withHash(string $hash): AsymmetricKey
     {
         if ($this->curve instanceof MontgomeryCurve) {
-            throw new UnsupportedOperationException('Montgomery Curves cannot be used to create signatures');
+            throw new BadMethodCallException('Montgomery Curves cannot be used to create signatures');
         }
         if ($this->curve instanceof Ed25519 && $hash != 'sha512') {
-            throw new UnsupportedAlgorithmException('Ed25519 only supports sha512 as a hash');
+            throw new BadMethodCallException('Ed25519 only supports sha512 as a hash');
         }
         if ($this->curve instanceof Ed448 && $hash != 'shake256-912') {
-            throw new UnsupportedAlgorithmException('Ed448 only supports shake256 with a length of 114 bytes');
+            throw new BadMethodCallException('Ed448 only supports shake256 with a length of 114 bytes');
         }
 
         return parent::withHash($hash);

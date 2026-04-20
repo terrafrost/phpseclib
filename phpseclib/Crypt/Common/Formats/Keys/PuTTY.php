@@ -57,7 +57,7 @@ abstract class PuTTY
     {
         self::$version = match ($version) {
             2, 3 => $version,
-            default => throw new UnexpectedValueException('Only supported versions are 2 and 3')
+            default => throw new UnsupportedValueException('Only supported versions are 2 and 3')
         };
     }
 
@@ -105,8 +105,8 @@ abstract class PuTTY
      */
     public static function load(array|string $key, ?string $password): array
     {
-        if (!Strings::is_stringable($key)) {
-            throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
+        if (!is_string($key)) {
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         if (str_contains($key, 'BEGIN SSH2 PUBLIC KEY')) {
@@ -152,7 +152,7 @@ abstract class PuTTY
         }
         $version = (int) Strings::shift($key[0], 3); // should be either "2: " or "3: 0" prior to int casting
         if ($version != 2 && $version != 3) {
-            throw new UnexpectedValueException('Only v2 and v3 PuTTY private keys are supported');
+            throw new UnsupportedValueException('Only v2 and v3 PuTTY private keys are supported');
         }
         $components['type'] = $type = rtrim($key[0]);
         if (!in_array($type, static::$types)) {
@@ -182,6 +182,10 @@ abstract class PuTTY
             2 => 'putty-private-key-file-mac-key'
         };
 
+        if ($encryption != 'none' && !isset($password)) {
+            throw new PasswordNeededException('Unable to perform decryption without some sort of password');
+        }
+
         $offset = $publicLength + 4;
         switch ($encryption) {
             case 'aes256-cbc':
@@ -198,7 +202,7 @@ abstract class PuTTY
                             'symkey' => $symkey,
                             'symiv' => $symiv,
                             'hashkey' => $hashkey
-                        ] = self::generateV3Key($password, $flavour, (int)$memory, (int)$passes, $salt);
+                        ] = self::generateV3Key($password, $flavour, (int) $memory, (int) $passes, $salt);
 
                         break;
                     case 2:

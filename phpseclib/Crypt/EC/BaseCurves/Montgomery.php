@@ -97,7 +97,7 @@ class Montgomery extends Base
     public function setCoefficients(BigInteger $a): void
     {
         if (!isset($this->factory)) {
-            throw new RuntimeException('setModulo needs to be called before this method');
+            throw new InvalidStateException('setModulo needs to be called before this method');
         }
         $this->a = $this->factory->newInteger($a);
         $two = $this->factory->newInteger(new BigInteger(2));
@@ -113,7 +113,7 @@ class Montgomery extends Base
     public function setBasePoint(BigInteger|PrimeInteger $x, BigInteger|PrimeInteger $y): array
     {
         if (!isset($this->factory)) {
-            throw new RuntimeException('setModulo needs to be called before this method');
+            throw new InvalidStateException('setModulo needs to be called before this method');
         }
         $this->p = [
             $x instanceof BigInteger ? $this->factory->newInteger($x) : $x,
@@ -129,11 +129,11 @@ class Montgomery extends Base
     public function getBasePoint(): array
     {
         if (!isset($this->factory)) {
-            throw new RuntimeException('setModulo needs to be called before this method');
+            throw new InvalidStateException('setModulo needs to be called before this method');
         }
         /*
         if (!isset($this->p)) {
-            throw new \phpseclib4\Exception\RuntimeException('setBasePoint needs to be called before this method');
+            throw new InvalidStateException('setBasePoint needs to be called before this method');
         }
         */
         return $this->p;
@@ -149,7 +149,7 @@ class Montgomery extends Base
     private function doubleAndAddPoint(array $p, array $q, PrimeInteger $x1): array
     {
         if (!isset($this->factory)) {
-            throw new RuntimeException('setModulo needs to be called before this method');
+            throw new InvalidStateException('setModulo needs to be called before this method');
         }
 
         if (!count($p) || !count($q)) {
@@ -157,7 +157,7 @@ class Montgomery extends Base
         }
 
         if (!isset($p[1])) {
-            throw new RuntimeException('Affine coordinates need to be manually converted to XZ coordinates');
+            throw new UnsupportedValueException('Affine coordinates need to be manually converted to XZ coordinates');
         }
 
         [$x2, $z2] = $p;

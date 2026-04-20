@@ -111,7 +111,7 @@ class PFX implements \ArrayAccess, \Countable, \Iterator
                     break;
                 case 'id-encryptedData':
                     if (!isset($password)) {
-                        throw new NoPasswordProvidedException('Encrypted data was found, however, no password has been provided');
+                        throw new PasswordNeededException('Encrypted data was found, however, no password has been provided');
                     }
                     $decoded = ASN1::decodeBER((string) $content['content']);
                     $content = ASN1::map($decoded, ASN1\Maps\CMSEncryptedData::MAP);
@@ -149,8 +149,13 @@ class PFX implements \ArrayAccess, \Countable, \Iterator
             case 'sha224':
             case 'sha256':
             case 'sha384':
+            case 'sha224':
             case 'sha512/224':
             case 'sha512/256':
+            case 'sha3/224':
+            case 'sha3/256':
+            case 'sha3/384':
+            case 'sha3/512':
                 break;
             default:
                 throw new UnsupportedAlgorithmException("$algo is an unsupported hash algorithm");
@@ -701,12 +706,12 @@ class PFX implements \ArrayAccess, \Countable, \Iterator
         $objects = $this->getAll();
         $message = 'Signatures can only be performed if there are *exactly* one private key and one matching X509 cert OR if there is just one private key, no more no less';
         if (count($objects) > 2 || !count($objects)) {
-            throw new UnsupportedOperationException("$message - x1");
+            throw new InvalidArgumentException("$message - x1");
         }
         if (count($objects) == 1) {
             $private = $objects[0];
             if (!$private instanceof PrivateKey) {
-                throw new UnsupportedOperationException("$message - x2");
+                throw new InvalidArgumentException("$message - x2");
             }
         } else {
             switch (true) {
@@ -719,12 +724,12 @@ class PFX implements \ArrayAccess, \Countable, \Iterator
                     $private = $objects[1];
                     break;
                 default:
-                    throw new UnsupportedOperationException("$message - x3");
+                    throw new InvalidArgumentException("$message - x3");
             }
             $publicKey = (string) $public->getPublicKey();
             $privateKey = (string) $private->getPublicKey();
             if ($publicKey != $privateKey) {
-                throw new UnsupportedOperationException("$message - x4");
+                throw new InvalidArgumentException("$message - x4");
             }
         }
 

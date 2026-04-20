@@ -82,7 +82,7 @@ abstract class PSS extends Progenitor
         self::initialize_static_variables();
 
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not an array');
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         $components = match (true) {

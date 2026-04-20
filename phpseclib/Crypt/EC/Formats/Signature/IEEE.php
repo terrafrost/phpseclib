@@ -36,7 +36,7 @@ abstract class IEEE
     {
         $len = strlen($sig);
         if ($len & 1) {
-            throw new LengthException('String length should be an even number');
+            throw new UnexpectedValueException('String length should be an even number');
         }
 
         $r = new BigInteger(substr($sig, 0, $len >> 1), 256);

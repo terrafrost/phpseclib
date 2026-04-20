@@ -35,6 +35,7 @@ use phpseclib4\File\ASN1\Types\OctetString;
 use phpseclib4\File\ASN1\Types\UTCTime;
 use phpseclib4\File\Common\Signable;
 use phpseclib4\Math\BigInteger;
+use UnexpectedValueException;
 
 /**
  * Pure-PHP CRL Parser
@@ -273,7 +274,7 @@ class CRL implements \ArrayAccess, \Countable, \Iterator, Signable
         if (isset($reason)) {
             $lower = strtolower($reason);
             if (!isset($validReasons[$lower])) {
-                throw new RuntimeException('Invalid reason presented - call CRL::listValidRevocationReasons() to see a list of valid reasons');
+                throw new UnexpectedValueException('Invalid reason presented - call CRL::listValidRevocationReasons() to see a list of valid reasons');
             }
             $temp['crlEntryExtensions'][] = [
                 'extnId' => 'id-ce-cRLReasons',

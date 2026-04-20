@@ -139,10 +139,6 @@ class TripleDES extends DES
             // If not 3CBC, we init as usual
             default:
                 parent::__construct($mode);
-
-                if ($this->mode == self::MODE_STREAM) {
-                    throw new BadModeException('Block ciphers cannot be ran in stream mode');
-                }
         }
     }
 

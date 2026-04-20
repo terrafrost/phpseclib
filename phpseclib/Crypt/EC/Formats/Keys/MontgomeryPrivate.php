@@ -50,7 +50,7 @@ abstract class MontgomeryPrivate
         $curve = match(strlen($key)) {
             32 => new Curve25519(),
             56 => new Curve448(),
-            default => throw new LengthException('The only supported lengths are 32 and 56')
+            default => throw new UnexpectedValueException('The only supported lengths are 32 and 56')
         };
 
         $components = ['curve' => $curve];
@@ -87,7 +87,7 @@ abstract class MontgomeryPrivate
     ): string
     {
         if (isset($password)) {
-            throw new UnsupportedFormatException('MontgomeryPrivate private keys do not support encryption');
+            throw new InvalidArgumentException('MontgomeryPrivate private keys do not support encryption');
         }
 
         return str_pad($privateKey->toBytes(), $curve::SIZE, "\0", STR_PAD_RIGHT);

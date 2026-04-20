@@ -453,7 +453,7 @@ abstract class RSA extends AsymmetricKey
     {
         $x = $x->toBytes();
         if (strlen($x) > $xLen) {
-            throw new OutOfRangeException('Resultant string length out of range');
+            throw new LengthException('Resultant string length out of range');
         }
         return str_pad($x, $xLen, chr(0), STR_PAD_LEFT);
     }
@@ -472,8 +472,6 @@ abstract class RSA extends AsymmetricKey
      * EMSA-PKCS1-V1_5-ENCODE
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-9.2 RFC3447#section-9.2}.
-     *
-     * @throws LengthException if the intended encoded message length is too short
      */
     protected function emsa_pkcs1_v1_5_encode(string $m, int $emLen): string
     {
@@ -751,7 +749,7 @@ abstract class RSA extends AsymmetricKey
             }
         }
         if ($encryptedCount > 1) {
-            throw new InconsistentSetupException('Multiple encryption padding modes have been selected; at most only one should be selected');
+            throw new InvalidStateException('Multiple encryption padding modes have been selected; at most only one should be selected');
         }
         $encryptionPadding = $selected;
 
@@ -768,7 +766,7 @@ abstract class RSA extends AsymmetricKey
             }
         }
         if ($signatureCount > 1) {
-            throw new InconsistentSetupException('Multiple signature padding modes have been selected; at most only one should be selected');
+            throw new InvalidStateException('Multiple signature padding modes have been selected; at most only one should be selected');
         }
         $signaturePadding = $selected;
 

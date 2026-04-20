@@ -327,20 +327,6 @@ class Twofish extends BlockCipher
     protected int $key_length = 16;
 
     /**
-     * Default Constructor.
-     *
-     * @throws BadModeException if an invalid / unsupported mode is provided
-     */
-    public function __construct(string $mode)
-    {
-        parent::__construct($mode);
-
-        if ($this->mode == self::MODE_STREAM) {
-            throw new BadModeException('Block ciphers cannot be ran in stream mode');
-        }
-    }
-
-    /**
      * Initialize Static Variables
      */
     protected static function initialize_static_variables(): void

@@ -113,10 +113,10 @@ abstract class Base
         }
 
         if (!isset($this->order)) {
-            throw new RuntimeException('setOrder needs to be called before this method');
+            throw new InvalidStateException('setOrder needs to be called before this method');
         }
         if ($x->compare($this->order) > 0 || $x->compare($zero) <= 0) {
-            throw new RangeException('x must be between 1 and the order of the curve');
+            throw new UnexpectedValueException('x must be between 1 and the order of the curve');
         }
     }
 

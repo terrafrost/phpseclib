@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\File;
 
+use BadMethodCallException as GlobalBadMethodCallException;
 use phpseclib4\Common\Functions\Arrays;
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\PublicKey;
@@ -56,6 +57,7 @@ use phpseclib4\File\ASN1\Types\UTCTime;
 use phpseclib4\File\ASN1\Types\UTF8String;
 use phpseclib4\File\Common\Signable;
 use phpseclib4\Math\BigInteger;
+use UnexpectedValueException;
 
 /**
  * Pure-PHP X.509 Parser
@@ -273,7 +275,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($mode != ASN1::FORMAT_DER) {
             $newcert = ASN1::extractBER($cert);
             if ($mode == ASN1::FORMAT_PEM && $cert == $newcert) {
-                throw new RuntimeException('Unable to decode PEM');
+                throw new UnexpectedValueException('Unable to decode PEM');
             }
             $cert = $newcert;
         }
@@ -290,7 +292,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
                 if ($key instanceof RSA && $key->getLoadedFormat() == 'PKCS8') {
                     $key = $key->withPadding(RSA::SIGNATURE_PKCS1);
                 }
-            } catch (NoKeyLoadedException $e) {
+            } catch (NoKeyLoadedException) {
             }
         };
 
@@ -408,7 +410,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
     public function getPublicKey(): PublicKey
     {
         if (!$this->cert['tbsCertificate']['subjectPublicKeyInfo'] instanceof PublicKey) {
-            throw new UnsupportedFormatException('Unable to decode subjectPublicKeyInfo');
+            throw new UnexpectedValueException('Unable to decode subjectPublicKeyInfo');
         }
 
         $publicKey = $this->cert['tbsCertificate']['subjectPublicKeyInfo'];
@@ -694,7 +696,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         }
 
         if (!$this->cert['tbsCertificate']['subjectPublicKeyInfo'] instanceof PublicKey) {
-            throw new UnsupportedFormatException('createSubjectKeyIdentifier only works if the public key is actually recognized by phpseclib as a public key');
+            throw new UnexpectedValueException('createSubjectKeyIdentifier only works if the public key is actually recognized by phpseclib as a public key');
         }
 
         $key = $this->cert['tbsCertificate']['subjectPublicKeyInfo']->toString('PKCS8', ['binary' => true]);
@@ -812,7 +814,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         if (!$this->isIssuerOf($this)) {
             self::$checkBasicConstraints = $oldBasicConstraints;
             self::$checkKeyUsage = $oldKeyUsage;
-            throw new MethodOnlyAvailableForSelfSigned('This method is only available for self signed certificates');
+            throw new BadMethodCallException('This method is only available for self signed certificates');
         }
         self::$checkBasicConstraints = $oldBasicConstraints;
         self::$checkKeyUsage = $oldKeyUsage;
@@ -980,7 +982,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
     public static function registerExtension(string $id, array $mapping): void
     {
         if (is_array(self::getMapping($id))) {
-            throw new RuntimeException(
+            throw new InvalidStateException(
                 "Extension $id has already been defined with a different mapping."
             );
         }
@@ -1023,8 +1025,6 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
 
     /**
      * Identify signature algorithm from private key
-     *
-     * @throws UnsupportedAlgorithmException if the algorithm is unsupported
      */
     public function identifySignatureAlgorithm(PublicKey $key): void
     {
@@ -1268,7 +1268,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
                 if ((self::$inCRLFunction)($url, $this->cert['tbsCertificate']['serialNumber'])) {
                     return false;
                 }
-            } catch (\Exception $e) {
+            } catch (UnexpectedValueSyntax) {
                 // there's not a URI for us to get the CRL from so we just won't check it
             }
         }
@@ -1302,7 +1302,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
                 try {
                     $this->testForSelfSigned();
                     $signingCert = $this;
-                } catch (MethodOnlyAvailableForSelfSigned $e) {
+                } catch (BadMethodCallException) {
                     return $this->testForIntermediate(true, $count) && $this->validateSignature(true);
                 }
             }

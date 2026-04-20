@@ -619,7 +619,7 @@ abstract class ASN1
                 return $decoded['content'];
         }
 
-        throw new RuntimeException(
+        throw new UnexpectedValueException(
             'Unable to perform mapping - found ' .
             self::convertTypeConstantToString($decoded['type']) .
             ' - expected ' .
@@ -743,9 +743,10 @@ abstract class ASN1
      * DER-encodes an ASN.1 semantic mapping ($mapping).  Some libraries would probably call this function
      * an ASN.1 compiler.
      *
-     * @param Element|string|array $source
+     * $source can be Element|BaseType|BigInteger|string|array|int|float|bool|null
+     * and by array that means any of the non-array types in any combination.
      */
-    public static function encodeDER($source, array $mapping): string
+    public static function encodeDER(mixed $source, array $mapping): string
     {
         self::$location = [];
         return self::encode_der($source, $mapping);
@@ -829,7 +830,7 @@ abstract class ASN1
                         case is_array($source) && !array_key_exists($key, $source):
                         case !is_array($source) && !isset($source[$key]):
                             if (!isset($child['optional'])) {
-                                throw new RuntimeException(implode('/', array_merge(self::$location, [$key])) . ' is not present and is not optional');
+                                throw new UnexpectedValueException(implode('/', array_merge(self::$location, [$key])) . ' is not present and is not optional');
                             }
                             continue 2;
                     }
@@ -909,7 +910,7 @@ abstract class ASN1
                     $options = implode(',', array_keys($mapping['children']));
                     $actual = is_array($source) ? array_keys($source) : $source->keys();
                     $actual = implode(',', $actual);
-                    throw new RuntimeException(implode('/', self::$location) . " appears to contain a key that's not defined in the CHOICE (expected: $options) (actual: $actual)");
+                    throw new UnexpectedValueException(implode('/', self::$location) . " appears to contain a key that's not defined in the CHOICE (expected: $options) (actual: $actual)");
                 }
 
                 if (isset($idx)) {
@@ -926,7 +927,7 @@ abstract class ASN1
                 if (!is_string($source) && !$source instanceof BigInteger && !is_numeric($source)) {
                     $message = implode('/', self::$location) . ' must be a string, a numeric (is_numeric), or an instance of ' .
                         'either phpseclib4\File\ASN1\Types\Integer or a phpseclib4\Math\BigInteger';
-                    throw new RuntimeException($message);
+                    throw new UnexpectedValueException($message);
                 }
                 if (!isset($mapping['mapping'])) {
                     if (is_numeric($source)) {
@@ -937,11 +938,11 @@ abstract class ASN1
                     if ($source instanceof Integer && isset($source->mappedValue)) {
                         $source = $source->mappedValue;
                     } elseif ($source instanceof BigInteger) {
-                        throw new RuntimeException('No mapped value provided for ' . implode('/', self::$location));
+                        throw new UnexpectedValueException('No mapped value provided for ' . implode('/', self::$location));
                     }
                     $value = array_search($source, $mapping['mapping']);
                     if ($value === false) {
-                        throw new RuntimeException("Unexpected value ($source) encountered for " . implode('/', self::$location) . '; expected any of ' . implode(',', $mapping['mapping']));
+                        throw new UnexpectedValueException("Unexpected value ($source) encountered for " . implode('/', self::$location) . '; expected any of ' . implode(',', $mapping['mapping']));
                     }
                     $value = new BigInteger($value);
                     $value = $value->toBytes(true);
@@ -954,15 +955,15 @@ abstract class ASN1
             case self::TYPE_GENERALIZED_TIME:
                 if (!is_string($source) && !$source instanceof \DateTimeInterface) {
                     $type = is_object($source) ? $source::CLASS : gettype($source);
-                    throw new RuntimeException(implode('/', self::$location) . " should be either a string or an instance of DateTimeInterface - $type given");
+                    throw new UnexpectedValueException(implode('/', self::$location) . " should be either a string or an instance of DateTimeInterface - $type given");
                 }
                 if ($tag === self::TYPE_UTC_TIME) {
                     if ($source instanceof GeneralizedTime) {
-                        throw new RuntimeException(implode('/', self::$location) . ' has a GeneralizedTime object but is of type UTCTime');
+                        throw new UnexpectedValueException(implode('/', self::$location) . ' has a GeneralizedTime object but is of type UTCTime');
                     }
                 } else {
                     if ($source instanceof UTCTime) {
-                        throw new RuntimeException(implode('/', self::$location) . ' has a UTCTime object but is of type GeneralizedTime');
+                        throw new UnexpectedValueException(implode('/', self::$location) . ' has a UTCTime object but is of type GeneralizedTime');
                     }
                 }
                 $format = $tag === self::TYPE_UTC_TIME ? 'y' : 'Y';
@@ -985,7 +986,7 @@ abstract class ASN1
                     if (!is_array($source)) {
                         if (!is_string($source)) {
                             $type = is_object($source) ? $source::CLASS : gettype($source);
-                            throw new RuntimeException(implode('/', self::$location) . " should be either a string, an array or an instance of BitString - $type provided");
+                            throw new UnexpectedValueException(implode('/', self::$location) . " should be either a string, an array or an instance of BitString - $type provided");
                         }
                         $value = $source;
                         break;
@@ -1022,7 +1023,7 @@ abstract class ASN1
                 }
                 if (!is_string($source) && !$source instanceof BitString) {
                     $type = is_object($source) ? $source::CLASS : gettype($source);
-                    throw new RuntimeException(implode('/', self::$location) . " should be either a string or an instance of BitString - $type provided");
+                    throw new UnexpectedValueException(implode('/', self::$location) . " should be either a string or an instance of BitString - $type provided");
                 }
                 $value = (string) $source;
                 break;
@@ -1033,7 +1034,7 @@ abstract class ASN1
                    -- http://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#page=16 */
                 if (!Strings::is_stringable($source)) {
                     $type = is_object($source) ? $source::CLASS : gettype($source);
-                    throw new RuntimeException(implode('/', self::$location) . " (a $type) could not be converted to a string");
+                    throw new UnexpectedValueException(implode('/', self::$location) . " (a $type) could not be converted to a string");
                 }
                 $value = (string) $source;
                 break;
@@ -1061,7 +1062,7 @@ abstract class ASN1
                     case is_string($source):
                         return self::encode_der($source, ['type' => self::TYPE_UTF8_STRING] + $mapping, null);
                 }
-                throw new RuntimeException('Please choose a primitive type or create an ASN1Element for ' . implode('/', $loc));
+                throw new UnexpectedValueException('Please choose a primitive type or create an ASN1Element for ' . implode('/', $loc));
             case self::TYPE_NULL:
                 $value = '';
                 break;
@@ -1077,7 +1078,7 @@ abstract class ASN1
             case self::TYPE_GRAPHIC_STRING:
             case self::TYPE_GENERAL_STRING:
                 if ($source instanceof BaseType && $source->hasTypeID() && $source->getTypeID() != $tag) {
-                    throw new RuntimeException('Object type does not match the expected type for ' . implode('/', self::$location));
+                    throw new UnexpectedValueException('Object type does not match the expected type for ' . implode('/', self::$location));
                 }
                 $value = (string) $source;
                 break;
@@ -1086,12 +1087,12 @@ abstract class ASN1
                     $source = $source->value;
                 }
                 if (!is_bool($source)) {
-                    throw new RuntimeException('Value is not a Boolean or a bool at ' . implode('/', self::$location));
+                    throw new UnexpectedValueException('Value is not a Boolean or a bool at ' . implode('/', self::$location));
                 }
                 $value = $source ? "\xFF" : "\x00";
                 break;
             default:
-                throw new RuntimeException('Mapping provides no type definition for ' . implode('/', self::$location));
+                throw new UnexpectedValueException('Mapping provides no type definition for ' . implode('/', self::$location));
         }
 
         if (isset($idx)) {
@@ -1136,11 +1137,11 @@ abstract class ASN1
 
         // see https://github.com/openjdk/jdk/blob/2deb318c9f047ec5a4b160d66a4b52f93688ec42/src/java.base/share/classes/sun/security/util/ObjectIdentifier.java#L55
         if ($len > 4096) {
-            throw new RuntimeException('Object Identifier size is limited to 4096 bytes');
+            throw new ResourceLimitException('Object Identifier size is limited to 4096 bytes');
         }
 
         if (ord($content[$len - 1]) & 0x80) {
-            throw new RuntimeException('OID is malformed');
+            throw new UnexpectedValueException('OID is malformed');
         }
 
         $n = new BigInteger();
@@ -1203,10 +1204,10 @@ abstract class ASN1
         $part2 = array_shift($parts);
 
         if ($part1 > 2) {
-            throw new RuntimeException('The first OID subidentifier should be between 0 and 2');
+            throw new UnexpectedValueException('The first OID subidentifier should be between 0 and 2');
         }
         if ($part1 < 2 && $part2 > 39) {
-            throw new RuntimeException('The second OID subidentifier should not be larger than 39 unless the first subidentifier is 2');
+            throw new UnexpectedValueException('The second OID subidentifier should not be larger than 39 unless the first subidentifier is 2');
         }
 
         $first = new BigInteger($part1);
@@ -1517,7 +1518,7 @@ abstract class ASN1
                 $ip = substr($val, 0, $size);
                 return [inet_ntop($ip), inet_ntop($mask)];
         }
-        throw new RuntimeException('An invalid IP address was encountered');
+        throw new UnexpectedValueException('An invalid IP address was encountered');
     }
     */
 }

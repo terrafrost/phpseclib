@@ -97,8 +97,6 @@ abstract class DSA extends AsymmetricKey
 
     /**
      * Create DSA parameters
-     *
-     * @return DSA|bool
      */
     public static function createParameters(int $L = 2048, int $N = 224): Parameters
     {
@@ -197,7 +195,7 @@ abstract class DSA extends AsymmetricKey
         } elseif (!count($args)) {
             $params = self::createParameters();
         } else {
-            throw new InsufficientSetupException('Valid parameters are either two integers (L and N), a single DSA object or no parameters at all.');
+            throw new InvalidArgumentException('Valid parameters are either two integers (L and N), a single DSA object or no parameters at all.');
         }
 
         // at this point the only two supported values for self::$forcedEngine are OpenSSL, PHP and null

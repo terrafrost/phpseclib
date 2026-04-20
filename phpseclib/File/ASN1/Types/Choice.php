@@ -128,7 +128,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function &offsetGet(mixed $offset): mixed
     {
         if ($offset != $this->index) {
-            throw new RuntimeException("The requested offset '$offset' was not found - did you mean '{$this->index}'?");
+            throw new UnexpectedValueException("The requested offset '$offset' was not found - did you mean '{$this->index}'?");
             return $this->value;
         }
         if (($this->value instanceof Constructed || $this->value instanceof Choice) && !$this->value->parent) {
@@ -147,7 +147,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function offsetSet(mixed $offset, mixed $value): void
     {
         if (!Strings::is_stringable($offset)) {
-            throw new RuntimeException('Only offsets that can be cast to strings are supported');
+            throw new BadMethodCallException('Only offsets that can be cast to strings are supported');
         }
 
         $this->index = "$offset";

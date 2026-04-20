@@ -42,7 +42,7 @@ abstract class MontgomeryPublic
         $curve = match (strlen($key)) {
             32 => new Curve25519(),
             56 => new Curve448(),
-            default => throw new LengthException('The only supported lengths are 32 and 56')
+            default => throw new UnexpectedValueException('The only supported lengths are 32 and 56')
         };
 
         $components = ['curve' => $curve];

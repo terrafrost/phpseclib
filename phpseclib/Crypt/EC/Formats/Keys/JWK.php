@@ -87,7 +87,7 @@ abstract class JWK extends Progenitor
         ];
 
         if (!$curve->verifyPoint($QA)) {
-            throw new \RuntimeException('Unable to verify that point exists on curve');
+            throw new UnexpectedValueException('Unable to verify that point exists on curve');
         }
 
         if (!isset($key->d)) {
@@ -173,6 +173,10 @@ abstract class JWK extends Progenitor
         ?string $password = null,
         array $options = []
     ): string {
+        if (isset($password)) {
+            throw new InvalidArgumentException('JWK private keys do not support encryption');
+        }
+
         $key = self::savePublicKeyHelper($curve, $publicKey);
         $key['d'] = $curve instanceof TwistedEdwardsCurve ? $secret : $privateKey->toBytes();
         $key['d'] = Strings::base64url_encode($key['d']);

@@ -64,7 +64,7 @@ abstract class PKCS8 extends Progenitor
     public static function load(string|array $key, #[SensitiveParameter] ?string $password = null): array
     {
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not an array');
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         if (str_contains($key, 'PUBLIC')) {
@@ -93,7 +93,7 @@ abstract class PKCS8 extends Progenitor
         $var = $type == 'privateKey' ? 'x' : 'y';
         $components[$var] = ASN1::map($decoded, Maps\DSAPublicKey::MAP);
         if (!$components[$var] instanceof BigInteger) {
-            throw new RuntimeException('Unable to perform ASN1 mapping');
+            throw new UnexpectedValueException('Unable to perform ASN1 mapping');
         }
 
         if (isset($key['meta'])) {

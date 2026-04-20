@@ -134,20 +134,6 @@ class Rijndael extends BlockCipher
     private array $kl;
 
     /**
-     * Default Constructor.
-     *
-     * @throws InvalidArgumentException if an invalid / unsupported mode is provided
-     */
-    public function __construct(string $mode)
-    {
-        parent::__construct($mode);
-
-        if ($this->mode == self::MODE_STREAM) {
-            throw new BadModeException('Block ciphers cannot be ran in stream mode');
-        }
-    }
-
-    /**
      * Sets the key length.
      *
      * Valid key lengths are 128, 160, 192, 224, and 256.
@@ -158,8 +144,6 @@ class Rijndael extends BlockCipher
      *
      *       That said, if you want be compatible with other Rijndael and AES implementations,
      *       you should not setKeyLength(160) or setKeyLength(224).
-     *
-     * @throws LengthException if the key length is invalid
      */
     public function setKeyLength(int $length): void
     {
@@ -459,7 +443,7 @@ class Rijndael extends BlockCipher
         parent::setup();
 
         if (is_string($this->iv) && strlen($this->iv) != $this->block_size) {
-            throw new InconsistentSetupException('The IV length (' . strlen($this->iv) . ') does not match the block size (' . $this->block_size . ')');
+            throw new LengthException('The IV length (' . strlen($this->iv) . ') does not match the block size (' . $this->block_size . ')');
         }
     }
 
@@ -951,7 +935,7 @@ class Rijndael extends BlockCipher
         switch ($this->engine) {
             case self::ENGINE_LIBSODIUM:
                 if (!isset($this->oldtag)) {
-                    throw new InsufficientSetupException('Authentication Tag has not been set');
+                    throw new InvalidStateException('Authentication Tag has not been set - call setTag() first');
                 }
                 if (strlen($this->oldtag) != 16) {
                     break;
@@ -964,7 +948,7 @@ class Rijndael extends BlockCipher
                 return $plaintext;
             case self::ENGINE_OPENSSL_GCM:
                 if (!isset($this->oldtag)) {
-                    throw new InsufficientSetupException('Authentication Tag has not been set');
+                    throw new InvalidStateException('Authentication Tag has not been set - call setTag() first');
                 }
                 $plaintext = openssl_decrypt(
                     $ciphertext,

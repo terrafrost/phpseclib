@@ -137,7 +137,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function &offsetGet(mixed $offset): mixed
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -169,7 +169,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function count(): int
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -208,7 +208,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
 
         if ($this->tag != $mapping['type']) {
             $key = $this->reconstituteKey();
-            throw new RuntimeException('Found ' . ASN1::convertTypeConstantToString($this->tag) . ' - expecting ' . ASN1::convertTypeConstantToString($mapping['type']) . $key);
+            throw new UnexpectedValueException('Found ' . ASN1::convertTypeConstantToString($this->tag) . ' - expecting ' . ASN1::convertTypeConstantToString($mapping['type']) . $key);
         }
 
         /*
@@ -261,7 +261,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                     }
                 }
                 $decoded[] = $temp;
-            } catch (EOCException $e) {
+            } catch (EOCException) {
                 break;
             }
         }
@@ -307,7 +307,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                     if ($content['type'] != $this->tag) {
                         $error = 'All subtags of a constructed string should be the same type as the constructed string itself';
                         $error = "$error (found " . ASN1::convertTypeConstantToString($content['type']) . '; expected '. ASN1::convertTypeConstantToString($this->tag) . ')';
-                        throw new RuntimeException($error);
+                        throw new UnexpectedDataException($error);
                     }
                     $result.= $content['content'];
                 }
@@ -367,7 +367,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                                 $map[$key] = new MalformedData((string) $temp['content']);
                                 break;
                             }
-                            throw new RuntimeException("Unable to find a matching element for $key in the SEQUENCE");
+                            throw new UnexpectedDataException("Unable to find a matching element for $key in the SEQUENCE");
                         }
                     }
                 }
@@ -383,12 +383,12 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                         if (ASN1::isBlobsOnBadDecodesEnabled()) {
                             break;
                         }
-                        throw new RuntimeException("Unable to find a matching element for $key in the SEQUENCE");
+                        throw new UnexpectedDataException("Unable to find a matching element for $key in the SEQUENCE");
                     }
                 }
 
                 if ($j < count($decoded)) {
-                    throw new RuntimeException('There were ' . count($decoded) . ' elements found in the decoded data but we\'re only expecting ' . count($keys) . ' (' . implode(', ', array_keys($map)) . ')');
+                    throw new UnexpectedDataException('There were ' . count($decoded) . ' elements found in the decoded data but we\'re only expecting ' . count($keys) . ' (' . implode(', ', array_keys($map)) . ')');
                 }
 
                 $this->decoded = $map;
@@ -440,7 +440,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                                 $map[$key] = new MalformedData($temp['content']);
                                 break;
                             }
-                            throw new RuntimeException("Unable to find a matching element for $key in the SET");
+                            throw new UnexpectedDataException("Unable to find a matching element for $key in the SET");
                         }
                     }
                 }
@@ -449,7 +449,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                 $this->rules = $rules;
                 break;
             default:
-                throw new RuntimeException('Unable to decode element (' . $this->tag . ') @ ' . $this->start);
+                throw new UnexpectedDataException('Unable to decode element (' . $this->tag . ') @ ' . $this->start);
         }
     }
 
@@ -471,7 +471,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                 return ASN1::map($decoded, $child);
         }
         //return $child['default'];
-        throw new RuntimeException('An unsupported default type was encountered');
+        throw new UnexpectedDataException('An unsupported default type was encountered');
     }
 
     private function setSeqOuterLoop(array $decoded, array $children): array
@@ -544,7 +544,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
             } catch (EncodedDataUnavailableException|ExcessivelyDeepDataException $e) {
                 $data = substr($this->encoded, $temp['start'] - $this->start, ($temp['length'] ?? $temp['actuallength']) + $temp['headerlength']);
                 return $e instanceof EncodedDataUnavailableException ? new Element($data) : new ExcessivelyDeepData($data);
-            } catch (RuntimeException $e) {
+            } catch (UnexpectedDataException) {
                 $maymatch = false;
             }
         }
@@ -566,7 +566,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function offsetSet(mixed $offset, mixed $value): void
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran');
+            throw new InvalidStateException('map() has not been ran');
         }
 
         self::decodeCurrent();
@@ -594,7 +594,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function offsetUnset(mixed $offset): void
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran');
+            throw new InvalidStateException('map() has not been ran');
         }
 
         self::decodeCurrent();
@@ -607,7 +607,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function firstKey(): mixed
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran');
+            throw new InvalidStateException('map() has not been ran');
         }
 
         self::decodeCurrent();
@@ -618,7 +618,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function lastKey(): mixed
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran');
+            throw new InvalidStateException('map() has not been ran');
         }
 
         self::decodeCurrent();
@@ -631,7 +631,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         // this is mainly intended to turn a sparse numerically indexed array into a dense array
 
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran');
+            throw new InvalidStateException('map() has not been ran');
         }
 
         // no point in messing with $this->decoded if it hasn't been messed with
@@ -733,7 +733,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function keys(): ?array
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -744,7 +744,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function rewind(): void
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -755,7 +755,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function current(): mixed
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -766,7 +766,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function key(): mixed
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -777,7 +777,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function next(): void
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -788,7 +788,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function valid(): bool
     {
         if (!$this->mapping) {
-            throw new RuntimeException('map() has not been ran; if you want to get the array keys do ->toArray()');
+            throw new InvalidStateException('map() has not been ran; if you want to get the array keys do ->toArray()');
         }
 
         self::decodeCurrent();
@@ -858,7 +858,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function __toString(): string
     {
         if (!$this->hasEncoded()) {
-            throw new RuntimeException('Unable to convert constructed to string');
+            throw new UnexpectedValueException('Unable to convert constructed to string');
         }
         return $this->getEncoded();
     }

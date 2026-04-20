@@ -69,7 +69,7 @@ trait Common
     public function getEncoded(): string
     {
         if (!isset($this->metadata['content'], $this->metadata['rawheader'])) {
-            throw new RuntimeException('Encoded data is not available');
+            throw new BadMethodCallException('Encoded data is not available');
         }
         return $this->metadata['rawheader'] . $this->metadata['content'];
     }
@@ -77,7 +77,7 @@ trait Common
     public function getEncodedWithoutHeader(): string
     {
         if (!isset($this->metadata['content'])) {
-            throw new RuntimeException('Encoded data is not available');
+            throw new BadMethodCallException('Encoded data is not available');
         }
         return $this->metadata['content'];
     }
@@ -85,7 +85,7 @@ trait Common
     public function getEncodedLength(): int
     {
         if (!isset($this->metadata['content'], $this->metadata['rawheader'])) {
-            throw new RuntimeException('Encoded data is not available');
+            throw new BadMethodCallException('Encoded data is not available');
         }
         return strlen($this->metadata['rawheader']) + strlen($this->metadata['content']);
     }
@@ -109,7 +109,7 @@ trait Common
         try {
             $this->getTypeID();
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }

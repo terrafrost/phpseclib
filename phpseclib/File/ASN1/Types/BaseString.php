@@ -46,7 +46,7 @@ abstract class BaseString implements BaseType
     private function convert(string $class): self
     {
         if (!$this->isConvertable()) {
-            throw new CharacterConversionException('Unable to convert - ' . static::CLASS . ' doesn\'t have a size constant associated with it');
+            throw new BadMethodCallException('Unable to convert - ' . static::CLASS . ' doesn\'t have a size constant associated with it');
         }
         //if (!defined("$class::SIZE")) {
         //    throw new \Exception("Unable to convert - $class doesn't have a size constant associated with it");

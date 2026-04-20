@@ -91,7 +91,7 @@ final class PrivateKey extends EC implements Common\PrivateKey
             return $this->curve->encodePoint($point);
         }
         if (empty($point)) {
-            throw new RuntimeException('The infinity point is invalid');
+            throw new UnexpectedValueException('The infinity point is invalid');
         }
         return "\4" . $point[0]->toBytes(true) . $point[1]->toBytes(true);
     }
@@ -104,7 +104,7 @@ final class PrivateKey extends EC implements Common\PrivateKey
     public function sign(string|Signable $source): string
     {
         if ($this->curve instanceof MontgomeryCurve) {
-            throw new UnsupportedOperationException('Montgomery Curves cannot be used to create signatures');
+            throw new BadMethodCallException('Montgomery Curves cannot be used to create signatures');
         }
 
         if ($source instanceof Signable) {
@@ -123,9 +123,6 @@ final class PrivateKey extends EC implements Common\PrivateKey
 
         $shortFormat = $this->shortFormat;
         $format = $this->sigFormat;
-        if ($format === false) {
-            throw new RuntimeException('No signature format has been specified');
-        }
 
         if (self::$forcedEngine === 'libsodium' && !$this->curve instanceof Ed25519) {
             throw new BadConfigurationException('Engine libsodium is only supported for Ed25519');
@@ -370,7 +367,7 @@ final class PrivateKey extends EC implements Common\PrivateKey
             2 => $format::save($r, $s),
             3 => $format::save($r, $s, $this->getCurve()),
             4 => $format::save($r, $s, $this->getCurve(), $this->getLength()),
-            default => throw new UnsupportedOperationException("$format::save() has $paramCount parameters - the only valid parameter counts are 2, 3 or 4")
+            default => throw new UnexpectedValueException("$format::save() has $paramCount parameters - the only valid parameter counts are 2, 3 or 4")
         };
     }
 }

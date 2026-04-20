@@ -120,7 +120,7 @@ class SPKAC implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($mode != ASN1::FORMAT_DER) {
             $newspkac = ASN1::extractBER($spkac);
             if ($mode == ASN1::FORMAT_PEM && $spkac == $newspkac) {
-                throw new RuntimeException('Unable to decode PEM');
+                throw new UnexpectedValueException('Unable to decode PEM');
             }
             $spkac = $newspkac;
         }
@@ -235,7 +235,7 @@ class SPKAC implements \ArrayAccess, \Countable, \Iterator, Signable
     public function getPublicKey(): PublicKey
     {
         if (!$this->spkac['publicKeyAndChallenge']['spki'] instanceof PublicKey) {
-            throw new RuntimeException('Unable to decode spki');
+            throw new UnexpectedValueException('Unable to decode spki');
         }
 
         $publicKey = $this->spkac['publicKeyAndChallenge']['spki'];

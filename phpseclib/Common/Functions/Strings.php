@@ -151,7 +151,7 @@ abstract class Strings
     {
         $format = self::formatPack($format);
         if (strlen($format) != count($elements)) {
-            throw new ConflictingStateException('There must be as many $element arguments as there are characters in the $format string');
+            throw new InvalidArgumentException('There must be as many $element arguments as there are characters in the $format string');
         }
         $result = '';
         for ($i = 0; $i < strlen($format); $i++) {

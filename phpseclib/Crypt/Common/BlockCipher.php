@@ -23,4 +23,15 @@ namespace phpseclib4\Crypt\Common;
  */
 abstract class BlockCipher extends SymmetricKey
 {
+    /**
+     * Default Constructor.
+     */
+    public function __construct(string $mode)
+    {
+        parent::__construct($mode);
+
+        if ($this->mode == self::MODE_STREAM) {
+            throw new BadModeException('Block ciphers cannot be ran in stream mode');
+        }
+    }
 }

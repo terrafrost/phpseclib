@@ -314,20 +314,6 @@ class Blowfish extends BlockCipher
     protected int $key_length = 16;
 
     /**
-     * Default Constructor.
-     *
-     * @throws InvalidArgumentException if an invalid / unsupported mode is provided
-     */
-    public function __construct(string $mode)
-    {
-        parent::__construct($mode);
-
-        if ($this->mode == self::MODE_STREAM) {
-            throw new InvalidArgumentException('Block ciphers cannot be ran in stream mode');
-        }
-    }
-
-    /**
      * Sets the key length.
      *
      * Key lengths can be between 32 and 448 bits.

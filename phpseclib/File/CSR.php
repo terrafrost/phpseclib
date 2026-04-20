@@ -35,6 +35,7 @@ use phpseclib4\File\ASN1\Types\BitString;
 use phpseclib4\File\ASN1\Types\PrintableString;
 use phpseclib4\File\ASN1\Types\UTF8String;
 use phpseclib4\File\Common\Signable;
+use UnexpectedValueException;
 
 /**
  * Pure-PHP CSR Parser
@@ -103,7 +104,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($mode != ASN1::FORMAT_DER) {
             $newcsr = ASN1::extractBER($csr);
             if ($mode == ASN1::FORMAT_PEM && $csr == $newcsr) {
-                throw new RuntimeException('Unable to decode PEM');
+                throw new UnexpectedValueException('Unable to decode PEM');
             }
             $csr = $newcsr;
         }
@@ -116,7 +117,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
         $rules['certificationRequestInfo']['subjectPKInfo'] = function(Constructed &$csr) {
             try {
                 $csr = PublicKeyLoader::load($csr->getEncoded());
-            } catch (NoKeyLoadedException $e) {
+            } catch (NoKeyLoadedException) {
             }
         };
 
@@ -274,7 +275,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
     public function getPublicKey(): PublicKey
     {
         if (!$this->csr['certificationRequestInfo']['subjectPKInfo'] instanceof PublicKey) {
-            throw new RuntimeException('Unable to decode subjectPKInfo');
+            throw new UnexpectedValueException('Unable to decode subjectPKInfo');
         }
         $publicKey = $this->csr['certificationRequestInfo']['subjectPKInfo'];
         if ($publicKey instanceof RSA && $publicKey->getLoadedFormat() == 'PKCS8') {
@@ -719,7 +720,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
     public static function registerExtension(string $id, array $mapping): void
     {
         if (!is_bool(self::getMapping($id))) {
-            throw new RuntimeException(
+            throw new InvalidStateException(
                 "Extension $id has already been defined with a different mapping."
             );
         }

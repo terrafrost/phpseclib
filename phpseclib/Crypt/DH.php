@@ -214,7 +214,7 @@ abstract class DH extends AsymmetricKey
                 'F9AB48195DED7EA1B1D510BD7EE74D73FAF36BC31ECFA268359046F4EB879F92' .
                 '4009438B481C6CD7889A002ED5EE382BC9190DA6FC026E479558E4475677E9AA' .
                 '9E3050E2765694DFC81F56E880B96E7160C980DD98EDD3DFFFFFFFFFFFFFFFFF',
-            default => throw new InvalidArgumentException('Invalid named prime provided')
+            default => throw new UnsupportedAlgorithmException('Invalid named prime provided')
         };
 
         $params->prime = new BigInteger($prime, 16);
@@ -387,7 +387,7 @@ abstract class DH extends AsymmetricKey
      */
     public function withHash(string $hash): AsymmetricKey
     {
-        throw new UnsupportedOperationException('DH does not use a hash algorithm');
+        throw new BadMethodCallException('DH does not use a hash algorithm');
     }
 
     /**
@@ -395,7 +395,7 @@ abstract class DH extends AsymmetricKey
      */
     public function getHash(): Hash
     {
-        throw new UnsupportedOperationException('DH does not use a hash algorithm');
+        throw new BadMethodCallException('DH does not use a hash algorithm');
     }
 
     /**

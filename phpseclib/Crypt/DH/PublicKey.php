@@ -28,8 +28,6 @@ final class PublicKey extends DH
 
     /**
      * Returns the public key
-     *
-     * @param array $options optional
      */
     public function toString(string $type, array $options = []): string
     {

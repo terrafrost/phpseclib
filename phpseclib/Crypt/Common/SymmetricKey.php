@@ -685,7 +685,7 @@ abstract class SymmetricKey
         $this->explicit_key_length = $length >> 3;
 
         if (isset($this->key) && strlen($this->key) != $this->explicit_key_length) {
-            throw new ConflictingStateException('Key has already been set and is not ' . $this->explicit_key_length . ' bytes long');
+            throw new LengthException('Key has already been set and is not ' . $this->explicit_key_length . ' bytes long');
         }
     }
 
@@ -704,7 +704,7 @@ abstract class SymmetricKey
     public function setKey(string $key): void
     {
         if (isset($this->explicit_key_length) && strlen($key) != $this->explicit_key_length) {
-            throw new ConflictingStateException('Key length has already been set to ' . $this->explicit_key_length . ' bytes and this key is ' . strlen($key) . ' bytes');
+            throw new LengthException('Key length has already been set to ' . $this->explicit_key_length . ' bytes and this key is ' . strlen($key) . ' bytes');
         }
 
         $this->key = $key;

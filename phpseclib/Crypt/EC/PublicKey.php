@@ -43,7 +43,7 @@ final class PublicKey extends EC implements Common\PublicKey
     public function verify(string $message, string $signature): bool
     {
         if ($this->curve instanceof MontgomeryCurve) {
-            throw new UnsupportedOperationException('Montgomery Curves cannot be used to create signatures');
+            throw new BadMethodCallException('Montgomery Curves cannot be used to create signatures');
         }
 
         $shortFormat = $this->shortFormat;

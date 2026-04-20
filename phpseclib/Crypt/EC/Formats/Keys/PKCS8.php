@@ -78,7 +78,7 @@ abstract class PKCS8 extends Progenitor
         self::initialize_static_variables();
 
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not an array');
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         $isPublic = match (true) {
@@ -127,7 +127,7 @@ abstract class PKCS8 extends Progenitor
         $key = ASN1::map($decoded, Maps\ECPrivateKey::MAP)->toArray();
 
         if (isset($key['parameters']) && $params != $key['parameters']) {
-            throw new RuntimeException('The PKCS8 parameter field does not match the private key parameter field');
+            throw new UnexpectedValueException('The PKCS8 parameter field does not match the private key parameter field');
         }
 
         $components['dA'] = new BigInteger((string) $key['privateKey'], 256);
@@ -151,7 +151,7 @@ abstract class PKCS8 extends Progenitor
             $components['curve'] = $key['privateKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new Ed25519() : new Ed448();
             $expected = chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($components['curve']::SIZE);
             if (substr($key['privateKey'], 0, 2) != $expected) {
-                throw new RuntimeException(
+                throw new UnexpectedValueException(
                     'The first two bytes of the ' .
                     $key['privateKeyAlgorithm']['algorithm'] .
                     ' private key field should be 0x' . bin2hex($expected)
@@ -186,7 +186,7 @@ abstract class PKCS8 extends Progenitor
             $expected = chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($components['curve']::SIZE);
             $privateKey = (string) $key['privateKey'];
             if (substr($privateKey, 0, 2) != $expected) {
-                throw new RuntimeException(
+                throw new UnexpectedValueException(
                     'The first two bytes of the ' .
                     $key['privateKeyAlgorithm']['algorithm'] .
                     ' private key field should be 0x' . bin2hex($expected)

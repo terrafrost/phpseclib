@@ -1024,7 +1024,7 @@ class Hash
 
         if (is_array($algo)) {
             if (is_resource($algo)) {
-                throw new UnexpectedValueException($this->hashParam . ' only works with strings');
+                throw new UnsupportedValueException($this->hashParam . ' only works with strings');
             }
             if (empty($this->key) || !is_string($this->key)) {
                 return substr($algo($text, ...array_values($this->parameters)), 0, $this->length);
@@ -1483,7 +1483,7 @@ class Hash
     public function setPassword(string $password, string $salt, int $iterationCount): void
     {
         if (!isset($this->blockSize)) {
-            throw new UnsupportedAlgorithmException($this->hashParam . ' cannot be used with the PKCS#12 KDF');
+            throw new BadMethodCallException($this->hashParam . ' cannot be used with the PKCS#12 KDF');
         }
 
         $password = "\0" . chunk_split($password, 1, "\0") . "\0";

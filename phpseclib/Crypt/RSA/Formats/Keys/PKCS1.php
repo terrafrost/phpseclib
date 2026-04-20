@@ -44,7 +44,7 @@ abstract class PKCS1 extends Progenitor
     public static function load(string|array $key, #[SensitiveParameter] ?string $password = null): array
     {
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not an array');
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         $components = match (true) {

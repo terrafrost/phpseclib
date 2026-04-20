@@ -34,7 +34,7 @@ abstract class Raw
     public static function load(string|array $key, #[SensitiveParameter] ?string $password = null): array
     {
         if (!is_array($key)) {
-            throw new UnexpectedValueException('Key should be a array - not a ' . gettype($key));
+            throw new InvalidArgumentException('Key should be a array - not a string');
         }
 
         switch (true) {
@@ -51,21 +51,5 @@ abstract class Raw
         $options = ['p' => 1, 'q' => 1, 'g' => 1, 'x' => 1, 'y' => 1];
 
         return array_intersect_key($key, $options);
-    }
-
-    /**
-     * Convert a private key to the appropriate format.
-     */
-    public static function savePrivateKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y, BigInteger $x, ?string $password = null): array
-    {
-        throw new BadMethodCallException('If you want to save Raw keys call ->toArray()');
-    }
-
-    /**
-     * Convert a public key to the appropriate format
-     */
-    public static function savePublicKey(BigInteger $p, BigInteger $q, BigInteger $g, BigInteger $y): array
-    {
-        throw new BadMethodCallException('If you want to save Raw keys call ->toArray()');
     }
 }

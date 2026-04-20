@@ -31,7 +31,7 @@ abstract class JWK
     protected static function loadHelper(string|array $key): \stdClass
     {
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         $key = preg_replace('#\s#', '', $key); // remove whitespace

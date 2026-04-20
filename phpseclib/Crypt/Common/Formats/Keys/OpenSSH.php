@@ -57,7 +57,7 @@ abstract class OpenSSH
     public static function load(string|array $key, #[SensitiveParameter] ?string $password = null): array
     {
         if (!is_string($key)) {
-            throw new UnexpectedValueException('Key should be a string - not a ' . gettype($key));
+            throw new InvalidArgumentException('Key should be a string - not an array');
         }
 
         // key format is described here:
@@ -84,6 +84,9 @@ abstract class OpenSSH
                 case 'aes256-ctr':
                     if ($kdfname != 'bcrypt') {
                         throw new UnsupportedAlgorithmException('Only the bcrypt kdf is supported (' . $kdfname . ' encountered)');
+                    }
+                    if (!isset($password)) {
+                        throw new PasswordNeededException('Key is encrypted but no password has been provided');
                     }
                     [$salt, $rounds] = Strings::unpackSSH2('sN', $kdfoptions);
                     $crypto = new AES('ctr');
