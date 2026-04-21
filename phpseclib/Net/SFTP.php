@@ -47,6 +47,7 @@ use phpseclib4\Net\SFTP\OpenFlag5;
 use phpseclib4\Net\SFTP\PacketType as SFTPPacketType;
 use phpseclib4\Net\SFTP\StatusCode;
 use phpseclib4\Net\SSH2\MessageType as SSH2MessageType;
+use UnexpectedValueException as GlobalUnexpectedValueException;
 
 /**
  * Pure-PHP implementations of SFTP.
@@ -1881,7 +1882,7 @@ class SFTP extends SSH2
         if ($status != StatusCode::OK) {
             throw throw $this->throwStatusError($response, $status);
         }
-    }zzzz
+    }
 
     /**
      * Downloads a file from the SFTP server.
@@ -1905,18 +1906,13 @@ class SFTP extends SSH2
             pack('N2', OpenFlag::READ, 0);
         $this->send_sftp_packet(SFTPPacketType::OPEN, $packet);
 
-        $response = $this->get_sftp_packet();
+        $response = $this->get_sftp_packet_or_error([SFTPPacketType::HANDLE, SFTPPacketType::STATUS]);
         switch ($this->packet_type) {
             case SFTPPacketType::HANDLE:
                 $handle = substr($response, 4);
                 break;
             case SFTPPacketType::STATUS: // presumably SSH_FX_NO_SUCH_FILE or SSH_FX_PERMISSION_DENIED
                 throw $this->throwStatusError($response);
-            default:
-                throw new UnexpectedValueException(
-                    'Expected PacketType::HANDLE or PacketType::STATUS. '
-                    . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
-                );
         }
 
         if (is_resource($local_file)) {
@@ -1975,44 +1971,39 @@ class SFTP extends SSH2
                     $this->get_sftp_packet($packets_sent - $i);
                     continue;
                 } else {
-                    $response = $this->get_sftp_packet($packets_sent - $i);
-                }
-
-                switch ($this->packet_type) {
-                    case SFTPPacketType::DATA:
-                        $temp = substr($response, 4);
-                        $offset += strlen($temp);
-                        if (!isset($local_file)) {
-                            $content .= $temp;
-                        } elseif (is_callable($local_file)) {
-                            $local_file($temp);
-                        } else {
-                            fwrite($fp, $temp);
-                        }
-                        if ($progressCallback) {
-                            $progressCallback($offset);
-                        }
-                        $temp = null;
-                        break;
-                    case SFTPPacketType::STATUS:
-                        // could, in theory, return false if !strlen($content) but we'll hold off for the time being
-                        //$this->logError($response);
-                        $clear_responses = true; // don't break out of the loop yet, so we can read the remaining responses
-                        break;
-                    default:
+                    try {
+                        $response = $this->get_sftp_packet_or_error([SFTPPacketType::DATA, SFTPPacketType::STATUS], $packets_sent - $i);
+                    } catch (UnexpectedPacketException $e) {
                         if ($fclose_check) {
                             fclose($fp);
                         }
                         if ($this->channel_close) {
                             $this->partial_init = false;
                             $this->init_sftp_connection();
-                            throw new RuntimeException('Connection closed while downloading file');
-                        } else {
-                            throw new UnexpectedValueException(
-                                'Expected PacketType::DATA or PacketType::STATUS. '
-                                                          . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
-                            );
+                            throw new UnexpectedValueException('Connection closed while downloading file');
                         }
+                        throw $e;
+                    }
+                }
+
+                if ($this->packet_type == SFTPPacketType::STATUS) {
+                    // could, in theory, return false if !strlen($content) but we'll hold off for the time being
+                    //$this->logError($response);
+                    $clear_responses = true; // don't break out of the loop yet, so we can read the remaining responses
+                } else { // $this->packet_type == SFTPPacketType::DATA
+                    $temp = substr($response, 4);
+                    $offset += strlen($temp);
+                    if (!isset($local_file)) {
+                        $content .= $temp;
+                    } elseif (is_callable($local_file)) {
+                        $local_file($temp);
+                    } else {
+                        fwrite($fp, $temp);
+                    }
+                    if ($progressCallback) {
+                        $progressCallback($offset);
+                    }
+                    $temp = null;
                 }
                 $response = null;
             }
@@ -2045,7 +2036,7 @@ class SFTP extends SSH2
         $this->precheck();
 
         if (!strlen($path)) {
-            throw new RuntimeException('strlen($path) should be > 0');
+            throw new InvalidArguementExcpetion('strlen($path) should be > 0');
         }
 
         $path = $this->realpath($path);
@@ -2053,13 +2044,7 @@ class SFTP extends SSH2
         // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.3
         $this->send_sftp_packet(SFTPPacketType::REMOVE, pack('Na*', strlen($path), $path));
 
-        $response = $this->get_sftp_packet();
-        if ($this->packet_type != SFTPPacketType::STATUS) {
-            throw new UnexpectedValueException(
-                'Expected PacketType::STATUS. '
-                . 'Got packet type: ' . SFTPPacketType::getConstantNameByValue($this->packet_type)
-            );
-        }
+        $response = $this->get_sftp_packet([SFTPPacketType::STATUS]);
 
         // if $status isn't SSH_FX_OK it's probably SSH_FX_NO_SUCH_FILE or SSH_FX_PERMISSION_DENIED
         [$status] = Strings::unpackSSH2('N', $response);
@@ -2093,7 +2078,7 @@ class SFTP extends SSH2
         $this->read_put_responses($files, true);
         try {
             $entries = $this->readlist($path, true);
-        } catch (\Exception $e) {
+        } catch (FileSystemException $e) {
             $this->logError($this->lastErrorResponse, $e->getCode(), "OPENDIR $path");
             if ($e->getCode() == StatusCode::NO_SUCH_FILE) {
                 return;
@@ -2106,7 +2091,7 @@ class SFTP extends SSH2
         unset($entries['.'], $entries['..']);
         foreach ($entries as $filename => $props) {
             if (!isset($props['type'])) {
-                throw new RuntimeException('Unable to determine resource type');
+                throw new UnexpectedValueException('Unable to determine resource type');
             }
 
             $temp = $path . '/' . $filename;
@@ -2151,7 +2136,7 @@ class SFTP extends SSH2
         try {
             $this->stat($path);
             return true;
-        } catch (\Exception $e) {
+        } catch (FileSystemException $e) {
             return false;
         }
     }
@@ -2163,7 +2148,7 @@ class SFTP extends SSH2
     {
         try {
             return $this->get_stat_cache_prop($path, 'type') === FileType::DIRECTORY;
-        } catch (\Exception $e) {
+        } catch (FileSystemException $e) {
             return false;
         }
     }
@@ -2175,7 +2160,7 @@ class SFTP extends SSH2
     {
         try {
             return $this->get_stat_cache_prop($path, 'type') === FileType::REGULAR;
-        } catch (\Exception $e) {
+        } catch (FileSystemException $e) {
             return false;
         }
     }
@@ -2187,14 +2172,14 @@ class SFTP extends SSH2
     {
         try {
             return $this->get_lstat_cache_prop($path, 'type') === FileType::SYMLINK;
-        } catch (\Exception $e) {
+        } catch (FileSystemException $e) {
             return false;
         }
     }
 
     /**
      * Tells whether a file exists and is readable
-     */
+     */zzzzz
     public function is_readable(string $path): bool
     {
         $this->precheck();
@@ -3114,9 +3099,12 @@ class SFTP extends SSH2
         );
     }
 
-    private function get_sftp_packet_or_error(int ...$packet_types): string
+    /**
+     * @param int[] $packet_types
+     */
+    private function get_sftp_packet_or_error(array $packet_types, ?int $request_id = null): string
     {
-        $packet = $this->get_sftp_packet();
+        $packet = $this->get_sftp_packet($request_id);
         if (count($packet_types) > 0 && !in_array($this->packet_type, $packet_types)) {
             $expected = [];
             foreach ($packet_types as $packet_type) {
