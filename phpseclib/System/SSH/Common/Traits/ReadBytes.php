@@ -26,17 +26,15 @@ trait ReadBytes
 {
     /**
      * Read data
-     *
-     * @throws RuntimeException on connection errors
      */
     public function readBytes(int $length): string
     {
         $temp = fread($this->fsock, $length);
         if ($temp === false) {
-            throw new RuntimeException('\fread() failed.');
+            throw new ConnectionClosedException('\fread() failed.');
         }
         if (strlen($temp) !== $length) {
-            throw new RuntimeException("Expected $length bytes; got " . strlen($temp));
+            throw new UnexpectedValueException("Expected $length bytes; got " . strlen($temp));
         }
         return $temp;
     }
