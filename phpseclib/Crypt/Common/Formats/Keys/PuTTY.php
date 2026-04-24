@@ -18,12 +18,15 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\Common\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\AES;
-use phpseclib4\Crypt\Hash;
-use phpseclib4\Crypt\Random;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
+use phpseclib4\Crypt\{AES, Hash, Random};
+use phpseclib4\Exception\{
+    BadConfigurationException,
+    InvalidArgumentException,
+    PasswordNeededException,
+    UnexpectedValueException,
+    UnsupportedAlgorithmException,
+    UnsupportedValueException
+};
 
 /**
  * PuTTY Formatted Key Handler

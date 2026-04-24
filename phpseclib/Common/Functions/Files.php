@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Common\Functions;
 
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\FileSystemException;
 
 /**
  * Common File Functions
@@ -24,7 +24,7 @@ use phpseclib4\Exception\RuntimeException;
  */
 abstract class Files
 {
-/**
+    /**
      * Safely open a file
      *
      * @return resource

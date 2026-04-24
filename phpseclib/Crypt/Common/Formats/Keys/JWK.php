@@ -15,8 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\Common\Formats\Keys;
 
-use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException, UnsupportedValueException};
 
 /**
  * JSON Web Key Formatted Key Handler

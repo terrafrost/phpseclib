@@ -19,8 +19,7 @@ namespace phpseclib4\Crypt\DSA\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\Formats\Keys\OpenSSH as Progenitor;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{LengthException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**

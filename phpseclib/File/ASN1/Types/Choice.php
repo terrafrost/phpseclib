@@ -16,13 +16,12 @@ declare(strict_types=1);
 namespace phpseclib4\File\ASN1\Types;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\File\ASN1;
+use phpseclib4\Exception\{BadMethodCallException, InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\File\ASN1\Constructed;
+use phpseclib4\File\{ASN1, X509};
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient\EncryptedKey;
 use phpseclib4\File\CMS\EnvelopedData\Recipient;
 use phpseclib4\File\CMS\SignedData\Signer;
-use phpseclib4\File\X509;
 
 /**
  * ASN.1 Choice

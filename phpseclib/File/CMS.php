@@ -17,9 +17,8 @@ declare(strict_types=1);
 
 namespace phpseclib4\File;
 
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{UnexpectedValueException, UnsupportedValueException};
 use phpseclib4\File\ASN1\Constructed;
-use phpseclib4\File\ASN1\Maps;
 
 /**
  * Pure-PHP CMS Parser

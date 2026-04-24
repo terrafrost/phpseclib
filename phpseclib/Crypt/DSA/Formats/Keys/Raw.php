@@ -17,8 +17,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\DSA\Formats\Keys;
 
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**

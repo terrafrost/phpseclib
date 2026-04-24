@@ -17,9 +17,7 @@ namespace phpseclib4\Crypt;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\StreamCipher;
-use phpseclib4\Exception\BadDecryptionException;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\LengthException;
+use phpseclib4\Exception\{BadDecryptionException, InvalidStateException, LengthException};
 
 /**
  * Pure-PHP implementation of Salsa20.

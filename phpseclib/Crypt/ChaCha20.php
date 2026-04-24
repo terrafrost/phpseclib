@@ -15,10 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt;
 
-use phpseclib4\Exception\BadDecryptionException;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Exception\{BadDecryptionException, InvalidStateException, LengthException};
 
 /**
  * Pure-PHP implementation of ChaCha20.

@@ -33,14 +33,15 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt;
 
-use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
-use phpseclib4\Math\BigInteger;
-use phpseclib4\Math\PrimeField;
+use phpseclib4\Exception\{
+    BadMethodCallException,
+    InvalidStateException,
+    LengthException,
+    UnexpectedValueException,
+    UnsupportedAlgorithmException,
+    UnsupportedValueException
+};
+use phpseclib4\Math\{BigInteger, PrimeField};
 
 /**
  * @author  Jim Wigginton <terrafrost@php.net>
@@ -314,7 +315,7 @@ class Hash
                 break;
             case 'keccak256':
                 $this->paddingType = self::PADDING_KECCAK;
-                // fall-through
+                // no break
             case 'sha256':
             case 'sha512-256':
             case 'sha3-256':

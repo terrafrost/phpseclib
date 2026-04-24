@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\Common;
 
+use phpseclib4\Exception\InvalidArgumentException;
+
 /**
  * Base Class for all block cipher classes
  *

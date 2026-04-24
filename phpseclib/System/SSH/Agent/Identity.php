@@ -18,13 +18,14 @@ declare(strict_types=1);
 namespace phpseclib4\System\SSH\Agent;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Common\PrivateKey;
-use phpseclib4\Crypt\Common\PublicKey;
-use phpseclib4\Crypt\DSA;
-use phpseclib4\Crypt\EC;
-use phpseclib4\Crypt\RSA;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
+use phpseclib4\Crypt\Common\{PrivateKey, PublicKey};
+use phpseclib4\Crypt\{DSA, EC, RSA};
+use phpseclib4\Exception\{
+    BadMethodCallException,
+    ConnectionClosedException,
+    UnexpectedValueException,
+    UnsupportedAlgorithmException
+};
 use phpseclib4\File\Common\Signable;
 use phpseclib4\File\CSR;
 use phpseclib4\System\SSH\Agent;

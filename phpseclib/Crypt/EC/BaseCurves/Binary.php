@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\EC\BaseCurves;
 
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Math\BigInteger;
+use phpseclib4\Exception\{BadMethodCallException, InvalidStateException, UnsupportedValueException};
 use phpseclib4\Math\BinaryField;
 use phpseclib4\Math\BinaryField\Integer as BinaryInteger;
 

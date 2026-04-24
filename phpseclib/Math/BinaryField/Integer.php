@@ -22,11 +22,9 @@ declare(strict_types=1);
 
 namespace phpseclib4\Math\BinaryField;
 
-use InvalidArgumentException;
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Math\BigInteger;
-use phpseclib4\Math\BinaryField;
+use phpseclib4\Exception\InvalidArgumentException;
+use phpseclib4\Math\{BigInteger, BinaryField};
 use phpseclib4\Math\Common\FiniteField\Integer as Base;
 
 /**

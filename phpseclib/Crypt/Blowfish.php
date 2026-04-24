@@ -115,9 +115,7 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt;
 
 use phpseclib4\Crypt\Common\BlockCipher;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\LengthException;
+use phpseclib4\Exception\{BadConfigurationException, LengthException};
 
 /**
  * Pure-PHP implementation of Blowfish.
@@ -734,7 +732,7 @@ class Blowfish extends BlockCipher
             );
         ';
 
-         // Generating decrypt code:
+        // Generating decrypt code:
         $decrypt_block = '
             $in = unpack("N*", $in);
             $l = $in[1];

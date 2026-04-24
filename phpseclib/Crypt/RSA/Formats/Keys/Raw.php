@@ -25,9 +25,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\RSA\Formats\Keys;
 
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedFormatException;
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**

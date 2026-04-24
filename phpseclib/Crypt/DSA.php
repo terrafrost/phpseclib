@@ -32,14 +32,8 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt;
 
 use phpseclib4\Crypt\Common\AsymmetricKey;
-use phpseclib4\Crypt\DSA\Parameters;
-use phpseclib4\Crypt\DSA\PrivateKey;
-use phpseclib4\Crypt\DSA\PublicKey;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Crypt\DSA\{Parameters, PrivateKey, PublicKey};
+use phpseclib4\Exception\{BadConfigurationException, BadMethodCallException, InvalidArgumentException};
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -93,7 +87,7 @@ abstract class DSA extends AsymmetricKey
     /**
      * Signature Format (Short)
      */
-    protected string $shortFormat;
+    protected string $shortFormat = 'ASN1';
 
     /**
      * Create DSA parameters
@@ -274,7 +268,6 @@ abstract class DSA extends AsymmetricKey
     protected function __construct()
     {
         $this->sigFormat = self::validatePlugin('Signature', 'ASN1');
-        $this->shortFormat = 'ASN1';
 
         parent::__construct();
     }

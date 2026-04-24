@@ -32,25 +32,20 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt;
 
 use phpseclib4\Crypt\Common\AsymmetricKey;
-use phpseclib4\Crypt\EC\BaseCurves\Base;
-use phpseclib4\Crypt\EC\BaseCurves\Binary as BinaryCurve;
-use phpseclib4\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib4\Crypt\EC\Curves\Curve25519;
-use phpseclib4\Crypt\EC\Curves\Curve448;
-use phpseclib4\Crypt\EC\Curves\Ed25519;
-use phpseclib4\Crypt\EC\Curves\Ed448;
+use phpseclib4\Crypt\EC\BaseCurves\{
+    Binary as BinaryCurve,
+    Montgomery as MontgomeryCurve,
+    TwistedEdwards as TwistedEdwardsCurve
+};
+use phpseclib4\Crypt\EC\Curves\{Curve25519, Ed25519, Ed448};
 use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib4\Crypt\EC\Parameters;
-use phpseclib4\Crypt\EC\PrivateKey;
-use phpseclib4\Crypt\EC\PublicKey;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
-use phpseclib4\Exception\UnsupportedCurveException;
-use phpseclib4\Exception\UnsupportedOperationException;
+use phpseclib4\Crypt\EC\{Parameters, PrivateKey, PublicKey};
+use phpseclib4\Exception\{
+    BadConfigurationException,
+    BadMethodCallException,
+    LengthException,
+    UnsupportedCurveException
+};
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Maps\ECParameters;
 use phpseclib4\Math\BigInteger;
@@ -84,7 +79,7 @@ abstract class EC extends AsymmetricKey
     /**
      * Signature Format (Short)
      */
-    protected string $shortFormat;
+    protected string $shortFormat = 'ASN1';
 
     /**
      * Curve Name
@@ -350,7 +345,6 @@ abstract class EC extends AsymmetricKey
     protected function __construct()
     {
         $this->sigFormat = self::validatePlugin('Signature', 'ASN1');
-        $this->shortFormat = 'ASN1';
 
         parent::__construct();
     }

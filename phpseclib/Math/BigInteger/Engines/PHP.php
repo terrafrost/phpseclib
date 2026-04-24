@@ -16,8 +16,7 @@ declare(strict_types=1);
 namespace phpseclib4\Math\BigInteger\Engines;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{BadConfigurationException, InvalidArgumentException};
 
 /**
  * Pure-PHP Engine.

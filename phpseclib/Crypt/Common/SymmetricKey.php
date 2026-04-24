@@ -37,20 +37,17 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\Common;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Blowfish;
-use phpseclib4\Crypt\Hash;
-use phpseclib4\Exception\BadDecryptionException;
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\BadModeException;
-use phpseclib4\Exception\InconsistentSetupException;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\LogicException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
-use phpseclib4\Math\BigInteger;
-use phpseclib4\Math\BinaryField;
-use phpseclib4\Math\PrimeField;
+use phpseclib4\Crypt\{Blowfish, Hash};
+use phpseclib4\Exception\{
+    BadDecryptionException,
+    BadMethodCallException,
+    InvalidArgumentException,
+    InvalidModeException,
+    InvalidStateException,
+    LengthException,
+    UnsupportedAlgorithmException
+};
+use phpseclib4\Math\{BigInteger, BinaryField, PrimeField};
 
 /**
  * Base Class for all \phpseclib4\Crypt\* cipher classes

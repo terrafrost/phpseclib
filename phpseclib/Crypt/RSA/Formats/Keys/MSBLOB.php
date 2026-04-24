@@ -20,9 +20,7 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\RSA\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedFormatException;
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -111,7 +109,7 @@ abstract class MSBLOB
         switch ($magic) {
             case self::RSA2:
                 $components['isPublicKey'] = false;
-                // fall-through
+                // no break
             case self::RSA1:
                 break;
             default:

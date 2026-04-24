@@ -35,20 +35,27 @@ declare(strict_types=1);
 
 namespace phpseclib4\Net;
 
-use phpseclib4\Common\Functions\Files;
-use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\BadFunctionCallException;
-use phpseclib4\Exception\FileNotFoundException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Net\SFTP\Attribute;
-use phpseclib4\Net\SFTP\FileType;
-use phpseclib4\Net\SFTP\OpenFlag;
-use phpseclib4\Net\SFTP\OpenFlag5;
-use phpseclib4\Net\SFTP\PacketType as SFTPPacketType;
-use phpseclib4\Net\SFTP\StatusCode;
+use phpseclib4\Common\Functions\{Files, Strings};
+use phpseclib4\Exception\{
+    ConnectionClosedException,
+    FileSystemException,
+    InvalidArgumentException,
+    InvalidStateException,
+    ServiceUnavailableException,
+    TimeoutException,
+    UnexpectedSFTPPacketException,
+    UnexpectedValueException,
+    UnsupportedValueException
+};
+use phpseclib4\Net\SFTP\{
+    Attribute,
+    FileType,
+    OpenFlag,
+    OpenFlag5,
+    PacketType as SFTPPacketType,
+    StatusCode
+};
 use phpseclib4\Net\SSH2\MessageType as SSH2MessageType;
-use UnexpectedValueException as GlobalUnexpectedValueException;
 
 /**
  * Pure-PHP implementations of SFTP.
@@ -592,7 +599,7 @@ class SFTP extends SSH2
             [$message] = Strings::unpackSSH2('s', $response);
             $output = "Error from server (SSH_FX_$error)";
             if (strlen($message)) {
-                $output.= ": $message";
+                $output .= ": $message";
             }
             return new FileSystemException($output, $status);
         }
@@ -690,7 +697,7 @@ class SFTP extends SSH2
             switch ($dir) {
                 case '..':
                     array_pop($new);
-                    // fall-through
+                    // no break
                 case '.':
                     break;
                 default:
@@ -984,7 +991,7 @@ class SFTP extends SSH2
                 case 'mode':
                     $a[$sort] &= 0o7777;
                     $b[$sort] &= 0o7777;
-                    // fall-through
+                    // no break
                 default:
                     if ($a[$sort] === $b[$sort]) {
                         break;

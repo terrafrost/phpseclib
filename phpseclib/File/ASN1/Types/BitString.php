@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\ASN1\Types;
 
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\InvalidStateException;
 
 /**
  * ASN.1 Bit String

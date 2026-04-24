@@ -27,10 +27,8 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\BaseCurves;
 
 use phpseclib4\Crypt\EC\Curves\Curve25519;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Math\BigInteger;
-use phpseclib4\Math\PrimeField;
+use phpseclib4\Exception\{InvalidStateException, UnsupportedValueException};
+use phpseclib4\Math\{BigInteger, PrimeField};
 use phpseclib4\Math\PrimeField\Integer as PrimeInteger;
 
 /**

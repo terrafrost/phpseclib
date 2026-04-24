@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pure-PHP CMS / PasswordRecipient Parser
  *
@@ -16,14 +17,10 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\Common\Traits;
 
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Crypt\{AES, TripleDES};
+use phpseclib4\Exception\{InvalidStateException, LengthException, UnexpectedValueException};
 use phpseclib4\File\ASN1;
-use phpseclib4\File\ASN1\Constructed;
 use phpseclib4\File\CMS\EncryptedData;
-use phpseclib4\Crypt\AES;
-use phpseclib4\Crypt\TripleDES;
 
 trait KeyDerivation
 {

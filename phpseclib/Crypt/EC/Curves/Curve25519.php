@@ -16,12 +16,12 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\Curves;
 
 use phpseclib4\Crypt\EC\BaseCurves\Montgomery;
-use phpseclib4\Exception\RangeException;
+use phpseclib4\Exception\UnexpectedValueException;
 use phpseclib4\Math\BigInteger;
 
 class Curve25519 extends Montgomery
 {
-    const SIZE = 32;
+    public const SIZE = 32;
 
     public function __construct()
     {

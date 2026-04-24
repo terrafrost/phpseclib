@@ -36,8 +36,6 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt;
 
 use phpseclib4\Crypt\Common\BlockCipher;
-use phpseclib4\Exception\BadModeException;
-use phpseclib4\Exception\InvalidArgumentException;
 use phpseclib4\Exception\LengthException;
 
 /**

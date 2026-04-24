@@ -15,8 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Common\Functions;
 
-use phpseclib4\Exception\RuntimeException;
-use UnexpectedValueException;
+use phpseclib4\Exception\{InvalidStateException, UnexpectedValueException};
 
 /**
  * Common Array Functions
@@ -122,7 +121,7 @@ abstract class Arrays
     public static function &subArrayWithWildcards(array|\ArrayAccess &$root, string $path, bool $create = false): mixed
     {
         $parts = explode('/', $path);
-        foreach ($parts as $k=>$i) {
+        foreach ($parts as $k => $i) {
             if (!isset($root)) {
                 $loc = implode('/', array_slice($parts, 0, $k));
                 throw new UnexpectedValueException("Unable to find node for $loc");
@@ -135,7 +134,7 @@ abstract class Arrays
 
             if ($i == '*') {
                 $path = implode('/', array_slice($parts, $k + 1));
-                foreach ($root as $key=>$val) {
+                foreach ($root as $key => $val) {
                     if (empty($path)) {
                         return $val;
                     } else {
@@ -165,14 +164,14 @@ abstract class Arrays
     public static function subArrayMapWithWildcards(array|\ArrayAccess &$root, string $path, \Closure $func): void
     {
         $parts = explode('/', $path);
-        foreach ($parts as $k=>$i) {
+        foreach ($parts as $k => $i) {
             if (!isset($root)) {
                 return;
             }
 
             if ($i == '*') {
                 $path = implode('/', array_slice($parts, $k + 1));
-                foreach ($root as $key=>$val) {
+                foreach ($root as $key => $val) {
                     if (empty($path)) {
                         $root[$key] = $func($val);
                     } else {

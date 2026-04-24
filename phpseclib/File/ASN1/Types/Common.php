@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\ASN1\Types;
 
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\BadMethodCallException;
 
 /**
  * Generic ASN.1 Type Helper functions
@@ -116,7 +116,7 @@ trait Common
 
     public function getTypeID(): int
     {
-        $reflection = new \ReflectionClassConstant(static::CLASS, 'TYPE');
+        $reflection = new \ReflectionClassConstant(static::class, 'TYPE');
         return $reflection->getValue();
     }
 }

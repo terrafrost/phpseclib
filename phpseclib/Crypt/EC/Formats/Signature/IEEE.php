@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\EC\Formats\Signature;
 
-use phpseclib4\Exception\LengthException;
+use phpseclib4\Exception\UnexpectedValueException;
 use phpseclib4\Math\BigInteger;
 
 /**

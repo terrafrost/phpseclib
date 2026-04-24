@@ -48,40 +48,44 @@ declare(strict_types=1);
 namespace phpseclib4\Net;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Blowfish;
-use phpseclib4\Crypt\ChaCha20;
-use phpseclib4\Crypt\Common\PrivateKey;
-use phpseclib4\Crypt\Common\PublicKey;
-use phpseclib4\Crypt\Common\SymmetricKey;
-use phpseclib4\Crypt\DH;
-use phpseclib4\Crypt\DSA;
-use phpseclib4\Crypt\EC;
-use phpseclib4\Crypt\Hash;
-use phpseclib4\Crypt\Random;
-use phpseclib4\Crypt\RC4;
-use phpseclib4\Crypt\Rijndael;
-use phpseclib4\Crypt\RSA;
-use phpseclib4\Crypt\TripleDES;
-use phpseclib4\Crypt\Twofish;
-use phpseclib4\Exception\ConnectionClosedException;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\InvalidPacketLengthException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\LogicException;
-use phpseclib4\Exception\NoSupportedAlgorithmsException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\TimeoutException;
-use phpseclib4\Exception\UnableToConnectException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
-use phpseclib4\Exception\UnsupportedCurveException;
+use phpseclib4\Crypt\{
+    Blowfish,
+    ChaCha20,
+    DH,
+    DSA,
+    EC,
+    Hash,
+    RC4,
+    RSA,
+    Random,
+    Rijndael,
+    TripleDES,
+    Twofish
+};
+use phpseclib4\Crypt\Common\{PrivateKey, SymmetricKey};
+use phpseclib4\Exception\{
+    ConnectionClosedException,
+    InvalidArgumentException,
+    InvalidPacketLengthException,
+    InvalidStateException,
+    LengthException,
+    NoSupportedAlgorithmsException,
+    ServiceUnavailableException,
+    TimeoutException,
+    UnexpectedSSHMessageException,
+    UnexpectedValueException,
+    UnsupportedAlgorithmException,
+    UnsupportedCurveException,
+    UnsupportedValueException
+};
 use phpseclib4\Math\BigInteger;
-use phpseclib4\Net\SSH2\ChannelConnectionFailureReason;
-use phpseclib4\Net\SSH2\DisconnectReason;
-use phpseclib4\Net\SSH2\MessageType;
-use phpseclib4\Net\SSH2\MessageTypeExtra;
-use phpseclib4\Net\SSH2\TerminalMode;
+use phpseclib4\Net\SSH2\{
+    ChannelConnectionFailureReason,
+    DisconnectReason,
+    MessageType,
+    MessageTypeExtra,
+    TerminalMode
+};
 use phpseclib4\System\SSH\Agent;
 
 /**
@@ -1668,7 +1672,7 @@ class SSH2
                     $nonce = $kexHash->hash($keyBytes . $this->exchange_hash . 'A' . $this->session_id);
                     $this->encryptFixedPart = substr($nonce, 0, 4);
                     $this->encryptInvocationCounter = substr($nonce, 4, 8);
-                    // fall-through
+                    // no break
                 case 'chacha20-poly1305@openssh.com':
                     break;
                 default:
@@ -1714,7 +1718,7 @@ class SSH2
                     $nonce = $kexHash->hash($keyBytes . $this->exchange_hash . 'B' . $this->session_id);
                     $this->decryptFixedPart = substr($nonce, 0, 4);
                     $this->decryptInvocationCounter = substr($nonce, 4, 8);
-                    // fall-through
+                    // no break
                 case 'chacha20-poly1305@openssh.com':
                     break;
                 default:
@@ -1978,7 +1982,7 @@ class SSH2
                                     }
                                 }
                             }
-                            // fall-through
+                            // no break
                         case 'password':
                             foreach ($args as $key => $arg) {
                                 $newargs[] = $arg;
@@ -2080,7 +2084,7 @@ class SSH2
                 case MessageType::USERAUTH_FAILURE:
                     [$auth_methods] = Strings::unpackSSH2('L', $response);
                     $this->auth_methods_to_continue = $auth_methods;
-                    // fall-through
+                    // no break
                 default:
                     return false;
             }
@@ -3297,7 +3301,7 @@ class SSH2
                 if (!$this->isAuthenticated()) {
                     break;
                 }
-                // fall-through
+                // no break
             case self::NET_SSH2_COMPRESSION_ZLIB:
                 if ($this->regenerate_decompression_context) {
                     $this->regenerate_decompression_context = false;
@@ -3830,6 +3834,7 @@ class SSH2
                                 $this->disconnect_helper(DisconnectReason::BY_APPLICATION);
                                 throw new ConnectionClosedException('Unable to fulfill channel request');
                         }
+                        // no break
                     case MessageType::CHANNEL_CLOSE:
                         if ($client_channel == $channel && $type == MessageType::CHANNEL_CLOSE) {
                             return true;
@@ -3881,7 +3886,7 @@ class SSH2
                     if ($client_channel == $channel) {
                         return true;
                     }
-                    // fall-through
+                    // no break
                 case MessageType::CHANNEL_EOF:
                     break;
                 default:
@@ -3914,7 +3919,7 @@ class SSH2
                 if (!$this->isAuthenticated()) {
                     break;
                 }
-                // fall-through
+                // no break
             case self::NET_SSH2_COMPRESSION_ZLIB:
                 if (!$this->regenerate_compression_context) {
                     $header = '';

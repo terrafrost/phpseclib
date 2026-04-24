@@ -17,15 +17,9 @@ namespace phpseclib4\Crypt\EC\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\Formats\Keys\JWK as Progenitor;
-use phpseclib4\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib4\Crypt\EC\Curves\Ed25519;
-use phpseclib4\Crypt\EC\Curves\secp256k1;
-use phpseclib4\Crypt\EC\Curves\secp256r1;
-use phpseclib4\Crypt\EC\Curves\secp384r1;
-use phpseclib4\Crypt\EC\Curves\secp521r1;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedCurveException;
+use phpseclib4\Crypt\EC\BaseCurves\{Base as BaseCurve, TwistedEdwards as TwistedEdwardsCurve};
+use phpseclib4\Crypt\EC\Curves\{Ed25519, secp256k1, secp256r1, secp384r1, secp521r1};
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException, UnsupportedCurveException};
 use phpseclib4\Math\BigInteger;
 
 /**

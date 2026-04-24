@@ -20,8 +20,12 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\Formats\Keys;
 
 use phpseclib4\Crypt\EC\Curves\Ed25519;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnsupportedFormatException;
+use phpseclib4\Exception\{
+    InvalidArgumentException,
+    LengthException,
+    UnexpectedValueException,
+    UnsupportedValueException
+};
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\Common\FiniteField\Integer;
 

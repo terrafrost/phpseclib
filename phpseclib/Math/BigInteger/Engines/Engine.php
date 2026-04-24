@@ -17,10 +17,7 @@ namespace phpseclib4\Math\BigInteger\Engines;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Random;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Math\BigInteger;
+use phpseclib4\Exception\{BadConfigurationException, InvalidArgumentException, ResourceLimitException};
 
 /**
  * Base Engine.

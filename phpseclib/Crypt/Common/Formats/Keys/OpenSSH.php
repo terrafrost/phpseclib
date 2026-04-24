@@ -18,11 +18,15 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\Common\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\AES;
-use phpseclib4\Crypt\Random;
-use phpseclib4\Exception\BadDecryptionException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Crypt\{AES, Random};
+use phpseclib4\Exception\{
+    BadDecryptionException,
+    InvalidArgumentException,
+    PasswordNeededException,
+    UnexpectedValueException,
+    UnsupportedAlgorithmException,
+    UnsupportedValueException
+};
 
 /**
  * OpenSSH Formatted RSA Key Handler

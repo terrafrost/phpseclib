@@ -37,8 +37,12 @@ namespace phpseclib4\System\SSH;
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\PublicKeyLoader;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{
+    BadConfigurationException,
+    ConnectionClosedException,
+    ServiceUnavailableException,
+    UnexpectedValueException
+};
 use phpseclib4\Net\SSH2;
 use phpseclib4\System\SSH\Agent\Identity;
 

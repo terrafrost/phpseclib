@@ -26,38 +26,20 @@ declare(strict_types=1);
 
 namespace phpseclib4\File;
 
-use BadMethodCallException as GlobalBadMethodCallException;
-use phpseclib4\Common\Functions\Arrays;
-use phpseclib4\Common\Functions\Strings;
+use phpseclib4\Common\Functions\{Arrays, Strings};
 use phpseclib4\Crypt\Common\PublicKey;
-use phpseclib4\Crypt\Hash;
-use phpseclib4\Crypt\PublicKeyLoader;
-use phpseclib4\Crypt\Random;
-use phpseclib4\Crypt\RSA;
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\CharacterConversionException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\MethodOnlyAvailableForSelfSigned;
-use phpseclib4\Exception\NoKeyLoadedException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnsupportedFormatException;
-use phpseclib4\File\ASN1\Constructed;
-use phpseclib4\File\ASN1\Element;
-use phpseclib4\File\ASN1\Maps;
-use phpseclib4\File\ASN1\Types\BaseString;
-use phpseclib4\File\ASN1\Types\BaseType;
-use phpseclib4\File\ASN1\Types\BitString;
-use phpseclib4\File\ASN1\Types\Boolean;
-use phpseclib4\File\ASN1\Types\Choice;
-use phpseclib4\File\ASN1\Types\ExplicitNull;
-use phpseclib4\File\ASN1\Types\GeneralizedTime;
-use phpseclib4\File\ASN1\Types\OctetString;
-use phpseclib4\File\ASN1\Types\OID;
-use phpseclib4\File\ASN1\Types\UTCTime;
-use phpseclib4\File\ASN1\Types\UTF8String;
+use phpseclib4\Crypt\{Hash, PublicKeyLoader, RSA, Random};
+use phpseclib4\Exception\{
+    BadMethodCallException,
+    InvalidArgumentException,
+    InvalidStateException,
+    NoKeyLoadedException,
+    UnexpectedValueException
+};
+use phpseclib4\File\ASN1\{Constructed, Element, Maps};
+use phpseclib4\File\ASN1\Types\{BaseString, BitString, Boolean, Choice, OID, OctetString};
 use phpseclib4\File\Common\Signable;
 use phpseclib4\Math\BigInteger;
-use UnexpectedValueException;
 
 /**
  * Pure-PHP X.509 Parser
@@ -111,7 +93,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
             // of time, however, phpseclib, making no assumptions on the underlying filesystem, doesn't
             // really have a mechanism to do this. if you want to save CRLs to some sort of DB then you can
             // replace this function with one that'll cache to the DB and pull from the DB when appropriate
-            self::$inCRLFunction = function(string $url, BigInteger $serial) {
+            self::$inCRLFunction = function (string $url, BigInteger $serial) {
                 return false;
             };
         }
@@ -286,7 +268,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
         $rules['tbsCertificate']['extensions']['*'] = [self::class, 'mapInExtensions'];
         $rules['tbsCertificate']['subject']['rdnSequence']['*']['*'] = [self::class, 'mapInDNs'];
         $rules['tbsCertificate']['issuer']['rdnSequence']['*']['*'] = [self::class, 'mapInDNs'];
-        $rules['tbsCertificate']['subjectPublicKeyInfo'] = function(Constructed &$key) {
+        $rules['tbsCertificate']['subjectPublicKeyInfo'] = function (Constructed &$key) {
             try {
                 $key = PublicKeyLoader::load($key->getEncoded());
                 if ($key instanceof RSA && $key->getLoadedFormat() == 'PKCS8') {

@@ -15,10 +15,8 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\Curves;
 
 use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards;
-use phpseclib4\Crypt\Hash;
-use phpseclib4\Crypt\Random;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Crypt\{Hash, Random};
+use phpseclib4\Exception\{InvalidStateException, UnexpectedValueException, UnsupportedValueException};
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\PrimeField\Integer as PrimeInteger;
 

@@ -18,8 +18,8 @@ declare(strict_types=1);
 namespace phpseclib4\Net\SFTP;
 
 use phpseclib4\Crypt\Common\PrivateKey;
-use phpseclib4\Net\SFTP;
-use phpseclib4\Net\SSH2;
+use phpseclib4\Exception\FileSystemException;
+use phpseclib4\Net\{SFTP, SSH2};
 use phpseclib4\Net\SSH2\MessageType as SSH2MessageType;
 
 /**
@@ -518,7 +518,7 @@ class Stream
     /**
      * Open directory handle
      *
-     * nlist() is the best that this function is realistically going to be able to do. When an SFTP client sends 
+     * nlist() is the best that this function is realistically going to be able to do. When an SFTP client sends
      * a SSH_FXP_READDIR packet you don't generally get info on just one file but on multiple files. Quoting
      * the SFTP specs:
      *

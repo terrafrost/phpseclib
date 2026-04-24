@@ -20,22 +20,13 @@ declare(strict_types=1);
 
 namespace phpseclib4\File;
 
-use phpseclib4\Common\Functions\Arrays;
-use phpseclib4\Common\Functions\Strings;
+use phpseclib4\Common\Functions\{Arrays, Strings};
 use phpseclib4\Crypt\Common\PublicKey;
-use phpseclib4\Crypt\PublicKeyLoader;
-use phpseclib4\Crypt\RSA;
-use phpseclib4\Exception\NoKeyLoadedException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\File\ASN1\Constructed;
-use phpseclib4\File\ASN1\Element;
-use phpseclib4\File\ASN1\Maps;
-use phpseclib4\File\ASN1\Types\BaseType;
-use phpseclib4\File\ASN1\Types\BitString;
-use phpseclib4\File\ASN1\Types\PrintableString;
-use phpseclib4\File\ASN1\Types\UTF8String;
+use phpseclib4\Crypt\{PublicKeyLoader, RSA};
+use phpseclib4\Exception\{InvalidStateException, NoKeyLoadedException, UnexpectedValueException};
+use phpseclib4\File\ASN1\{Constructed, Element, Maps};
+use phpseclib4\File\ASN1\Types\{BaseType, BitString, PrintableString, UTF8String};
 use phpseclib4\File\Common\Signable;
-use UnexpectedValueException;
 
 /**
  * Pure-PHP CSR Parser
@@ -48,7 +39,21 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
     use \phpseclib4\File\Common\Traits\DN;
     use \phpseclib4\File\Common\Traits\ASN1Signature;
 
-    private Constructed|array $csr;
+    private Constructed|array $csr = [
+        'certificationRequestInfo' => [
+            'version' => 'v1',
+            'subject' => ['rdnSequence' => []],
+            'subjectPKInfo' => [
+                'algorithm' => ['algorithm' => '0.0'],
+                'subjectPublicKey' => "\0",
+            ],
+            'attributes' => [],
+        ],
+        'signatureAlgorithm' => [
+            'algorithm' => '0.0',
+        ],
+        'signature' => "\0",
+    ];
 
     private static array $extensions = [];
 
@@ -60,22 +65,6 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
     public function __construct(PublicKey|X509|null $csr = null)
     {
         ASN1::loadOIDs('X509');
-
-        $this->csr = [
-            'certificationRequestInfo' => [
-                'version' => 'v1',
-                'subject' => ['rdnSequence' => []],
-                'subjectPKInfo' => [
-                    'algorithm' => ['algorithm' => '0.0'],
-                    'subjectPublicKey' => "\0",
-                ],
-                'attributes' => [],
-            ],
-            'signatureAlgorithm' => [
-                'algorithm' => '0.0',
-            ],
-            'signature' => "\0",
-        ];
 
         if ($csr instanceof PublicKey) {
             $this->setPublicKey($csr);
@@ -114,7 +103,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
         $rules = [];
         $rules['certificationRequestInfo']['attributes']['*'] = [self::class, 'mapInAttributes'];
         $rules['certificationRequestInfo']['subject']['rdnSequence']['*']['*'] = [self::class, 'mapInDNs'];
-        $rules['certificationRequestInfo']['subjectPKInfo'] = function(Constructed &$csr) {
+        $rules['certificationRequestInfo']['subjectPKInfo'] = function (Constructed &$csr) {
             try {
                 $csr = PublicKeyLoader::load($csr->getEncoded());
             } catch (NoKeyLoadedException) {
@@ -167,7 +156,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
 
             if ($id == 'pkcs-9-at-extensionRequest') {
                 $oldValue = $value instanceof Constructed ? $value->toArray() : $value;
-                foreach ($value as $i=>$subvalue) {
+                foreach ($value as $i => $subvalue) {
                     self::mapOutExtensionsHelper($value[$i]);
                 }
             }
@@ -184,7 +173,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
                 unset($attributes[$i]);
                 continue;
             } else {
-                foreach ($value as $i=>$subvalue) {
+                foreach ($value as $i => $subvalue) {
                     if ($value[$i] instanceof BaseType) {
                         ASN1::encodeDER($value[$i], $map);
                         $value[$i]->enableForcedCache();
@@ -257,7 +246,7 @@ class CSR implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($id == 'pkcs-9-at-extensionRequest') {
             $rule['*'] = [self::class, 'mapInExtensions'];
         }
-        foreach ($attr['value'] as $key=>$value) {
+        foreach ($attr['value'] as $key => $value) {
             $value = &$attr['value'][$key];
             $decoded = ASN1::decodeBER($value instanceof Element ? $value->value : $value->getEncodedWithWrapping());
             $value = ASN1::map($decoded, $map, $rule);

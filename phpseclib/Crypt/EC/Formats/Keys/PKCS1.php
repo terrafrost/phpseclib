@@ -29,12 +29,12 @@ namespace phpseclib4\Crypt\EC\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\Formats\Keys\PKCS1 as Progenitor;
-use phpseclib4\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib4\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedCurveException;
+use phpseclib4\Crypt\EC\BaseCurves\{
+    Base as BaseCurve,
+    Montgomery as MontgomeryCurve,
+    TwistedEdwards as TwistedEdwardsCurve
+};
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException, UnsupportedCurveException};
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Maps;
 use phpseclib4\Math\BigInteger;

@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\System\SSH\Common\Traits;
 
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{ConnectionClosedException, UnexpectedValueException};
 
 /**
  * ReadBytes trait

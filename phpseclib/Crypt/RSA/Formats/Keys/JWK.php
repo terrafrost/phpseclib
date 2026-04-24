@@ -17,8 +17,7 @@ namespace phpseclib4\Crypt\RSA\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\Formats\Keys\JWK as Progenitor;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**

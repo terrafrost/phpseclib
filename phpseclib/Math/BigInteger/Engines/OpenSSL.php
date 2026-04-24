@@ -16,8 +16,7 @@ declare(strict_types=1);
 namespace phpseclib4\Math\BigInteger\Engines;
 
 use phpseclib4\Crypt\RSA\Formats\Keys\PKCS8;
-use phpseclib4\Exception\OutOfRangeException;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Exception\{ResourceLimitException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**

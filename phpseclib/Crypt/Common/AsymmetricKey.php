@@ -16,8 +16,12 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\Common;
 
 use phpseclib4\Crypt\Hash;
-use phpseclib4\Exception\NoKeyLoadedException;
-use phpseclib4\Exception\UnsupportedFormatException;
+use phpseclib4\Exception\{
+    BadConfigurationException,
+    InvalidStateException,
+    NoKeyLoadedException,
+    UnsupportedValueException
+};
 use phpseclib4\Math\BigInteger;
 
 /**

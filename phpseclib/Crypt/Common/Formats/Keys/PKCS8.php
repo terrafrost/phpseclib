@@ -28,15 +28,15 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\Common\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
+use phpseclib4\Exception\{
+    InvalidArgumentException,
+    PasswordNeededException,
+    UnexpectedValueException,
+    UnsupportedAlgorithmException
+};
 use phpseclib4\File\ASN1;
-use phpseclib4\File\ASN1\Element;
-use phpseclib4\File\ASN1\Types\BaseType;
-use phpseclib4\File\ASN1\Types\ExplicitNull;
-use phpseclib4\File\ASN1\Maps;
+use phpseclib4\File\ASN1\{Element, Maps};
+use phpseclib4\File\ASN1\Types\{BaseType, ExplicitNull};
 
 /**
  * PKCS#8 Formatted Key Handler

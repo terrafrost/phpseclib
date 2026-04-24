@@ -26,19 +26,15 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\Formats\Keys;
 
 use phpseclib4\Crypt\Common\Formats\Keys\PKCS8 as Progenitor;
-use phpseclib4\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib4\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib4\Crypt\EC\Curves\Curve25519;
-use phpseclib4\Crypt\EC\Curves\Curve448;
-use phpseclib4\Crypt\EC\Curves\Ed25519;
-use phpseclib4\Crypt\EC\Curves\Ed448;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedCurveException;
+use phpseclib4\Crypt\EC\BaseCurves\{
+    Base as BaseCurve,
+    Montgomery as MontgomeryCurve,
+    TwistedEdwards as TwistedEdwardsCurve
+};
+use phpseclib4\Crypt\EC\Curves\{Curve25519, Curve448, Ed25519, Ed448};
+use phpseclib4\Exception\{InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Maps;
-use phpseclib4\File\ASN1\Types\ExplicitNull;
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\Common\FiniteField\Integer;
 

@@ -30,8 +30,6 @@ declare(strict_types=1);
 namespace phpseclib4\Math;
 
 use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\UnexpectedValueException;
 use phpseclib4\Math\BigInteger\Engines\Engine;
 
 /**

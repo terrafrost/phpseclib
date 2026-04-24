@@ -31,10 +31,13 @@
 
 namespace phpseclib4\Net;
 
-use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Common\Functions\Files;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\FileNotFoundException;
+use phpseclib4\Exception\{
+    FileSystemException,
+    InvalidArgumentException,
+    InvalidStateException,
+    UnexpectedSSHMessageException
+};
 
 /**
  * Pure-PHP implementations of SCP.
@@ -48,14 +51,14 @@ class SCP extends SSH2
      *
      * @see \phpseclib3\Net\SCP::put()
      */
-    const SOURCE_LOCAL_FILE = 1;
+    public const SOURCE_LOCAL_FILE = 1;
     /**
      * Reads data from a string.
      *
      * @see \phpseclib3\Net\SCP::put()
      */
     // this value isn't really used anymore but i'm keeping it reserved for historical reasons
-    const SOURCE_STRING = 2;
+    public const SOURCE_STRING = 2;
     /**
      * SCP.php doesn't support SOURCE_CALLBACK because, with that one, we don't know the size, in advance
      */
@@ -74,7 +77,7 @@ class SCP extends SSH2
      *
      * Currently, only binary mode is supported.  As such, if the line endings need to be adjusted, you will need to take
      * care of that, yourself.
-     * 
+     *
      * @param string|resource $data
      */
     public function put(string $remote_file, mixed $data, int $mode = self::SOURCE_STRING, ?\Closure $callback = null): void

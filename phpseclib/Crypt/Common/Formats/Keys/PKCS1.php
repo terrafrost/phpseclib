@@ -16,13 +16,8 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\Common\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\AES;
-use phpseclib4\Crypt\DES;
-use phpseclib4\Crypt\Random;
-use phpseclib4\Crypt\TripleDES;
-use phpseclib4\Exception\BadDecryptionException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
+use phpseclib4\Crypt\{AES, DES, Random, TripleDES};
+use phpseclib4\Exception\{InvalidArgumentException, PasswordNeededException, UnsupportedAlgorithmException, UnsupportedValueException};
 use phpseclib4\File\ASN1;
 
 /**

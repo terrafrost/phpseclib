@@ -15,8 +15,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt\EC\BaseCurves;
 
-use phpseclib4\Exception\RangeException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{InvalidStateException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\Common\FiniteField\Integer;
 

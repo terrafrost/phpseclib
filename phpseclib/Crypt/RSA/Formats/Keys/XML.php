@@ -23,10 +23,7 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\RSA\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedFormatException;
+use phpseclib4\Exception\{BadConfigurationException, InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**

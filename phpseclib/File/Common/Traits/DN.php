@@ -15,23 +15,19 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\Common\Traits;
 
-use phpseclib4\Common\Functions\Arrays;
 use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Hash;
-use phpseclib4\Exception\CharacterConversionException;
-use phpseclib4\Exception\InvalidArgumentException;
-use phpseclib4\Exception\RuntimeException;
+use phpseclib4\Exception\{
+    CharacterConversionException,
+    InvalidArgumentException,
+    UnexpectedValueException,
+    UnsupportedValueException
+};
 use phpseclib4\File\ASN1;
-use phpseclib4\File\ASN1\Constructed;
-use phpseclib4\File\ASN1\Element;
-use phpseclib4\File\ASN1\Maps;
-use phpseclib4\File\ASN1\Types\BaseString;
-use phpseclib4\File\ASN1\Types\BaseType;
-use phpseclib4\File\ASN1\Types\Choice;
-//use phpseclib4\File\ASN1\Types\OctetString;
-use phpseclib4\File\ASN1\Types\OID;
-use phpseclib4\File\ASN1\Types\UTF8String;
+use phpseclib4\File\ASN1\{Constructed, Element, Maps};
+use phpseclib4\File\ASN1\Types\{BaseString, BaseType, Choice, OID, UTF8String};
 
+//use phpseclib4\File\ASN1\Types\OctetString;
 /**
  * Extension Helper for misc ASN1 classes
  *
@@ -46,37 +42,37 @@ trait DN
      *
      * @see \phpseclib4\File\X509::getDN()
      */
-    const DN_ARRAY = 0;
+    public const DN_ARRAY = 0;
     /**
      * Return string
      *
      * @see \phpseclib4\File\X509::getDN()
      */
-    const DN_STRING = 1;
+    public const DN_STRING = 1;
     /**
      * Return ASN.1 name string
      *
      * @see \phpseclib4\File\X509::getDN()
      */
-    const DN_ASN1 = 2;
+    public const DN_ASN1 = 2;
     /**
      * Return OpenSSL compatible array
      *
      * @see \phpseclib4\File\X509::getDN()
      */
-    const DN_OPENSSL = 3;
+    public const DN_OPENSSL = 3;
     /**
      * Return canonical ASN.1 RDNs string
      *
      * @see \phpseclib4\File\X509::getDN()
      */
-    const DN_CANON = 4;
+    public const DN_CANON = 4;
     /**
      * Return name hash for file indexing
      *
      * @see \phpseclib4\File\X509::getDN()
      */
-    const DN_HASH = 5;
+    public const DN_HASH = 5;
 
     public static function mapInDNs(array|Constructed &$dn): void
     {
@@ -132,7 +128,7 @@ trait DN
             } else {
                 foreach ($value as &$val) {
                     if ($val instanceof BaseType) {
-                        $class = (new \ReflectionClass($val::CLASS))->getShortName();
+                        $class = (new \ReflectionClass($val::class))->getShortName();
                         $key = match ($class) {
                             'TeletexString' => 'teletexString',
                             'PrintableString' => 'printableString',
@@ -466,7 +462,7 @@ trait DN
                             }
                         } elseif (is_array($attr['value']) || $attr['value'] instanceof Constructed) {
                             if ($attr['type'] == 'id-at-postalAddress') {
-                                foreach ($attr['value'] as $key=>$val) {
+                                foreach ($attr['value'] as $key => $val) {
                                     $val = &$attr['value'][$key];
                                     if ($val instanceof Choice && !isset($val['utf8String']) && $val->value instanceof BaseString && $val->value->isConvertable()) {
                                         $val['utf8String'] = $val->value->toUTF8String();

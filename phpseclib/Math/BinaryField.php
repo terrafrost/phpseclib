@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace phpseclib4\Math;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\OutOfBoundsException;
+use phpseclib4\Exception\ResourceLimitException;
 use phpseclib4\Math\BinaryField\Integer;
 use phpseclib4\Math\Common\FiniteField;
 

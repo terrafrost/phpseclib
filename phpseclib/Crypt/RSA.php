@@ -57,14 +57,15 @@ namespace phpseclib4\Crypt;
 
 use phpseclib4\Crypt\Common\AsymmetricKey;
 use phpseclib4\Crypt\RSA\Formats\Keys\PSS;
-use phpseclib4\Crypt\RSA\PrivateKey;
-use phpseclib4\Crypt\RSA\PublicKey;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\InconsistentSetupException;
-use phpseclib4\Exception\LengthException;
-use phpseclib4\Exception\OutOfRangeException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
+use phpseclib4\Crypt\RSA\{PrivateKey, PublicKey};
+use phpseclib4\Exception\{
+    BadConfigurationException,
+    BadMethodCallException,
+    InvalidArgumentException,
+    InvalidStateException,
+    LengthException,
+    UnsupportedAlgorithmException
+};
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -983,9 +984,9 @@ abstract class RSA extends AsymmetricKey
             'e' => clone $this->publicExponent,
             'n' => clone $this->modulus,
             'd' => clone $this->exponent,
-            'primes' => array_map(fn(BigInteger $var): BigInteger => clone $var, $this->primes),
-            'exponents' => array_map(fn(BigInteger $var): BigInteger => clone $var, $this->exponents),
-            'coefficients' => array_map(fn(BigInteger $var): BigInteger => clone $var, $this->coefficients),
+            'primes' => array_map(fn (BigInteger $var): BigInteger => clone $var, $this->primes),
+            'exponents' => array_map(fn (BigInteger $var): BigInteger => clone $var, $this->exponents),
+            'coefficients' => array_map(fn (BigInteger $var): BigInteger => clone $var, $this->coefficients),
         ];
     }
 }

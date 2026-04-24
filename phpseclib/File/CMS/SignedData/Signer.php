@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pure-PHP CMS / SignedData Parser
  *
@@ -19,16 +20,12 @@ namespace phpseclib4\File\CMS\SignedData;
 use phpseclib4\Common\Functions\Arrays;
 use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\Hash;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnsupportedAlgorithmException;
-use phpseclib4\File\ASN1;
-use phpseclib4\File\ASN1\Constructed;
-use phpseclib4\File\ASN1\Maps;
-use phpseclib4\File\ASN1\Types\BitString;
-use phpseclib4\File\ASN1\Types\OctetString;
+use phpseclib4\Exception\{UnexpectedValueException, UnsupportedAlgorithmException};
+use phpseclib4\File\ASN1\{Constructed, Maps};
+use phpseclib4\File\ASN1\Types\{BitString, OctetString};
+use phpseclib4\File\{ASN1, X509};
 use phpseclib4\File\CMS\SignedData;
 use phpseclib4\File\Common\Signable;
-use phpseclib4\File\X509;
 
 class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
 {
@@ -396,8 +393,7 @@ class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
 
     public function validateSignature(bool $caonly = true): bool
     {
-        if (count($this->signer['signedAttrs']))
-        {
+        if (count($this->signer['signedAttrs'])) {
             $messageDigest = $this->cms->calculateFileHash(preg_replace('#^id-#', '', (string) $this->signer['digestAlgorithm']['algorithm']));
             $expectedDigest = $this->getSignedAttr('id-messageDigest');
             if (!isset($expectedDigest)) {

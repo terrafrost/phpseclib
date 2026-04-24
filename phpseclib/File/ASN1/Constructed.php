@@ -22,29 +22,18 @@ declare(strict_types=1);
 
 namespace phpseclib4\File\ASN1;
 
-use phpseclib4\Exception\EncodedDataUnavailableException;
-use phpseclib4\Exception\EOCException;
-use phpseclib4\Exception\ExcessivelyDeepDataException;
-use phpseclib4\Exception\InsufficientSetupException;
-use phpseclib4\Exception\NoValidTagFoundException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\File\ASN1;
+use phpseclib4\Exception\{
+    EOCException,
+    EncodedDataUnavailableException,
+    ExcessivelyDeepDataException,
+    InvalidStateException,
+    UnexpectedValueException
+};
+use phpseclib4\File\ASN1\Types\{BaseType, BitString, Boolean, Choice, Integer, OctetString};
+use phpseclib4\File\{ASN1, CRL, X509};
 use phpseclib4\File\CMS\EnvelopedData\KeyAgreeRecipient\EncryptedKey;
 use phpseclib4\File\CMS\EnvelopedData\Recipient;
 use phpseclib4\File\CMS\SignedData\Signer;
-use phpseclib4\File\CRL;
-use phpseclib4\File\X509;
-use phpseclib4\File\ASN1\Element;
-use phpseclib4\File\ASN1\ExcessivelyDeepData;
-use phpseclib4\File\ASN1\MalformedData;
-use phpseclib4\File\ASN1\Types\BaseString;
-use phpseclib4\File\ASN1\Types\BaseType;
-use phpseclib4\File\ASN1\Types\BitString;
-use phpseclib4\File\ASN1\Types\Boolean;
-use phpseclib4\File\ASN1\Types\Choice;
-use phpseclib4\File\ASN1\Types\ExplicitNull;
-use phpseclib4\File\ASN1\Types\Integer;
-use phpseclib4\File\ASN1\Types\OctetString;
 
 /**
  * ASN.1 Constructed Array Object
@@ -127,7 +116,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
             if (!isset($length)) {
                 $this->calculateIndefiniteLength($offset, $depth + 1);
             } else {
-                $offset+= $length;
+                $offset += $length;
             }
         }
 
@@ -301,7 +290,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                             }
                             $excessivelyDeepData = true;
                         }
-                        $result.= $temp['data'];
+                        $result .= $temp['data'];
                         continue;
                     }
                     if ($content['type'] != $this->tag) {
@@ -309,7 +298,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                         $error = "$error (found " . ASN1::convertTypeConstantToString($content['type']) . '; expected '. ASN1::convertTypeConstantToString($this->tag) . ')';
                         throw new UnexpectedValueException($error);
                     }
-                    $result.= $content['content'];
+                    $result .= $content['content'];
                 }
                 if ($excessivelyDeepData) {
                     $value = new ExcessivelyDeepData($this->rawheader . $result);
@@ -479,7 +468,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         $rules = $this->rules;
         $map = [];
 
-        foreach ($decoded as $key=>$content) {
+        foreach ($decoded as $key => $content) {
             try {
                 $temp = ASN1::map($content, $children, $rules);
                 if ($temp instanceof Constructed || $temp instanceof Choice) {
@@ -660,7 +649,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
 
         self::decodeCurrent();
 
-        foreach ($this->decoded as $key=>$value) {
+        foreach ($this->decoded as $key => $value) {
             if ($value instanceof Constructed && !isset($value->decoded)) {
                 // if we rely on __debugInfo's built-in recursiveness then we wouldn't be able to
                 // replace Constructed objects with OctetString or BitString objects
@@ -813,7 +802,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         }
 
         $output = [];
-        foreach ($this->decoded as $key=>$value) {
+        foreach ($this->decoded as $key => $value) {
             if ($value instanceof Constructed) {
                 $output[$key] = $value->decoded ? $value->currentlyDecoded() : '...';
             } else {
@@ -831,7 +820,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
 
         self::decodeCurrent();
         $result = [];
-        foreach ($this->decoded as $key=>$value) {
+        foreach ($this->decoded as $key => $value) {
             try {
                 if ($value instanceof Constructed || $value instanceof Choice || $value instanceof Signer || $value instanceof Recipient || $value instanceof EncryptedKey) {
                     $value = $value->toArray($convertPrimitives);

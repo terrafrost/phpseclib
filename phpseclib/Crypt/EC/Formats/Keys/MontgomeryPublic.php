@@ -16,9 +16,8 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\Formats\Keys;
 
 use phpseclib4\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib4\Crypt\EC\Curves\Curve25519;
-use phpseclib4\Crypt\EC\Curves\Curve448;
-use phpseclib4\Exception\LengthException;
+use phpseclib4\Crypt\EC\Curves\{Curve25519, Curve448};
+use phpseclib4\Exception\UnexpectedValueException;
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\Common\FiniteField\Integer;
 

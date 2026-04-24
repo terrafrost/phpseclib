@@ -21,8 +21,12 @@ use phpseclib4\Common\Functions\Strings;
 use phpseclib4\Crypt\Common\Formats\Keys\OpenSSH as Progenitor;
 use phpseclib4\Crypt\EC\BaseCurves\Base as BaseCurve;
 use phpseclib4\Crypt\EC\Curves\Ed25519;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnsupportedCurveException;
+use phpseclib4\Exception\{
+    LengthException,
+    UnexpectedValueException,
+    UnsupportedCurveException,
+    UnsupportedValueException
+};
 use phpseclib4\File\ASN1\OIDs\Curves;
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\Common\FiniteField\Integer;

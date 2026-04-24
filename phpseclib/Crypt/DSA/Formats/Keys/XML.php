@@ -22,8 +22,7 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\DSA\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\Exception\{BadConfigurationException, InvalidArgumentException, UnexpectedValueException};
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -82,6 +81,7 @@ abstract class XML
                 case 'y': // G**X mod P (where X is part of the private key and not made public)
                     $components['y'] = $value;
                     // the remaining options do not do anything
+                    // no break
                 case 'j': // (P - 1) / Q
                     // Parameter J is available for inclusion solely for efficiency as it is calculatable from
                     // P and Q

@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Math;
 
+use phpseclib4\Exception\InvalidArgumentException;
 use phpseclib4\Math\Common\FiniteField;
 use phpseclib4\Math\PrimeField\Integer;
 

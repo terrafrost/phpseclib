@@ -49,8 +49,7 @@ declare(strict_types=1);
 
 namespace phpseclib4\Crypt;
 
-use phpseclib4\Exception\BadMethodCallException;
-use phpseclib4\Exception\LengthException;
+use phpseclib4\Exception\{BadMethodCallException, LengthException};
 
 /**
  * Pure-PHP implementation of AES.

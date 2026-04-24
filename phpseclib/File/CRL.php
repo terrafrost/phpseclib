@@ -20,22 +20,14 @@ declare(strict_types=1);
 
 namespace phpseclib4\File;
 
-use phpseclib4\Common\Functions\Arrays;
-use phpseclib4\Common\Functions\Strings;
+use phpseclib4\Common\Functions\{Arrays, Strings};
 use phpseclib4\Crypt\Common\PublicKey;
-use phpseclib4\Crypt\PublicKeyLoader;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\File\ASN1\Constructed;
-use phpseclib4\File\ASN1\Element;
-use phpseclib4\File\ASN1\Maps;
+use phpseclib4\Exception\UnexpectedValueException;
+use phpseclib4\File\ASN1\{Constructed, Element, Maps};
 use phpseclib4\File\ASN1\Maps\CRLReason;
-use phpseclib4\File\ASN1\Types\BitString;
-use phpseclib4\File\ASN1\Types\GeneralizedTime;
-use phpseclib4\File\ASN1\Types\OctetString;
-use phpseclib4\File\ASN1\Types\UTCTime;
+use phpseclib4\File\ASN1\Types\{BitString, OctetString};
 use phpseclib4\File\Common\Signable;
 use phpseclib4\Math\BigInteger;
-use UnexpectedValueException;
 
 /**
  * Pure-PHP CRL Parser
@@ -636,7 +628,7 @@ class CRL implements \ArrayAccess, \Countable, \Iterator, Signable
             ];
             return;
         }
-        foreach ($revoked['crlEntryExtensions'] as $i=>$ext) {
+        foreach ($revoked['crlEntryExtensions'] as $i => $ext) {
             $ext = &$revoked['crlEntryExtensions'][$i];
             if ("$ext[extnId]" == $name) {
                 $ext['extnValue'] = $value;
@@ -699,7 +691,7 @@ class CRL implements \ArrayAccess, \Countable, \Iterator, Signable
     public function validateSignature(): bool
     {
         $CAs = X509::getCAs();
-        foreach ($CAs as $i=>$ca) {
+        foreach ($CAs as $i => $ca) {
             if ($ca->isIssuerOf($this)) {
                 $signingCert = $ca;
                 break;

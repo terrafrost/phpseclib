@@ -21,14 +21,18 @@ declare(strict_types=1);
 namespace phpseclib4\Crypt\EC\Formats\Keys;
 
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib4\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use phpseclib4\Crypt\EC\BaseCurves\Prime as PrimeCurve;
-use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use phpseclib4\Exception\BadConfigurationException;
-use phpseclib4\Exception\RuntimeException;
-use phpseclib4\Exception\UnexpectedValueException;
-use phpseclib4\Exception\UnsupportedCurveException;
+use phpseclib4\Crypt\EC\BaseCurves\{
+    Base as BaseCurve,
+    Montgomery as MontgomeryCurve,
+    Prime as PrimeCurve,
+    TwistedEdwards as TwistedEdwardsCurve
+};
+use phpseclib4\Exception\{
+    BadConfigurationException,
+    InvalidArgumentException,
+    UnexpectedValueException,
+    UnsupportedCurveException
+};
 use phpseclib4\File\ASN1\OIDs\Curves;
 use phpseclib4\Math\BigInteger;
 use phpseclib4\Math\Common\FiniteField\Integer;
