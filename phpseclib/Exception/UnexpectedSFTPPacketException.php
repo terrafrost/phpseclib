@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UnsupportedOperationException
+ * UnexpectedSFTPPacketException
  *
  * PHP version 5
  *
@@ -16,10 +16,10 @@ declare(strict_types=1);
 namespace phpseclib4\Exception;
 
 /**
- * UnsupportedOperationException
+ * UnexpectedSFTPPacketException
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
-class UnsupportedOperationException extends \RuntimeException implements ExceptionInterface
+class UnexpectedSFTPPacketException extends \RuntimeException implements ExceptionInterface
 {
 }

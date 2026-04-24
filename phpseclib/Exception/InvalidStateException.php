@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace phpseclib4\Exception;
 
 /**
- * BadDecryptionException
+ * InvalidStateException
  *
  * @author  Jim Wigginton <terrafrost@php.net>
  */
