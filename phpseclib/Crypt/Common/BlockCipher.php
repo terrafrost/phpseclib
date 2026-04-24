@@ -31,7 +31,7 @@ abstract class BlockCipher extends SymmetricKey
         parent::__construct($mode);
 
         if ($this->mode == self::MODE_STREAM) {
-            throw new BadModeException('Block ciphers cannot be ran in stream mode');
+            throw new InvalidArgumentException('Block ciphers cannot be ran in stream mode');
         }
     }
 }

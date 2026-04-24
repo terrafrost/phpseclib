@@ -282,7 +282,7 @@ abstract class ASN1
     {
         // Length, as discussed in paragraph 8.1.3 of X.690-0207.pdf#page=13
         if (!isset($encoded[$encoded_pos])) {
-            throw new UnexpectedException('Not enough bytes to decode length');
+            throw new UnexpectedValueException('Not enough bytes to decode length');
         }
         $length = ord($encoded[$encoded_pos++]);
         if ($length == 0x80) { // indefinite length
@@ -435,7 +435,7 @@ abstract class ASN1
                 $current['content'] = new Integer($content, -256);
                 break;
             case self::TYPE_REAL: // not currently supported
-                //throw new UnsupportedFormatException('Real numbers are not supported');
+                //throw new UnsupportedValueException('Real numbers are not supported');
                 $current['content'] = new Element($headercontent . $content);
                 break;
             case self::TYPE_BIT_STRING:
@@ -801,7 +801,7 @@ abstract class ASN1
             case self::TYPE_SET:    // Children order is not important, thus process in sequence.
             case self::TYPE_SEQUENCE:
                 if (!is_array($source) && !$source instanceof Constructed) {
-                    throw new RuntimeException(implode('/', self::$location) . ' is not an array or an instance of Constructed');
+                    throw new UnexpectedValueException(implode('/', self::$location) . ' is not an array or an instance of Constructed');
                 }
                 $tag |= 0x20; // set the constructed bit
 
@@ -1196,7 +1196,7 @@ abstract class ASN1
             $oid = $source;
         }
         if ($oid === false) {
-            throw new RuntimeException("$source is an invalid OID");
+            throw new UnsupportedValueException("$source is an invalid OID");
         }
 
         $parts = explode('.', $oid);
@@ -1363,8 +1363,7 @@ abstract class ASN1
         $temp = str_replace(["\r", "\n", ' '], '', $temp);
         // remove the -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- stuff
         $temp = preg_replace('#^-+[^-]+-+|-+[^-]+-+$#', '', $temp);
-        $temp = preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? Strings::base64_decode($temp) : false;
-        return $temp != false ? $temp : $str;
+        return preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? Strings::base64_decode($temp) : $str;
     }
 
     /**

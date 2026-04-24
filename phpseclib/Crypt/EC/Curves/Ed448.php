@@ -191,7 +191,7 @@ class Ed448 extends TwistedEdwards
         }
 
         if (!isset($p[2])) {
-            throw new UnsupportedStateException('Affine coordinates need to be manually converted to "Jacobi" coordinates or vice versa');
+            throw new UnsupportedValueException('Affine coordinates need to be manually converted to "Jacobi" coordinates or vice versa');
         }
 
         // from https://tools.ietf.org/html/rfc8032#page-18
@@ -235,7 +235,7 @@ class Ed448 extends TwistedEdwards
         }
 
         if (!isset($p[2]) || !isset($q[2])) {
-            throw new UnsupportedStateException('Affine coordinates need to be manually converted to "Jacobi" coordinates or vice versa');
+            throw new UnsupportedValueException('Affine coordinates need to be manually converted to "Jacobi" coordinates or vice versa');
         }
 
         if ($p[0]->equals($q[0])) {

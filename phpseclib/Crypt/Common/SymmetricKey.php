@@ -485,7 +485,7 @@ abstract class SymmetricKey
         // necessary because of 5.6 compatibility; we can't do isset(self::MODE_MAP[$mode]) in 5.6
         $map = self::MODE_MAP;
         if (!isset($map[$mode])) {
-            throw new BadModeException('No valid mode has been specified');
+            throw new InvalidArgumentException('No valid mode has been specified');
         }
 
         $mode = self::MODE_MAP[$mode];
@@ -506,7 +506,7 @@ abstract class SymmetricKey
                 break;
             case self::MODE_GCM:
                 if ($this->block_size != 16) {
-                    throw new BadModeException('GCM is only valid for block ciphers with a block size of 128 bits');
+                    throw new InvalidModeException('GCM is only valid for block ciphers with a block size of 128 bits');
                 }
                 if (!isset(self::$gcmField)) {
                     self::$gcmField = new BinaryField(128, 7, 2, 1, 0);
@@ -514,7 +514,7 @@ abstract class SymmetricKey
                 $this->paddable = false;
                 break;
             default:
-                throw new BadModeException('No valid mode has been specified');
+                throw new InvalidModeException('No valid mode has been specified');
         }
 
         $this->mode = $mode;
@@ -737,7 +737,7 @@ abstract class SymmetricKey
         switch ($method) {
             case 'bcrypt':
                 if (!isset($func_args[2])) {
-                    throw new MissingArgumentsException('A salt must be provided for bcrypt to work');
+                    throw new InvalidArgumentException('A salt must be provided for bcrypt to work');
                 }
 
                 $salt = $func_args[0];

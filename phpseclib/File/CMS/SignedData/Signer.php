@@ -382,7 +382,7 @@ class Signer implements \ArrayAccess, \Countable, \Iterator, Signable
                         X509::checkKeyUsage();
                     }
                     if (!isset($cert)) {
-                        throw new RuntimeException('Unable to find matching id-aa-signingCertificateV2 certificate');
+                        throw new UnexpectedValueException('Unable to find matching id-aa-signingCertificateV2 certificate');
                     }
                     $attr['value'][0]['certs'][0]['hashAlgorithm'] = ['algorithm' => $hash];
                     // explicitly setting the following to OctetString isn't needed as Hash is type OCTET_STRING, however,

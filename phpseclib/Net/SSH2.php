@@ -2820,7 +2820,7 @@ class SSH2
 
         if (!$this->is_channel_status_data($channel)) {
             if ($channel != self::CHANNEL_SHELL) {
-                throw new InsufficientSetupException('Data is not available on channel');
+                throw new UnexpectedValueException('Data is not available on channel');
             }
             $this->openShell();
         }
@@ -3227,7 +3227,7 @@ class SSH2
                 case 'chacha20-poly1305@openssh.com':
                     // This should be impossible, but we are checking anyway to narrow the type for Psalm.
                     if (!($this->decrypt instanceof ChaCha20)) {
-                        throw new LogicException('$this->decrypt is not a ' . ChaCha20::class);
+                        throw new InvalidStateException('$this->decrypt is not a ' . ChaCha20::class);
                     }
                     $this->decrypt->setNonce(pack('N2', 0, $this->get_seq_no));
                     $this->decrypt->setCounter(0);

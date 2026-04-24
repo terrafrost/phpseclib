@@ -910,7 +910,7 @@ class Hash
             $constZero = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
             if ($this->recomputeAESKey) {
                 if (!is_string($this->key)) {
-                    throw new InsufficientSetupException('No key has been set');
+                    throw new InvalidStateException('No key has been set');
                 }
                 if (strlen($this->key) != 16) {
                     throw new LengthException('Key must be 16 bytes long');
@@ -973,10 +973,10 @@ class Hash
             }
             if ($this->recomputeAESKey) {
                 if (!is_string($this->nonce)) {
-                    throw new InsufficientSetupException('No nonce has been set');
+                    throw new InvalidStateException('No nonce has been set');
                 }
                 if (!is_string($this->key)) {
-                    throw new InsufficientSetupException('No key has been set');
+                    throw new InvalidStateException('No key has been set');
                 }
                 if (strlen($this->key) != 16) {
                     throw new LengthException('Key must be 16 bytes long');

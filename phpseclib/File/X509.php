@@ -1059,7 +1059,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
     {
         $components = parse_url($url);
         if (!isset($components['host'])) {
-            throw new RuntimeException('Unable to parse URL');
+            throw new UnexpectedValueException('Unable to parse URL');
         }
 
         if ($names = $this->getExtension('id-ce-subjectAltName')) {
@@ -1268,7 +1268,7 @@ class X509 implements \ArrayAccess, \Countable, \Iterator, Signable
                 if ((self::$inCRLFunction)($url, $this->cert['tbsCertificate']['serialNumber'])) {
                     return false;
                 }
-            } catch (UnexpectedValueSyntax) {
+            } catch (UnexpectedValueException) {
                 // there's not a URI for us to get the CRL from so we just won't check it
             }
         }

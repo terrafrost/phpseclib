@@ -510,7 +510,7 @@ abstract class EC extends AsymmetricKey
     public function withContext(?string $context = null): EC
     {
         if (!$this->curve instanceof TwistedEdwardsCurve) {
-            throw new BadMethodCallExceptionx('Only Ed25519 and Ed448 support contexts');
+            throw new BadMethodCallException('Only Ed25519 and Ed448 support contexts');
         }
 
         $new = clone $this;

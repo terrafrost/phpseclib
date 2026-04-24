@@ -143,7 +143,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         self::decodeCurrent();
 
         if (!isset($this->decoded[$offset])) {
-            //throw new RuntimeException("The requested offset '$offset' was not found");
+            //throw new UnexpectedValueException("The requested offset '$offset' was not found");
             //this is https://en.wikipedia.org/wiki/Autovivification
             $this->decoded[$offset] = [];
             if (ASN1::invalidateCache()) {
@@ -307,7 +307,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                     if ($content['type'] != $this->tag) {
                         $error = 'All subtags of a constructed string should be the same type as the constructed string itself';
                         $error = "$error (found " . ASN1::convertTypeConstantToString($content['type']) . '; expected '. ASN1::convertTypeConstantToString($this->tag) . ')';
-                        throw new UnexpectedDataException($error);
+                        throw new UnexpectedValueException($error);
                     }
                     $result.= $content['content'];
                 }
@@ -367,7 +367,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                                 $map[$key] = new MalformedData((string) $temp['content']);
                                 break;
                             }
-                            throw new UnexpectedDataException("Unable to find a matching element for $key in the SEQUENCE");
+                            throw new UnexpectedValueException("Unable to find a matching element for $key in the SEQUENCE");
                         }
                     }
                 }
@@ -383,12 +383,12 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                         if (ASN1::isBlobsOnBadDecodesEnabled()) {
                             break;
                         }
-                        throw new UnexpectedDataException("Unable to find a matching element for $key in the SEQUENCE");
+                        throw new UnexpectedValueException("Unable to find a matching element for $key in the SEQUENCE");
                     }
                 }
 
                 if ($j < count($decoded)) {
-                    throw new UnexpectedDataException('There were ' . count($decoded) . ' elements found in the decoded data but we\'re only expecting ' . count($keys) . ' (' . implode(', ', array_keys($map)) . ')');
+                    throw new UnexpectedValueException('There were ' . count($decoded) . ' elements found in the decoded data but we\'re only expecting ' . count($keys) . ' (' . implode(', ', array_keys($map)) . ')');
                 }
 
                 $this->decoded = $map;
@@ -440,7 +440,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                                 $map[$key] = new MalformedData($temp['content']);
                                 break;
                             }
-                            throw new UnexpectedDataException("Unable to find a matching element for $key in the SET");
+                            throw new UnexpectedValueException("Unable to find a matching element for $key in the SET");
                         }
                     }
                 }
@@ -449,7 +449,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                 $this->rules = $rules;
                 break;
             default:
-                throw new UnexpectedDataException('Unable to decode element (' . $this->tag . ') @ ' . $this->start);
+                throw new UnexpectedValueException('Unable to decode element (' . $this->tag . ') @ ' . $this->start);
         }
     }
 
@@ -471,7 +471,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
                 return ASN1::map($decoded, $child);
         }
         //return $child['default'];
-        throw new UnexpectedDataException('An unsupported default type was encountered');
+        throw new UnexpectedValueException('An unsupported default type was encountered');
     }
 
     private function setSeqOuterLoop(array $decoded, array $children): array
@@ -544,7 +544,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
             } catch (EncodedDataUnavailableException|ExcessivelyDeepDataException $e) {
                 $data = substr($this->encoded, $temp['start'] - $this->start, ($temp['length'] ?? $temp['actuallength']) + $temp['headerlength']);
                 return $e instanceof EncodedDataUnavailableException ? new Element($data) : new ExcessivelyDeepData($data);
-            } catch (UnexpectedDataException) {
+            } catch (UnexpectedValueException) {
                 $maymatch = false;
             }
         }
@@ -826,7 +826,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function toArray(bool $convertPrimitives = false): array
     {
         if (!isset($this->mapping)) {
-            throw new InsufficientSetupException('Cannot convert Constructed object to an array when no mapping has been provided');
+            throw new InvalidStateException('Cannot convert Constructed object to an array when no mapping has been provided');
         }
 
         self::decodeCurrent();

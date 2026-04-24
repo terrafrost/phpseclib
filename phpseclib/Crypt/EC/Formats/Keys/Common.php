@@ -165,11 +165,11 @@ trait Common
             $y[0] = $y[0] & chr(0x7F);
             $y = new BigInteger($y, 256);
             if ($y->compare($curve->getModulo()) >= 0) {
-                throw new UnexpectedValueParameter('The Y coordinate should not be >= the modulo');
+                throw new UnexpectedValueException('The Y coordinate should not be >= the modulo');
             }
             $point = $curve->recoverX($y, $sign);
             if (!$curve->verifyPoint($point)) {
-                throw new UnexpectedValueParameter('Unable to verify that point exists on curve');
+                throw new UnexpectedValueException('Unable to verify that point exists on curve');
             }
             return $point;
         }

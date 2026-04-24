@@ -88,7 +88,7 @@ class CRL implements \ArrayAccess, \Countable, \Iterator, Signable
         if ($mode != ASN1::FORMAT_DER) {
             $newcrl = ASN1::extractBER($crl);
             if ($mode == ASN1::FORMAT_PEM && $crl == $newcrl) {
-                throw new RuntimeException('Unable to decode PEM');
+                throw new UnexpectedValueException('Unable to decode PEM');
             }
             $crl = $newcrl;
         }

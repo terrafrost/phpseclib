@@ -1492,7 +1492,7 @@ class SFTP extends SSH2
 
         [$count] = Strings::unpackSSH2('N', $response);
         if (!$count) {
-            throw new RuntimException('The file in question is not a symlink');
+            throw new FileSystemException('The file in question is not a symlink');
         }
 
         [$filename] = Strings::unpackSSH2('s', $response);
@@ -1730,7 +1730,7 @@ class SFTP extends SSH2
         switch (true) {
             case $mode & self::SOURCE_CALLBACK:
                 if (!$data instanceof \Closure) {
-                    throw new BadFunctionCallException("\$data should be a Closure if you specify SOURCE_CALLBACK flag");
+                    throw new InvalidArgumentException("\$data should be a Closure if you specify SOURCE_CALLBACK flag");
                 }
                 $dataCallback = $data;
                 // do nothing
@@ -1748,7 +1748,7 @@ class SFTP extends SSH2
                 break;
             case $mode & self::SOURCE_LOCAL_FILE:
                 if (!is_file($data)) {
-                    throw new FileNotFoundException("$data is not a valid file");
+                    throw new FileSystemException("$data is not a valid file");
                 }
                 $fp = Files::open($data, 'rb');
         }
@@ -2031,7 +2031,7 @@ class SFTP extends SSH2
         $this->precheck();
 
         if (!strlen($path)) {
-            throw new InvalidArguementExcpetion('strlen($path) should be > 0');
+            throw new InvalidArgumentException('strlen($path) should be > 0');
         }
 
         $path = $this->realpath($path);

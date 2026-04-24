@@ -43,7 +43,7 @@ class CompressedData implements \ArrayAccess, \Countable, \Iterator
     public function __construct(string $data)
     {
         if (!function_exists('zlib_encode')) {
-            throw new InsufficientSetupException('zlib_encode() is not available');
+            throw new BadConfigurationException('zlib_encode() is not available');
         }
         $this->decompressed = $data;
         $this->cms = [
@@ -181,7 +181,7 @@ class CompressedData implements \ArrayAccess, \Countable, \Iterator
     {
         if (!isset($this->decompressed)) {
             if (!function_exists('zlib_decode')) {
-                throw new InsufficientSetupException('zlib_decode() is not available');
+                throw new BadConfigurationException('zlib_decode() is not available');
             }
             $this->decompressed = zlib_decode((string) $this->cms['content']['encapContentInfo']['eContent']);
         }

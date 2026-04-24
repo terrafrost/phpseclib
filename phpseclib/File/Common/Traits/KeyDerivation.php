@@ -54,7 +54,7 @@ trait KeyDerivation
         }
 
         if ($a != $iv) {
-            throw new RuntimeException('Error with unwrapping');
+            throw new UnexpectedValueException('Error with unwrapping');
         }
         return implode('', $r);
     }
@@ -80,7 +80,7 @@ trait KeyDerivation
         $cek = substr($cekicv, 0, 24);
         $icv = substr($cekicv, -8);
         if ($icv != substr(sha1($cek, true), 0, 8)) {
-            throw new RuntimeException('Checksum validation failed');
+            throw new UnexpectedValueException('Checksum validation failed');
         }
         return $cek;
     }
@@ -95,7 +95,7 @@ trait KeyDerivation
             $cms = &$this->cms;
         }
         if (!isset($cek)) {
-            throw new InsufficientSetupException('Content encryption key not set');
+            throw new InvalidStateException('Content encryption key not set');
         }
 
         $cea = ASN1::decodeBER((string) $cms['content']['encryptedContentInfo']['contentEncryptionAlgorithm']);

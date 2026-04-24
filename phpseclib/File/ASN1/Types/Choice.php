@@ -161,8 +161,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
     public function offsetUnset(mixed $offset): void
     {
         if ($offset == $this->index) {
-            unset($this->index);
-            unset($this->value);
+            unset($this->index, $this->value);
         }
     }
 
@@ -170,7 +169,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
     {
         if (!Strings::is_stringable($this->value)) {
             $reflect = new \ReflectionClass($this->value);
-            throw new RuntimeException($reflect->getShortName() . ' isn\'t stringable');
+            throw new InvalidArgumentException($reflect->getShortName() . ' isn\'t stringable');
         }
         return (string) $this->value;
     }

@@ -61,9 +61,6 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
     private Constructed|array $cms;
     public string $cek; // content encryption key
 
-    /**
-     * @param string $data
-     */
     public function __construct(string $data, string $encryptionAlgorithm = 'aes128-CBC-PAD', #[\SensitiveParameter] ?string $key = null)
     {
         $cipher = self::getPBES2EncryptionObject($encryptionAlgorithm);
@@ -468,7 +465,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
                 try {
                     $recipient['pwri']->withPassword($password);
                     return $this;
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                 }
             }
         }
@@ -481,7 +478,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
         // openssl cms -decrypt -inform PEM -in enveloped.pem -out plaintext.txt -pwri_password 'password'
 
         if (!isset($this->cek)) {
-            throw new InsufficientSetupException('A content encryption key is unavailable');
+            throw new InvalidStateException('A content encryption key is unavailable');
         }
         $params = [
             'encryptionAlgorithm' => 'id-PBES2',
@@ -527,7 +524,7 @@ class EncryptedData implements \ArrayAccess, \Countable, \Iterator
         // openssl cms -decrypt -in enveloped.pem -secretkey <hex-kek> -secretkeyid <hex-key-id> -out plaintext.txt
 
         if (!isset($this->cek)) {
-            throw new InsufficientSetupException('A content encryption key is unavailable');
+            throw new InvalidStateException('A content encryption key is unavailable');
         }
 
         $keyLength = strlen($key);

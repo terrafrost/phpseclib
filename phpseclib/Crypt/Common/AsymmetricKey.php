@@ -252,11 +252,11 @@ abstract class AsymmetricKey
     {
         $type = strtolower($type);
         if (!isset(self::$plugins[static::ALGORITHM][$format][$type])) {
-            throw new UnsupportedFormatException("$type is not a supported format");
+            throw new UnsupportedValueException("$type is not a supported format");
         }
         $type = self::$plugins[static::ALGORITHM][$format][$type];
         if (isset($method) && !method_exists($type, $method)) {
-            throw new UnsupportedFormatException("$type does not implement $method");
+            throw new UnsupportedValueException("$type does not implement $method");
         }
 
         return $type;

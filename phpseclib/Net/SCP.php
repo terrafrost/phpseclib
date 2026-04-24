@@ -92,7 +92,7 @@ class SCP extends SSH2
         $temp = $this->get_channel_packet(self::CHANNEL_EXEC, true);
         if ($temp !== chr(0)) {
             $this->close_channel(self::CHANNEL_EXEC, true);
-            throw new UnexpectedPacketException('Expected but did not receive a null packet');
+            throw new UnexpectedSSHMessageException('Expected but did not receive a null packet');
         }
 
         $packet_size = $this->packet_size_client_to_server[self::CHANNEL_EXEC] - 4;
@@ -140,7 +140,7 @@ class SCP extends SSH2
         $temp = $this->get_channel_packet(self::CHANNEL_EXEC, true);
         if ($temp !== chr(0)) {
             $this->close_channel(self::CHANNEL_EXEC, true);
-            throw new UnexpectedPacketException('Expected but did not receive a null packet');
+            throw new UnexpectedSSHMessageException('Expected but did not receive a null packet');
         }
 
         $sent = 0;
@@ -191,7 +191,7 @@ class SCP extends SSH2
 
         if (!preg_match('#(?<perms>[^ ]+) (?<size>\d+) (?<name>.+)#', rtrim($info), $info)) {
             $this->close_channel(self::CHANNEL_EXEC, true);
-            throw new UnexpectedPacketException('Response did not meet expected format');
+            throw new UnexpectedSSHMessageException('Response did not meet expected format');
         }
 
         $fclose_check = false;

@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace phpseclib4\Common\Functions;
 
 use phpseclib4\Exception\RuntimeException;
+use UnexpectedValueException;
 
 /**
  * Common Array Functions
@@ -124,12 +125,12 @@ abstract class Arrays
         foreach ($parts as $k=>$i) {
             if (!isset($root)) {
                 $loc = implode('/', array_slice($parts, 0, $k));
-                throw new UnexpectedValueSyntax("Unable to find node for $loc");
+                throw new UnexpectedValueException("Unable to find node for $loc");
             }
 
             if (!is_array($root) && !$root instanceof \ArrayAccess) {
                 $loc = implode('/', array_slice($parts, 0, $k));
-                throw new UnexpectedValueSyntax("$loc isn't an array or an instance of ArrayAccess");
+                throw new UnexpectedValueException("$loc isn't an array or an instance of ArrayAccess");
             }
 
             if ($i == '*') {
@@ -143,13 +144,13 @@ abstract class Arrays
                     }
                 }
                 $loc = implode('/', array_slice($parts, 0, $k));
-                throw new UnexpectedValueSyntax("$loc wasn't found");
+                throw new UnexpectedValueException("$loc wasn't found");
             }
 
             if (!isset($root[$i])) {
                 if (!$create) {
                     $loc = implode('/', array_slice($parts, 0, $k));
-                    throw new UnexpectedValueSyntax("$loc wasn't found and the create flag wasn't set");
+                    throw new UnexpectedValueException("$loc wasn't found and the create flag wasn't set");
                 }
 
                 $root[$i] = [];

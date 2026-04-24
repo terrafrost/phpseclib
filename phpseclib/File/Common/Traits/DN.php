@@ -118,7 +118,7 @@ trait DN
                 self::encodeDNS($type, $value);
                 if (is_array($value)) {
                     // maybe we should create an UnableToMapException ?
-                    throw new RuntimeException("An unmappable array was encountered for $type");
+                    throw new UnsupportedValueException("An unmappable array was encountered for $type");
                 }
             }
         }
@@ -142,7 +142,7 @@ trait DN
                             default => null
                         };
                         if (!isset($key)) {
-                            throw new RuntimeException("$class is not a supported value for id-at-postalAddress");
+                            throw new UnsupportedValueException("$class is not a supported value for id-at-postalAddress");
                         }
                         $val = [$key => $val];
                     } elseif (is_string($val)) {
@@ -150,7 +150,7 @@ trait DN
                     } elseif ($val instanceof Element) {
                         $val = ['utf8String' => $val];
                     } elseif (!is_array($val)) {
-                        throw new RuntimeException('Invalid value for id-at-postalAddress encountered');
+                        throw new UnexpectedValueException('Invalid value for id-at-postalAddress encountered');
                     }
                 }
                 $temp = ASN1::encodeDER($value, Maps\PostalAddress::MAP);
@@ -362,7 +362,7 @@ trait DN
         }
 
         if (preg_match('#[^\x20-\x7E]#', $props)) {
-            throw new RuntimeException('Non-printable ASCII characters should not be present');
+            throw new UnexpectedValueException('Non-printable ASCII characters should not be present');
         }
 
         // openssl_x509_parse() with OpenSSL 3.0+ returns this format
@@ -407,7 +407,7 @@ trait DN
 
         foreach ($props as $prop) {
             if (!preg_match('#(^[a-zA-Z0-9\.]+)[ ]?=[ ]?(.*)#', $prop, $match)) {
-                throw new RuntimeException('DNs should be in either a /C=whatever/O=whatever format or a "C = whatever, O = whatever" format (without the double quotes)');
+                throw new UnexpectedValueException('DNs should be in either a /C=whatever/O=whatever format or a "C = whatever, O = whatever" format (without the double quotes)');
             }
             $propName = $match[1];
             $propValue = $match[2];
@@ -462,7 +462,8 @@ trait DN
                             try {
                                 $attr['value'] = $attr['value']->toUTF8String();
                                 $attr['value']->value = strtolower(preg_replace('/\s+/', ' ', $attr['value']->value));
-                            } catch (CharacterConversionException $e) {}
+                            } catch (CharacterConversionException) {
+                            }
                         } elseif (is_array($attr['value']) || $attr['value'] instanceof Constructed) {
                             if ($attr['type'] == 'id-at-postalAddress') {
                                 foreach ($attr['value'] as $key=>$val) {
@@ -524,7 +525,7 @@ trait DN
                 self::encodeDNS($prop, $value);
                 if (is_array($value)) {
                     // maybe we should create an UnableToMapException ?
-                    throw new RuntimeException("An unmappable array was encountered for $prop");
+                    throw new UnexpectedValueException("An unmappable array was encountered for $prop");
                 }
             }
             $isConstructed = false;
@@ -535,7 +536,8 @@ trait DN
             if ($value instanceof BaseString && $value->isConvertable()) {
                 try {
                     $value = (string) $value->toUTF8String();
-                } catch (CharacterConversionException $e) {}
+                } catch (CharacterConversionException) {
+                }
             }
 
             $result[$desc] = isset($result[$desc]) ?

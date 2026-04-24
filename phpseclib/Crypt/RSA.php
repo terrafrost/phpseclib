@@ -932,7 +932,7 @@ abstract class RSA extends AsymmetricKey
                     'saltLength' => $this->getSaltLength(),
                 ];
             } else {
-                throw new UnsupportedFormatException('The PSS format can only be used when the signature method has been explicitly set to PSS');
+                throw new InvalidArgumentException('The PSS format can only be used when the signature method has been explicitly set to PSS');
             }
         }
 

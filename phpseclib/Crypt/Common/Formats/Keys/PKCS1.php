@@ -47,8 +47,6 @@ abstract class PKCS1 extends PKCS
 
     /**
      * Returns the mode constant corresponding to the mode string
-     *
-     * @throws UnexpectedValueException if the block cipher mode is unsupported
      */
     private static function getEncryptionMode(string $mode): string
     {
@@ -60,13 +58,11 @@ abstract class PKCS1 extends PKCS
             case 'CTR':
                 return $mode;
         }
-        throw new BadModeException('Unsupported block cipher mode of operation');
+        throw new UnsupportedValueException('Unsupported block cipher mode of operation');
     }
 
     /**
      * Returns a cipher object corresponding to a string
-     *
-     * @throws UnexpectedValueException if the encryption algorithm is unsupported
      */
     private static function getEncryptionObject(string $algo): AES|DES|TripleDES
     {

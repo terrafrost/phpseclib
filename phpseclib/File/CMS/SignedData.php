@@ -298,7 +298,7 @@ class SignedData implements \ArrayAccess, \Countable, \Iterator, Signable
         } elseif (isset($this->fp)) {
             return $hash->hash($this->fp);
         } else {
-            throw new RuntimeException('There is nothing to hash');
+            throw new BadMethodCallException('There is nothing to hash');
         }
     }
 

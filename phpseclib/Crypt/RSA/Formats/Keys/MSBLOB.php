@@ -162,7 +162,7 @@ abstract class MSBLOB
         }
 
         if (isset($password)) {
-            throw new UnsupportedFormatException('MSBLOB private keys do not support encryption');
+            throw new InvalidArgumentException('MSBLOB private keys do not support encryption');
         }
 
         $n = strrev($n->toBytes());
