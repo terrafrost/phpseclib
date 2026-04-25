@@ -2046,7 +2046,7 @@ class SFTP extends SSH2
         // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.3
         $this->send_sftp_packet(SFTPPacketType::REMOVE, pack('Na*', strlen($path), $path));
 
-        $response = $this->get_sftp_packet([SFTPPacketType::STATUS]);
+        $response = $this->get_sftp_packet_or_error([SFTPPacketType::STATUS]);
 
         // if $status isn't SSH_FX_OK it's probably SSH_FX_NO_SUCH_FILE or SSH_FX_PERMISSION_DENIED
         [$status] = Strings::unpackSSH2('N', $response);
@@ -2944,7 +2944,7 @@ class SFTP extends SSH2
             pack('N2', $flags, 0);
         $this->send_sftp_packet(SFTPPacketType::OPEN, $packet);
 
-        $response = $this->get_sftp_packet([SFTPPacketType::HANDLE, SFTPPacketType::STATUS]);
+        $response = $this->get_sftp_packetor_error([SFTPPacketType::HANDLE, SFTPPacketType::STATUS]);
         switch ($this->packet_type) {
             case SFTPPacketType::HANDLE:
                 $newhandle = substr($response, 4);
@@ -2956,7 +2956,7 @@ class SFTP extends SSH2
         $packet = Strings::packSSH2('ssQQsQ', 'copy-data', $oldhandle, 0, $size, $newhandle, 0);
         $this->send_sftp_packet(SFTPPacketType::EXTENDED, $packet);
 
-        $this->get_sftp_packet([SFTPPacketType::STATUS]);
+        $this->get_sftp_packet_or_error([SFTPPacketType::STATUS]);
 
         $this->close_handle($oldhandle);
         $this->close_handle($newhandle);
@@ -3029,7 +3029,7 @@ class SFTP extends SSH2
         $packet = Strings::packSSH2('ss', 'statvfs@openssh.com', $realpath);
         $this->send_sftp_packet(SFTPPacketType::EXTENDED, $packet);
 
-        $response = $this->get_sftp_packet([SFTPPacketType::EXTENDED_REPLY]);
+        $response = $this->get_sftp_packet_or_error([SFTPPacketType::EXTENDED_REPLY]);
 
         /**
          * These requests return a SSH_FXP_STATUS reply on failure. On success they
