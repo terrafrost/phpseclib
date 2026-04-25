@@ -744,7 +744,7 @@ cN6W+k8UvGf+Y/lDWNbFitQocabsDUvSN0edHH3UKP5QPTz4cOlyIPMrXQ==
 
     public function testExcessivelyLargeBinaryField(): void
     {
-        $this->expectException('ResourceLimitException');
+        $this->expectException(ResourceLimitException::class);
 
         $key = '-----BEGIN PUBLIC KEY-----
 MIIBDDCB0wYHKoZIzj0CATCBxwIBATAgBgcqhkjOPQECMBUCBH////8GCSqGSM49

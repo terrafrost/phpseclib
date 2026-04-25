@@ -97,7 +97,7 @@ p0GbMJDyR4e9T04ZZwIDAQAB
 
     public function testSmallModulo(): void
     {
-        $this->expectException('KeyConstraintException');
+        $this->expectException(KeyConstraintException::class);
 
         $plaintext = 'x';
 
