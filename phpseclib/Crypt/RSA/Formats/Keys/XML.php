@@ -60,9 +60,10 @@ abstract class XML
             $key = '<xml>' . $key . '</xml>';
         }
         if (!$dom->loadXML($key)) {
-            $message = 'Error loading XML - ' . libxml_get_last_error();
+            $e = libxml_get_last_error();
+            $message = 'Error loading XML - ' . $e->message;
             libxml_use_internal_errors($use_errors);
-            throw new UnexpectedValueException($message);
+            throw new UnexpectedValueException($message, $e->code);
         }
         $xpath = new \DOMXPath($dom);
         $keys = ['modulus', 'exponent', 'p', 'q', 'dp', 'dq', 'inverseq', 'd'];
