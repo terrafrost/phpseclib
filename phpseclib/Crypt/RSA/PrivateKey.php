@@ -33,26 +33,26 @@ final class PrivateKey extends RSA implements Common\PrivateKey
      *
      * @var BigInteger[]
      */
-    protected array $primes;
+    protected readonly array $primes;
 
     /**
      * Exponents for Chinese Remainder Theorem (ie. dP and dQ)
      *
      * @var BigInteger[]
      */
-    protected array $exponents;
+    protected readonly array $exponents;
 
     /**
      * Coefficients for Chinese Remainder Theorem (ie. qInv)
      *
      * @var BigInteger[]
      */
-    protected array $coefficients;
+    protected readonly array $coefficients;
 
     /**
      * Private Exponent
      */
-    protected BigInteger $privateExponent;
+    protected readonly BigInteger $privateExponent;
 
     /**
      * RSADP

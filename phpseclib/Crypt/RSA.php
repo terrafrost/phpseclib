@@ -143,52 +143,52 @@ abstract class RSA extends AsymmetricKey
     /**
      * Encryption padding mode
      */
-    protected int $encryptionPadding = self::ENCRYPTION_OAEP;
+    protected readonly int $encryptionPadding;
 
     /**
      * Signature padding mode
      */
-    protected int $signaturePadding = self::SIGNATURE_PSS;
+    protected readonly int $signaturePadding;
 
     /**
      * Length of hash function output
      */
-    protected int $hLen;
+    protected readonly int $hLen;
 
     /**
      * Length of salt
      */
-    protected ?int $sLen = null;
+    protected readonly ?int $sLen;
 
     /**
      * Label
      */
-    protected string $label = '';
+    protected readonly string $label;
 
     /**
      * Hash function for the Mask Generation Function
      */
-    protected Hash $mgfHash;
+    protected readonly Hash $mgfHash;
 
     /**
      * Length of MGF hash function output
      */
-    protected int $mgfHLen;
+    protected readonly int $mgfHLen;
 
     /**
      * Modulus (ie. n)
      */
-    protected BigInteger $modulus;
+    protected readonly BigInteger $modulus;
 
     /**
      * Modulus length
      */
-    protected int $k;
+    protected readonly int $k;
 
     /**
      * Exponent (ie. e or d)
      */
-    protected BigInteger $exponent;
+    protected readonly BigInteger $exponent;
 
     /**
      * Default public exponent
@@ -217,7 +217,7 @@ abstract class RSA extends AsymmetricKey
     /**
      * Public Exponent
      */
-    protected BigInteger $publicExponent;
+    protected readonly BigInteger $publicExponent;
 
     /**
      * Forced Engine
@@ -427,6 +427,11 @@ abstract class RSA extends AsymmetricKey
                 $key = $key->withSaltLength($components['saltLength']);
             }
         }
+
+        $key->encryptionPadding = self::ENCRYPTION_OAEP;
+        $key->signaturePadding = self::SIGNATURE_PSS;
+        $key->sLen = null;
+        $key->label = '';
 
         return $key;
     }
