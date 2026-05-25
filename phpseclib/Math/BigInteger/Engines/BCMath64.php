@@ -106,23 +106,4 @@ class BCMath64 extends BCMath
             substr(str_pad($value, $this->precision >> 3, chr(0), STR_PAD_LEFT), -($this->precision >> 3)) :
             ltrim($value, chr(0));
     }
-
-    /**
-     * Sets engine type.
-     *
-     * Throws an exception if the type is invalid
-     *
-     * @param class-string<Engine> $engine
-     */
-    public static function setModExpEngine(string $engine): void
-    {
-        $fqengine = '\\phpseclib4\\Math\\BigInteger\\Engines\\BCMath\\' . $engine;
-        if (!class_exists($fqengine) || !method_exists($fqengine, 'isValidEngine')) {
-            throw new BadConfigurationException("$engine is not a valid engine");
-        }
-        if (!$fqengine::isValidEngine()) {
-            throw new BadConfigurationException("$engine is not setup correctly on this system");
-        }
-        static::$modexpEngine['phpseclib4\Math\BigInteger\Engines\BCMath'] = $fqengine;
-    }
 }
