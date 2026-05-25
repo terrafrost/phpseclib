@@ -19,10 +19,10 @@ class BCMath64Test extends TestCase
         if (!BCMath64::isValidEngine()) {
             self::markTestSkipped('BCMath64 extension is either not available or you\'re on a 32-bit PHP install');
         }
-        BCMath::setModExpEngine('DefaultEngine');
+        BCMath64::setModExpEngine('DefaultEngine');
     }
 
-    public function getInstance($x = 0, $base = 10): BCMath
+    public function getInstance($x = 0, $base = 10): BCMath64
     {
         return new BCMath64($x, $base);
     }
