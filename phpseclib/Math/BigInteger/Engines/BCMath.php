@@ -87,11 +87,8 @@ class BCMath extends Engine
                 $this->value = '0';
                 for ($i = 0; $i < $len; $i += 4) {
                     $this->value = bcmul($this->value, '4294967296', 0); // 4294967296 == 2**32
-                    $this->value = bcadd(
-                        $this->value,
-                        (string) (0x1000000 * ord($x[$i]) + ((ord($x[$i + 1]) << 16) | (ord($x[$i + 2]) << 8) | ord($x[$i + 3]))),
-                        0
-                    );
+                    $temp = sprintf('%u', unpack('N', substr($x, $i, 4))[1]);
+                    $this->value = bcadd($this->value, $temp, 0);
                 }
 
                 if ($this->is_negative) {
@@ -107,7 +104,7 @@ class BCMath extends Engine
             case 10:
                 // explicitly casting $x to a string is necessary, here, since doing $x[0] on -1 yields different
                 // results then doing it on '-1' does (modInverse does $x[0])
-                $this->value = $this->value === '-' ? '0' : (string)$this->value;
+                $this->value = $this->value === '-' ? '0' : (string) $this->value;
         }
     }
 
@@ -140,9 +137,16 @@ class BCMath extends Engine
         }
 
         while (bccomp($current, '0', 0) > 0) {
-            $temp = bcmod($current, '16777216', 0);
-            $value = chr($temp >> 16) . chr(($temp >> 8) & 0xFF) . chr($temp & 0xFF) . $value;
-            $current = bcdiv($current, '16777216', 0);
+            $quotient = bcdiv($current, '4294967296', 0);
+            $remainder = bcsub($current, bcmul($quotient, '4294967296', 0), 0);
+            $temp = (int) ($remainder / 256); // ie. >> 8
+            $value = chr($temp >> 16) . // ie. $remainder >> 24
+                chr(($temp >> 8) & 0xFF) . // ie. $remainder >> 16
+                chr($temp & 0xFF) . // i. $remainder >> 8
+                //chr((int) ($remainder - 256 * $temp)) .
+                chr((int) fmod(floatval($remainder), 256)) .
+                $value;
+            $current = $quotient;
         }
 
         return $this->precision > 0 ?
