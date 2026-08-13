@@ -30,7 +30,7 @@ abstract class Recipient implements \ArrayAccess, \Countable, \Iterator
 {
     use \phpseclib4\File\Common\Traits\KeyDerivation;
 
-    public Constructed|array $recipient;
+    public Constructed|array|null $recipient;
     public ?EncryptedData $cms = null;
     /** @psalm-suppress PossiblyUnusedProperty */
     public ?Choice $parent;
