@@ -673,9 +673,12 @@ class SSH2
     /**
      * Timeout
      *
+     * Is overwritten by the constructor BUT if you're mocking the object
+     * the constructor may be bypassed, hence our setting it to -1 initially
+     *
      * @see SSH2::setTimeout()
      */
-    protected int $timeout;
+    protected int $timeout = -1;
 
     /**
      * Current Timeout
