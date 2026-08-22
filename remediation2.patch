@@ -1,0 +1,23 @@
+diff --git a/phpseclib/Crypt/EC/Formats/Keys/MontgomeryPrivate.php b/phpseclib/Crypt/EC/Formats/Keys/MontgomeryPrivate.php
+index 533259d1..9a105a54 100644
+--- a/phpseclib/Crypt/EC/Formats/Keys/MontgomeryPrivate.php
++++ b/phpseclib/Crypt/EC/Formats/Keys/MontgomeryPrivate.php
+@@ -61,7 +61,17 @@ abstract class MontgomeryPrivate
+ 
+         $components = ['curve' => $curve];
+         $components['dA'] = new BigInteger($key, 256);
+-        $curve->rangeCheck($components['dA']);
++
++        if ($curve instanceof Curve25519 && function_exists('sodium_crypto_box_publickey_from_secretkey')) {
++            //$r = pack('H*', '0900000000000000000000000000000000000000000000000000000000000000');
++            //$QA = sodium_crypto_scalarmult(key, $r);
++            $QA = sodium_crypto_box_publickey_from_secretkey(str_pad($key, 32, chr(0), STR_PAD_LEFT));
++            $components['QA'] = [$curve->convertInteger(new BigInteger(strrev($QA), 256))];
++        } else {
++            // note that EC::getEncodedCoordinates does some additional "magic" (it does strrev on the result)
++            $components['QA'] = [$curve->multiplyPoint($curve->getBasePoint(), $components['dA'])[0]];
++        }
++
+         // note that EC::getEncodedCoordinates does some additional "magic" (it does strrev on the result)
+         $components['QA'] = $components['curve']->multiplyPoint($components['curve']->getBasePoint(), $components['dA']);
+ 
