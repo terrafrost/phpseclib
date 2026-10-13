@@ -232,8 +232,12 @@ abstract class EC extends AsymmetricKey
                 $privatekey = EC::loadPrivateKeyFormat('libsodium', sodium_crypto_sign_secretkey($kp));
                 //$publickey = EC::loadFormat('libsodium', sodium_crypto_sign_publickey($kp));
 
+<<<<<<< HEAD
                 $privatekey->format = null;
 
+=======
+                /** @var PrivateKey $privatekey */
+>>>>>>> b8c74baf8 (Narrow loader key types for PHPStan)
                 $privatekey->curveName = 'Ed25519';
                 //$publickey->curveName = $curve;
 
@@ -285,7 +289,11 @@ abstract class EC extends AsymmetricKey
         }
         // some versions of OpenSSL / PHP return PKCS1 keys, others return PKCS8 keys
         $privatekey = EC::loadPrivateKey($privateKeyStr);
+<<<<<<< HEAD
         $privatekey->format = null;
+=======
+        /** @var PrivateKey $privatekey */
+>>>>>>> b8c74baf8 (Narrow loader key types for PHPStan)
         $privatekey->curveName = match ($curveName) {
             'prime256v1' => 'secp256r1',
             'prime192v1' => 'secp192r1',
