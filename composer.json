@@ -68,6 +68,8 @@
         "squizlabs/php_codesniffer": "4.0.4",
         "vimeo/psalm": "7.6.0",
         "phpstan/phpstan": "^2"
+        "phpstan/phpstan-phpunit": "~2.0.21"
+
     },
     "suggest": {
         "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
