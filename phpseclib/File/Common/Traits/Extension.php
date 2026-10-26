@@ -169,11 +169,13 @@ trait Extension
 
         try {
             if (isset($map)) {
-                $ext['extnValue'] = ASN1::map(ASN1::decodeBER((string) $ext['extnValue']), $map, $rules);
+                $temp = (string) $ext['extnValue'];
+                $ext['extnValue'] = ASN1::map(ASN1::decodeBER($temp), $map, $rules);
                 if ($ext['extnValue'] instanceof Constructed) {
                     $ext['extnValue']->parent = $ext;
                     $ext['extnValue']->depth = $ext->depth + 1;
                     $ext['extnValue']->key = 'extnValue';
+                    $ext['extnValue']->setWrapping(chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength(strlen($temp)));
                 }
             } else {
                 $temp = ASN1::decodeBER((string) $ext['extnValue']);
@@ -200,15 +202,6 @@ trait Extension
                 case $extensions[$i]['extnValue'] instanceof Element:
                 case $extensions[$i] instanceof Constructed && $extensions[$i]->hasEncoded():
                     continue 2;
-            }
-
-            $unparsedTest = is_array($extensions[$i]['extnValue']) && isset($extensions[$i]['extnValue']['content']);
-            $unparsedTest = $unparsedTest && $extensions[$i]['extnValue']['content'] instanceof Constructed;
-            $unparsedTest = $unparsedTest && !$extensions[$i]['extnValue']['content']->hasMapping();
-            if ($unparsedTest) {
-                $wrapping = chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($extensions[$i]['extnValue']['content']->getEncodedLength());
-                $extensions[$i]['extnValue']['content']->setWrapping($wrapping);
-                continue;
             }
 
             $id = (string) $extensions[$i]['extnId'];
@@ -293,7 +286,9 @@ trait Extension
                     if ($value instanceof Constructed) {
                         $value->invalidateCache();
                     }
-                    ASN1::encodeDER($value, $map);
+                    if (!$value instanceof OctetString) {
+                        ASN1::encodeDER($value, $map);
+                    }
                 } else {
                     $temp = ASN1::encodeDER($value, $map);
                     $value = ASN1::map(ASN1::decodeBER($temp), $map);
@@ -304,8 +299,10 @@ trait Extension
                 $value->decoded = $oldValue;
             }
 
-            $value->setWrapping(chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($value->getEncodedLength()));
-            $value->enableForcedCache();
+            if (!$value instanceof OctetString) {
+                $value->setWrapping(chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($value->getEncodedLength()));
+                $value->enableForcedCache();
+            }
         }
 
         if ($extensions instanceof Constructed) {

@@ -23,6 +23,7 @@ use phpseclib4\File\ASN1;
 use phpseclib4\File\ASN1\Element;
 use phpseclib4\File\ASN1\MalformedData;
 use phpseclib4\File\ASN1\Types\Boolean;
+use phpseclib4\File\ASN1\Types\OctetString;
 use phpseclib4\File\ASN1\Types\PrintableString;
 use phpseclib4\File\ASN1\Types\UTF8String;
 use phpseclib4\File\CRL;
@@ -1751,5 +1752,15 @@ cKVMm1WnOQd4aQgCvzv2r7/gsdX++496vRpBMTfwa1qLBjG6
         $this->assertIsString($x509);
         $this->expectException(UnexpectedValueException::class);
         X509::load($x509)->toArray();
+    }
+
+    public function testExtnValueReplacement(): void
+    {
+        $cert = file_get_contents(__DIR__ . '/vmc-ebay.pem');
+        $x509 = X509::load($cert);
+        $x509['tbsCertificate']['extensions'][8]['extnValue'] = new Element($x509['tbsCertificate']['extensions'][8]['extnValue']->getEncodedWithWrapping());
+        $this->assertIsArray($x509->toArray());
+        $x509['tbsCertificate']['extensions'][8]['extnValue'] = new OctetString($x509['tbsCertificate']['extensions'][8]['extnValue']->getEncoded());
+        $this->assertIsArray($x509->toArray());
     }
 }
