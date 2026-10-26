@@ -169,11 +169,13 @@ trait Extension
 
         try {
             if (isset($map)) {
-                $ext['extnValue'] = ASN1::map(ASN1::decodeBER((string) $ext['extnValue']), $map, $rules);
+                $temp = (string) $ext['extnValue'];
+                $ext['extnValue'] = ASN1::map(ASN1::decodeBER($temp), $map, $rules);
                 if ($ext['extnValue'] instanceof Constructed) {
                     $ext['extnValue']->parent = $ext;
                     $ext['extnValue']->depth = $ext->depth + 1;
                     $ext['extnValue']->key = 'extnValue';
+                    $ext['extnValue']->setWrapping(chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength(strlen($temp)));
                 }
             } else {
                 $temp = ASN1::decodeBER((string) $ext['extnValue']);
@@ -202,14 +204,14 @@ trait Extension
                     continue 2;
             }
 
-            $unparsedTest = is_array($extensions[$i]['extnValue']) && isset($extensions[$i]['extnValue']['content']);
-            $unparsedTest = $unparsedTest && $extensions[$i]['extnValue']['content'] instanceof Constructed;
-            $unparsedTest = $unparsedTest && !$extensions[$i]['extnValue']['content']->hasMapping();
-            if ($unparsedTest) {
-                $wrapping = chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($extensions[$i]['extnValue']['content']->getEncodedLength());
-                $extensions[$i]['extnValue']['content']->setWrapping($wrapping);
-                continue;
-            }
+//            $unparsedTest = is_array($extensions[$i]['extnValue']) && isset($extensions[$i]['extnValue']['content']);
+//            $unparsedTest = $unparsedTest && $extensions[$i]['extnValue']['content'] instanceof Constructed;
+//            $unparsedTest = $unparsedTest && !$extensions[$i]['extnValue']['content']->hasMapping();
+//            if ($unparsedTest) {
+//                $wrapping = chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($extensions[$i]['extnValue']['content']->getEncodedLength());
+//                $extensions[$i]['extnValue']['content']->setWrapping($wrapping);
+//                continue;
+//            }
 
             $id = (string) $extensions[$i]['extnId'];
             $value = &$extensions[$i]['extnValue'];
