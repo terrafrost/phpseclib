@@ -1136,7 +1136,7 @@ class SFTP extends SSH2
     /**
      * Returns general information about a file.
      *
-     * Returns an array on success and false otherwise.
+     * Returns an array on success; throws an exception on failure.
      */
     public function stat(string $filename): array
     {
@@ -2109,6 +2109,10 @@ class SFTP extends SSH2
             $result = $this->query_stat_cache($path);
 
             if (isset($result)) {
+<<<<<<< HEAD
+=======
+                // return true if $result is an array or if it's an stdClass object
+>>>>>>> 795d9321e (Remove redundant checks identified by PHPStan)
                 return true;
             }
         }
