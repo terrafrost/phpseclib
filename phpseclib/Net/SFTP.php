@@ -1716,6 +1716,7 @@ class SFTP extends SSH2
             case is_resource($data):
                 $mode = $mode & ~self::SOURCE_LOCAL_FILE;
                 $info = stream_get_meta_data($data);
+                // @phpstan-ignore isset.offset (Some stream wrappers omit wrapper_type; preserve the runtime guard.)
                 if (isset($info['wrapper_type']) && $info['wrapper_type'] == 'PHP' && $info['stream_type'] == 'Input') {
                     $fp = fopen('php://memory', 'w+');
                     stream_copy_to_stream($data, $fp);
@@ -2114,10 +2115,6 @@ class SFTP extends SSH2
             $result = $this->query_stat_cache($path);
 
             if (isset($result)) {
-<<<<<<< HEAD
-=======
-                // return true if $result is an array or if it's an stdClass object
->>>>>>> 795d9321e (Remove redundant checks identified by PHPStan)
                 return true;
             }
         }
@@ -2347,7 +2344,7 @@ class SFTP extends SSH2
      *
      * Uses cache if appropriate.
      */
-    private function get_xstat_cache_prop(string $path, string $prop, string $type): int|string
+    private function get_xstat_cache_prop(string $path, string $prop, string $type): int|float|string
     {
         $this->precheck();
 
@@ -2725,9 +2722,14 @@ class SFTP extends SSH2
             }
             $this->packet_buffer .= $temp;
         }
-        if (strlen($this->packet_buffer) < 4) {
+        ['length' => $length] = unpack('Nlength', Strings::shift($this->packet_buffer, 4));
+
+        if ($this->use_request_id && $length < 5) {
+            $this->packet_type = -1;
+            $this->packet_buffer = '';
             throw new UnexpectedValueException('Packet is too small');
         }
+
         // what's been read of a packet stays in the buffer until all of it has been, so if reading it times out, the
         // next call finishes reading it instead of taking the rest of it as the start of another packet
         ['length' => $length] = unpack('Nlength', substr($this->packet_buffer, 0, 4));
@@ -2778,7 +2780,9 @@ class SFTP extends SSH2
             $this->append_log($packet_type, $packet);
         }
 
+        // @phpstan-ignore variable.undefined (A non-null request ID reaches this only when request-id mode unpacked the validated packet above.)
         if (isset($request_id) && $this->use_request_id && $packet_id != $request_id) {
+            // @phpstan-ignore variable.undefined (The guarded packet ID above is defined whenever request-id mode is enabled.)
             $this->requestBuffer[$packet_id] = [
                 'packet_type' => $this->packet_type,
                 'packet' => $packet,
