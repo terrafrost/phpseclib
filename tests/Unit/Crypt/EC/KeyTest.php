@@ -22,7 +22,12 @@ use phpseclib4\Crypt\EC\PublicKey;
 use phpseclib4\Crypt\PublicKeyLoader;
 use phpseclib4\Exception\ResourceLimitException;
 use phpseclib4\Exception\UnexpectedValueException;
+<<<<<<< HEAD
 use phpseclib4\Exception\NoKeyLoadedException;
+=======
+use phpseclib4\Exception\UnsupportedValueException;
+use phpseclib4\Math\BigInteger;
+>>>>>>> 918f0d643 (Reject nonpositive EC parameter orders)
 use phpseclib4\Tests\PhpseclibTestCase;
 
 class KeyTest extends PhpseclibTestCase
@@ -138,6 +143,17 @@ AFLpken6rN6lOEIeyNLdD097
         PKCS8::useSpecifiedCurve();
         $this->assertSameNL($expected, $key->toString('PKCS8'));
         PKCS8::useNamedCurve();
+    }
+
+    public function testECParametersRejectNonPositiveOrder(): void
+    {
+        $curve = new secp384r1();
+        $curve->setOrder(new BigInteger(0));
+
+        $this->expectException(UnsupportedValueException::class);
+        $this->expectExceptionMessage('Specified Curves need a positive order');
+
+        PKCS1::saveParameters($curve, ['namedCurve' => false]);
     }
 
     // openssl ecparam -name sect113r1 -genkey -noout -out sect113r1.pem
