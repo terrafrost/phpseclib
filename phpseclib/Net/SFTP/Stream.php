@@ -100,8 +100,6 @@ class Stream
 
     /**
      * The Constructor
-     *
-     * @psalm-api
      */
     public function __construct()
     {
