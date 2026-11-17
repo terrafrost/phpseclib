@@ -25,6 +25,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class PFX
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         'KeyBag' => '1.2.840.113549.1.12.10.1.1',
         'PKCS8ShroudedKeyBag' => '1.2.840.113549.1.12.10.1.2',

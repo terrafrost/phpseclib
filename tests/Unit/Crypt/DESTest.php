@@ -11,7 +11,7 @@ namespace phpseclib4\Tests\Unit\Crypt;
 use phpseclib4\Crypt\DES;
 use phpseclib4\Tests\PhpseclibTestCase;
 
-// the AES tests establish the correctness of the modes of operation. this test is inteded to establish the consistency of
+// the AES tests establish the correctness of the modes of operation. this test is intended to establish the consistency of
 // key and iv padding between the multiple engines
 class DESTest extends PhpseclibTestCase
 {

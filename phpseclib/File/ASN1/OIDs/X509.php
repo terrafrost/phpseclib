@@ -25,6 +25,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class X509
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         //'id-pkix' => '1.3.6.1.5.5.7',
         //'id-pe' => '1.3.6.1.5.5.7.1',

@@ -23,6 +23,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class Hashes
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         'md2' => '1.2.840.113549.2.2',
         'md4' => '1.2.840.113549.2.4',

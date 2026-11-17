@@ -25,6 +25,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class PKCS8
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         // PBES1 encryption schemes
         'pbeWithMD2AndDES-CBC' => '1.2.840.113549.1.5.1',

@@ -30,6 +30,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class Curves
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         'prime192v1' => '1.2.840.10045.3.1.1', // J.5.1, example 1 (aka secp192r1)
         'prime192v2' => '1.2.840.10045.3.1.2', // J.5.1, example 2

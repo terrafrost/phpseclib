@@ -23,6 +23,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class EC
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         'prime-field' => '1.2.840.10045.1.1',
         'characteristic-two-field' => '1.2.840.10045.1.2',

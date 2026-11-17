@@ -25,6 +25,7 @@ namespace phpseclib4\File\ASN1\OIDs;
  */
 abstract class CMS
 {
+    // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase -- Preserve this public OIDs map name for backwards compatibility.
     public const OIDs = [
         'id-data' => '1.2.840.113549.1.7.1', // section 4
         'id-signedData' => '1.2.840.113549.1.7.2', // section 5
