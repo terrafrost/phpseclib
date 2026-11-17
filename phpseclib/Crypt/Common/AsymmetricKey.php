@@ -476,6 +476,7 @@ abstract class AsymmetricKey
      * want to use it at some point
      *
      * @psalm-api
+     * @psalm-suppress PossiblyUnusedMethod
      * @psalm-suppress UndefinedThisPropertyFetch
      */
     protected function computek(string $h1): string
