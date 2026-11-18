@@ -209,8 +209,6 @@ abstract class ASN1
      */
     private static bool $useEncodedCache = true;
 
-    private static ?bool $use64BitOIDHandling = null;
-
     /**
      * Cache Invalidation Flag
      *
@@ -644,7 +642,7 @@ abstract class ASN1
         if (!isset($decoded['constant'])) {
             $message .= self::convertTypeConstantToString($decoded['type']);
         } else {
-            /** @pslam-suppress UnhandledMatchCondition */
+            /** @psalm-suppress UnhandledMatchCondition */
             $message .= match ($decoded['type']) {
                 self::CLASS_APPLICATION => 'application',
                 self::CLASS_PRIVATE => 'private',
@@ -657,7 +655,7 @@ abstract class ASN1
             $message .= self::convertTypeConstantToString($mapping['type']);
         } else {
             if (isset($mapping['class'])) {
-                /** @pslam-suppress UnhandledMatchCondition */
+                /** @psalm-suppress UnhandledMatchCondition */
                 $message .= match ($mapping['class']) {
                     self::CLASS_APPLICATION => 'application tag',
                     self::CLASS_PRIVATE => 'private tag',
@@ -1164,21 +1162,6 @@ abstract class ASN1
         }
 
         return $header . $value;
-    }
-
-    /** @psalm-suppress PossiblyUnusedMethod */
-    public static function enable64BitOIDHandling(): void
-    {
-        if (PHP_INT_SIZE === 4) {
-            throw new BadConfigurationException('64-bit OID handling is unavailable on 32-bit PHP installs');
-        }
-        self::$use64BitOIDHandling = true;
-    }
-
-    /** @psalm-suppress PossiblyUnusedMethod */
-    public static function disable64BitOIDHandling(): void
-    {
-        self::$use64BitOIDHandling = false;
     }
 
     /**
