@@ -1579,7 +1579,7 @@ abstract class ASN1
         return match ($value::class) {
             ExplicitNull::class => null,
             Boolean::class, Element::class => $value->value,
-            /** @psalm-suppress InvalidCast */
+            /** @var \Stringable $value */
             default => (string) $value
         };
     }
