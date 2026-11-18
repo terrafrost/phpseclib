@@ -641,23 +641,28 @@ abstract class ASN1
         }
 
         $message = 'Unable to perform mapping - found ';
-        $constantStr = ' tag with a constant of ' . $decoded['type'];
-        $message .= match ($decoded['class']) {
-            self::CLASS_UNIVERSAL => self::convertTypeConstantToString($decoded['type']),
-            self::CLASS_APPLICATION => "application$constantStr",
-            self::CLASS_PRIVATE => "private$constantStr",
-            self::CLASS_CONTEXT_SPECIFIC => "context specific$constantStr"
-        };
-        $message .= ' expected ';
-        if (!isset($decoded['class'])) {
+        if (!isset($decoded['constant'])) {
             $message .= self::convertTypeConstantToString($decoded['type']);
         } else {
-            $constantStr = isset($decoded['cast']) ? ' with a constant of ' . $decoded['cast'] : '';
-            $message .= match ($decoded['class']) {
-                self::CLASS_APPLICATION => "application tag$constantStr",
-                self::CLASS_PRIVATE => "private tag$constantStr",
-                self::CLASS_CONTEXT_SPECIFIC => "context specific$constantStr"
+            $message .= match ($decoded['type']) {
+                self::CLASS_APPLICATION => 'application',
+                self::CLASS_PRIVATE => 'private',
+                self::CLASS_CONTEXT_SPECIFIC => 'context specific'
             };
+            $message .= ' tag with a constant of ' . $decoded['constant'];
+        }
+        $message .= ' expected ';
+        if (!isset($mapping['constant'])) {
+            $message .= self::convertTypeConstantToString($mapping['type']);
+        } else {
+            if (isset($mapping['class'])) {
+                $message .= match ($mapping['class']) {
+                    self::CLASS_APPLICATION => 'application tag',
+                    self::CLASS_PRIVATE => 'private tag',
+                    self::CLASS_CONTEXT_SPECIFIC => 'context specific'
+                };
+            }
+            $message .= ' with a constant of ' . $mapping['constant'];
         }
         throw new UnexpectedValueException($message);
     }
