@@ -642,7 +642,7 @@ abstract class ASN1
 
         $message = 'Unable to perform mapping - found ';
         $constantStr = ' tag with a constant of ' . $decoded['type'];
-        $message .= match ($decoded['type']) {
+        $message .= match ($decoded['class']) {
             self::CLASS_UNIVERSAL => self::convertTypeConstantToString($decoded['type']),
             self::CLASS_APPLICATION => "application$constantStr",
             self::CLASS_PRIVATE => "private$constantStr",

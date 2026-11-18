@@ -113,7 +113,7 @@ class Constructed implements \ArrayAccess, \Countable, \Iterator, BaseType
         $origOffset = $offset;
         while (true) {
             if (substr($this->encoded, $offset, 2) === "\0\0") {
-                $offset+= 2;
+                $offset += 2;
                 break;
             }
             ASN1::decodeTag($this->encoded, $offset);

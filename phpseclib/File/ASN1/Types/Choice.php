@@ -47,7 +47,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
     /**
      * Constructor
      */
-    public function __construct(public string $index, public BaseType $value)
+    public function __construct(public string $index, public mixed $value)
     {
     }
 
@@ -195,7 +195,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
         if ($this->value instanceof Signer || $this->value instanceof Recipient || $this->value instanceof EncryptedKey) {
             return [$this->index => $this->value->toArray($convertPrimitives)];
         }
-        return [$this->index => $convertPrimitives ? ASN1::convertToPrimitive($this->value) : $this->value];
+        return [$this->index => $convertPrimitives && $this->value instanceof BaseType ? ASN1::convertToPrimitive($this->value) : $this->value];
     }
 
     public function reconstituteKeyHelper(): ?string
