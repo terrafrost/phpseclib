@@ -47,7 +47,7 @@ class Choice implements \ArrayAccess, \Countable, \Iterator, BaseType
     /**
      * Constructor
      */
-    public function __construct(public string $index, public mixed $value)
+    public function __construct(public string $index, public BaseType $value)
     {
     }
 
