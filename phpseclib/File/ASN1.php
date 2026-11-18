@@ -1595,16 +1595,11 @@ abstract class ASN1
      * A CHOICE or an ANY can hold a raw Element, a string, or an array that a rule
      * produced, as well as a BaseType.
      */
-    public static function convertToPrimitive(mixed $value): mixed
+    public static function convertToPrimitive(BaseType $value): string|bool|null
     {
-        return match (true) {
-            is_array($value) => array_map(
-                fn ($v) => $v instanceof Constructed || $v instanceof Choice ? $v->toArray(true) : self::convertToPrimitive($v),
-                $value
-            ),
-            $value === null, is_scalar($value) => $value,
-            $value instanceof ExplicitNull => null,
-            $value instanceof Boolean => $value->value,
+        return match ($value::class) {
+            ExplicitNull::class => null,
+            Boolean::class => $value->value,
             default => (string) $value
         };
     }
