@@ -644,6 +644,7 @@ abstract class ASN1
         if (!isset($decoded['constant'])) {
             $message .= self::convertTypeConstantToString($decoded['type']);
         } else {
+            /** @pslam-suppress UnhandledMatchCondition */
             $message .= match ($decoded['type']) {
                 self::CLASS_APPLICATION => 'application',
                 self::CLASS_PRIVATE => 'private',
@@ -656,6 +657,7 @@ abstract class ASN1
             $message .= self::convertTypeConstantToString($mapping['type']);
         } else {
             if (isset($mapping['class'])) {
+                /** @pslam-suppress UnhandledMatchCondition */
                 $message .= match ($mapping['class']) {
                     self::CLASS_APPLICATION => 'application tag',
                     self::CLASS_PRIVATE => 'private tag',
@@ -1194,7 +1196,6 @@ abstract class ASN1
         }
 
         $oid = [];
-        $pos = 0;
 
         self::checkOIDEncoding($content);
 
@@ -1594,7 +1595,8 @@ abstract class ASN1
     {
         return match ($value::class) {
             ExplicitNull::class => null,
-            Boolean::class => $value->value,
+            Boolean::class, Element::class => $value->value,
+            /** @psalm-suppress InvalidCast */
             default => (string) $value
         };
     }
