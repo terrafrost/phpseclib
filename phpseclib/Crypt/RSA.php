@@ -297,7 +297,9 @@ abstract class RSA extends AsymmetricKey
                     while (openssl_error_string() !== false) {
                     }
 
-                    return RSA::load($privatekeystr);
+                    $key = RSA::load($privatekeystr);
+                    $key->format = null;
+                    return $key;
                 }
             }
         }
@@ -1036,34 +1038,6 @@ abstract class RSA extends AsymmetricKey
         }
 
         return $type::savePublicKey($this->modulus, $this->exponent, $options);
-
-        /*
-        $key = $type::savePrivateKey($this->modulus, $th is->publicExponent, $this->exponent, $this->primes, $this->exponents, $this->coefficients, $this->password, $options);
-        if ($key !== false || count($this->primes) == 2) {
-            return $key;
-        }
-
-        $nSize = $this->getSize() >> 1;
-
-        $primes = [1 => clone self::$one, clone self::$one];
-        $i = 1;
-        foreach ($this->primes as $prime) {
-            $primes[$i] = $primes[$i]->multiply($prime);
-            if ($primes[$i]->getLength() >= $nSize) {
-                $i++;
-            }
-        }
-
-        $exponents = [];
-        $coefficients = [2 => $primes[2]->modInverse($primes[1])];
-
-        foreach ($primes as $i => $prime) {
-            $temp = $prime->subtract(self::$one);
-            $exponents[$i] = $this->modulus->modInverse($temp);
-        }
-
-        return $type::savePrivateKey($this->modulus, $this->publicExponent, $this->exponent, $primes, $exponents, $coefficients, $this->password, $options);
-        */
     }
 
     public function toArray(): array

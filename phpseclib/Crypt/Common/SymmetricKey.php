@@ -45,6 +45,7 @@ use phpseclib4\Exception\{
     InvalidModeException,
     InvalidStateException,
     LengthException,
+    ResourceLimitException,
     UnsupportedAlgorithmException
 };
 use phpseclib4\Math\{BigInteger, BinaryField, PrimeField};
@@ -489,9 +490,7 @@ abstract class SymmetricKey
     public function __construct(string $mode)
     {
         $mode = strtolower($mode);
-        // necessary because of 5.6 compatibility; we can't do isset(self::MODE_MAP[$mode]) in 5.6
-        $map = self::MODE_MAP;
-        if (!isset($map[$mode])) {
+        if (!isset(self::MODE_MAP[$mode])) {
             throw new InvalidArgumentException('No valid mode has been specified');
         }
 
@@ -746,14 +745,16 @@ abstract class SymmetricKey
         $method = strtolower($method);
         switch ($method) {
             case 'bcrypt':
-                if (!isset($func_args[2])) {
+                if (!isset($func_args[0])) {
                     throw new InvalidArgumentException('A salt must be provided for bcrypt to work');
                 }
 
                 $salt = $func_args[0];
-
                 $rounds = $func_args[1] ?? 16;
                 $keylen = $func_args[2] ?? $this->key_length;
+                if ($rounds > 250) {
+                    throw new ResourceLimitException('Iteration count too high');
+                }
 
                 $key = Blowfish::bcrypt_pbkdf($password, $salt, $keylen + $this->block_size, $rounds);
 
@@ -775,6 +776,11 @@ abstract class SymmetricKey
                 // RFC2898#section-4.2 uses 1,000 iterations by default
                 // WPA and WPA2 use 4,096.
                 $count = $func_args[2] ?? 1000;
+                // bouncycastle uses 5,000,000 as the upper bound:
+                // https://advisories.gitlab.com/maven/org.bouncycastle/bcprov-jdk18on/CVE-2026-13586/
+                if ($count > 5000000) {
+                    throw new ResourceLimitException('Iteration count too high');
+                }
 
                 // Keylength
                 if (isset($func_args[3])) {
@@ -782,6 +788,7 @@ abstract class SymmetricKey
                         throw new LengthException('Derived key length cannot be longer 0 or less');
                     }
                     $dkLen = $func_args[3];
+                    $this->setKeyLength($method == 'pbkdf1' ? 4 * $dkLen : 8 * $dkLen);
                 } else {
                     $key_length = $this->explicit_key_length ?? $this->key_length;
                     $dkLen = $method == 'pbkdf1' ? 2 * $key_length : $key_length;
