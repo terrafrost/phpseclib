@@ -1591,7 +1591,7 @@ abstract class ASN1
      * A CHOICE or an ANY can hold a raw Element, a string, or an array that a rule
      * produced, as well as a BaseType.
      */
-    public static function convertToPrimitive(BaseType $value): string|bool|null
+    public static function convertToPrimitive(Element|BaseType $value): string|bool|null
     {
         return match ($value::class) {
             ExplicitNull::class => null,
