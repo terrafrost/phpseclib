@@ -145,7 +145,7 @@ class RC4 extends StreamCipher
      */
     public function encrypt(#[\SensitiveParameter] string $plaintext): string
     {
-        if ($this->engine != self::ENGINE_INTERNAL) {
+        if (!isset($this->engine) || $this->engine != self::ENGINE_INTERNAL) {
             return parent::encrypt($plaintext);
         }
         return $this->crypt($plaintext, self::ENCRYPT);
@@ -163,7 +163,7 @@ class RC4 extends StreamCipher
      */
     public function decrypt(string $ciphertext): string
     {
-        if ($this->engine != self::ENGINE_INTERNAL) {
+        if (!isset($this->engine) || $this->engine != self::ENGINE_INTERNAL) {
             return parent::decrypt($ciphertext);
         }
         return $this->crypt($ciphertext, self::DECRYPT);

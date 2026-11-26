@@ -222,7 +222,7 @@ class RC2 extends BlockCipher
     {
         switch ($engine) {
             case self::ENGINE_OPENSSL:
-                if ($this->current_key_length != 128 || strlen($this->orig_key) < 16) {
+                if (!isset($this->orig_key) || $this->current_key_length != 128 || strlen($this->orig_key) < 16) {
                     return false;
                 }
                 // quoting https://www.openssl.org/news/openssl-3.0-notes.html, OpenSSL 3.0.1
@@ -263,7 +263,7 @@ class RC2 extends BlockCipher
      */
     public function getKeyLength(): int
     {
-        return $this->current_key_length;
+        return $this->current_key_length ?? $this->default_key_length;
     }
 
     /**
@@ -337,7 +337,7 @@ class RC2 extends BlockCipher
      */
     public function encrypt(#[\SensitiveParameter] string $plaintext): string
     {
-        if ($this->engine == self::ENGINE_OPENSSL) {
+        if (isset($this->engine) && $this->engine == self::ENGINE_OPENSSL) {
             $temp = $this->key;
             $this->key = $this->orig_key;
             $result = parent::encrypt($plaintext);
@@ -357,7 +357,7 @@ class RC2 extends BlockCipher
      */
     public function decrypt(string $ciphertext): string
     {
-        if ($this->engine == self::ENGINE_OPENSSL) {
+        if (isset($this->engine) && $this->engine == self::ENGINE_OPENSSL) {
             $temp = $this->key;
             $this->key = $this->orig_key;
             $result = parent::decrypt($ciphertext);
